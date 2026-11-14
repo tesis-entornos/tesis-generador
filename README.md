@@ -103,3 +103,16 @@ Contenido sintético:
 Cada acción agrega una línea JSON a `registros/c<N>.jsonl` (`t_real`, `accion`, `n`, `repo`, `rama`, `k`,
 `commit`, `pr`, `pr_created_at`, `dry_run`). Con `--dry-run` todo queda local (sin push ni PR), se imprime el
 diff contra la línea base y el registro va a `registros/dryrun-c<N>.jsonl`, que no se versiona.
+
+## Reset de inicio de corrida (`reset.py`)
+
+```sh
+python3 reset.py --corrida N [--dry-run]
+```
+
+Deja el entorno compartido del fijo en la línea base (el `tag.json` de main de cada -cd): precondiciones
+(sin builds en curso, efímero vacío, sin PR release/* abiertos), reset de datos con `scripts/reset_baseline.py`
+en una tarea one-off, despliegue de la línea base en dev de backend-cd y frontend-cd (esperando cada build
+del fijo con build_ok y suite ok), segundo reset de datos, y `main-fijo`/`main-efimero` al SHA de main en los
+dos -cd. El registro va a `registros/reset-c<N>.json`; su `fin` es el t = 0 de la corrida. `--dry-run` solo
+consulta y muestra lo que haría.
