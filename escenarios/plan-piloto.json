@@ -1,0 +1,60 @@
+{
+  "plan": "piloto",
+  "semilla_maestra": 20261114,
+  "metodo": "rng = random.Random(semilla_maestra); rng.shuffle([1, 1, 3, 3]); luego rng.randint(1, 10**6) por corrida, en el orden de la lista",
+  "corridas": [
+    {
+      "corrida": "c1",
+      "nivel": 3,
+      "semilla": 529928,
+      "escenario": "escenarios/c1.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "combinacion",
+          "migracion"
+        ],
+        "actualizaciones": 2
+      }
+    },
+    {
+      "corrida": "c2",
+      "nivel": 1,
+      "semilla": 801609,
+      "escenario": "escenarios/c2.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c3",
+      "nivel": 3,
+      "semilla": 135228,
+      "escenario": "escenarios/c3.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "combinacion"
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c4",
+      "nivel": 1,
+      "semilla": 521341,
+      "escenario": "escenarios/c4.json",
+      "resumen": {
+        "tipos": [
+          "combinacion"
+        ],
+        "actualizaciones": 1
+      }
+    }
+  ],
+  "pendiente": "nivel 5, cuota Fargate"
+}
