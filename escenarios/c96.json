@@ -1,0 +1,174 @@
+{
+  "corrida": 96,
+  "nivel": 3,
+  "semilla": 9603,
+  "generador": {
+    "commit": "9c93b47200a4c35a5e5dcb0dceea64800685b010",
+    "version_formato": 1
+  },
+  "parametros": {
+    "niveles": [
+      1,
+      3,
+      5
+    ],
+    "brecha_apertura_seg": [
+      0,
+      600
+    ],
+    "tipos": {
+      "solo_frontend": 0.19,
+      "solo_backend": 0.23,
+      "migracion": 0.41,
+      "combinacion": 0.17
+    },
+    "repos_por_tipo": {
+      "solo_frontend": [
+        "frontend"
+      ],
+      "solo_backend": [
+        "backend"
+      ],
+      "migracion": [
+        "backend"
+      ],
+      "combinacion": [
+        "backend",
+        "frontend"
+      ]
+    },
+    "tipos_con_migracion": [
+      "migracion",
+      "combinacion"
+    ],
+    "combinacion_primer_repo_backend": 0.5,
+    "brecha_segundo_repo_seg": [
+      0,
+      600
+    ],
+    "actualizaciones": {
+      "0": 0.57,
+      "1": 0.28,
+      "2": 0.08,
+      "3": 0.07
+    },
+    "brecha_actualizacion_seg": [
+      0,
+      600
+    ],
+    "resultados": {
+      "integrada": 0.75,
+      "declinada": 0.25
+    }
+  },
+  "catalogo_migraciones": [
+    "c96_1",
+    "c96_3"
+  ],
+  "versiones": [
+    {
+      "n": 1,
+      "rama": "release/c96-1",
+      "tipo": "migracion",
+      "repos": [
+        "backend"
+      ],
+      "migracion": "c96_1",
+      "resultado": "declinada",
+      "eventos": [
+        {
+          "t": 0,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "rama": "release/c96-2",
+      "tipo": "solo_backend",
+      "repos": [
+        "backend"
+      ],
+      "migracion": null,
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 118,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "rama": "release/c96-3",
+      "tipo": "combinacion",
+      "repos": [
+        "backend",
+        "frontend"
+      ],
+      "migracion": "c96_3",
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 404,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        },
+        {
+          "t": 707,
+          "repo": "backend",
+          "accion": "actualizacion",
+          "actualizacion": 1
+        },
+        {
+          "t": 992,
+          "repo": "frontend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    }
+  ],
+  "eventos_ordenados": [
+    {
+      "n": 1,
+      "t": 0,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 2,
+      "t": 118,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 3,
+      "t": 404,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 3,
+      "t": 707,
+      "repo": "backend",
+      "accion": "actualizacion",
+      "actualizacion": 1
+    },
+    {
+      "n": 3,
+      "t": 992,
+      "repo": "frontend",
+      "accion": "apertura",
+      "actualizacion": 0
+    }
+  ]
+}
