@@ -1,0 +1,92 @@
+{
+  "corrida": "c95",
+  "valida": true,
+  "motivos": [],
+  "nota_depurador": null,
+  "depurador": {
+    "inicio": "2026-11-14T22:35:26Z",
+    "encontrados": [],
+    "acciones": [],
+    "restantes": [],
+    "fin": "2026-11-14T22:35:54Z"
+  },
+  "versiones": [
+    {
+      "corrida": "c95",
+      "nivel": 1,
+      "semilla": 9503,
+      "n": 1,
+      "rama": "release/c95-1",
+      "tipo": "migracion",
+      "resultado_escenario": "integrada",
+      "modelo": "efimero",
+      "t_apertura": "2026-11-14T22:15:53Z",
+      "t_fin_validacion_final": "2026-11-14T22:28:31Z",
+      "tiempo_validacion_s": 758.9,
+      "resultado_validacion_final": "ok",
+      "validaciones": 1,
+      "espera_fijo_s": null,
+      "aprovisionamiento_s": 311,
+      "flaky": 0,
+      "unexpected": 0,
+      "expirada": true,
+      "build_final": "tesis-efimero-desplegar-backend:e8552fc3-bd85-4906-92f2-7745d3f1ab1a"
+    },
+    {
+      "corrida": "c95",
+      "nivel": 1,
+      "semilla": 9503,
+      "n": 1,
+      "rama": "release/c95-1",
+      "tipo": "migracion",
+      "resultado_escenario": "integrada",
+      "modelo": "fijo",
+      "t_apertura": "2026-11-14T22:15:53Z",
+      "t_fin_validacion_final": "2026-11-14T22:23:04Z",
+      "tiempo_validacion_s": 431.4,
+      "resultado_validacion_final": "ok",
+      "validaciones": 1,
+      "espera_fijo_s": 11.0,
+      "aprovisionamiento_s": null,
+      "flaky": 0,
+      "unexpected": 0,
+      "expirada": true,
+      "build_final": "tesis-fijo-desplegar-backend:2d6efe5a-fc40-4cd2-a2d4-90b53a03c76e"
+    }
+  ],
+  "corridas": [
+    {
+      "corrida": "c95",
+      "nivel": 1,
+      "semilla": 9503,
+      "modelo": "efimero",
+      "valida": true,
+      "motivo_invalidez": null,
+      "versiones": 0,
+      "mediana_tiempo_validacion_s": null,
+      "p90_tiempo_validacion_s": null,
+      "versiones_por_hora": null,
+      "espera_acumulada_s": null,
+      "flaky_total": 0,
+      "inicio": "2026-11-14T22:15:39Z",
+      "fin": "2026-11-14T22:35:26Z"
+    },
+    {
+      "corrida": "c95",
+      "nivel": 1,
+      "semilla": 9503,
+      "modelo": "fijo",
+      "valida": true,
+      "motivo_invalidez": null,
+      "versiones": 0,
+      "mediana_tiempo_validacion_s": null,
+      "p90_tiempo_validacion_s": null,
+      "versiones_por_hora": null,
+      "espera_acumulada_s": 11.0,
+      "flaky_total": 0,
+      "inicio": "2026-11-14T22:15:39Z",
+      "fin": "2026-11-14T22:35:26Z"
+    }
+  ],
+  "hora": "2026-11-14T22:35:56Z"
+}

@@ -185,5 +185,81 @@ class CorridaSimulada(unittest.TestCase):
         self.assertIn("90 min", ej.s["motivo"])
 
 
+def v_exp(n, cierres=("pendiente", "pendiente"), expirada=None):
+    return {"n": n, "expirada": expirada,
+            "cierre": {"efimero": {"estado": cierres[0]}, "fijo": {"estado": cierres[1]}}}
+
+
+class Expiracion(unittest.TestCase):
+    EVENTOS = [{"n": 1, "despachado": 1000.0}, {"n": 1, "despachado": 1500.0}, {"n": 2, "despachado": 1900.0},
+               {"n": 3, "despachado": None}]
+
+    def test_ultimo_evento(self):
+        self.assertEqual(ejecutor.ultimo_evento(self.EVENTOS, 1), 1500.0)
+        self.assertIsNone(ejecutor.ultimo_evento(self.EVENTOS, 3))
+
+    def test_seleccion(self):
+        vs = [v_exp(1), v_exp(2), v_exp(3)]
+        self.assertEqual(ejecutor.versiones_que_expiran(vs, self.EVENTOS, 2000.0, 400), [1])
+        self.assertEqual(ejecutor.versiones_que_expiran(vs, self.EVENTOS, 2000.0, 500), [])  # 500 justo: no vence
+        self.assertEqual(ejecutor.versiones_que_expiran(vs, self.EVENTOS, 2400.0, 400), [1, 2])
+
+    def test_cerradas_o_ya_expiradas_no(self):
+        vs = [v_exp(1, ("hecho", "hecho")), v_exp(2, ("en_curso", "hecho")), v_exp(3, expirada={"hora": "x"})]
+        eventos = [{"n": 1, "despachado": 0.0}, {"n": 2, "despachado": 0.0}, {"n": 3, "despachado": 0.0}]
+        self.assertEqual(ejecutor.versiones_que_expiran(vs, eventos, 10_000.0, 60), [])
+        # abierta en un solo modelo: expira
+        self.assertEqual(ejecutor.versiones_que_expiran([v_exp(4, ("hecho", "pendiente"))], [{"n": 4, "despachado": 0.0}],
+                                                        10_000.0, 60), [4])
+
+
+class CorridaSimuladaConExpiracion(unittest.TestCase):
+    def correr(self, corrida, nivel, semilla, umbral, ajustar=None):
+        e = escenario.generar(corrida, nivel, semilla)
+        if ajustar:
+            ajustar(e)
+        ej = ejecutor.Ejecutor(e, ejecutor.PlataformaSimulada(e, inicio=1_800_000_000.0), escribir=False, expiracion_seg=umbral)
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(ej.correr(), 0)
+        return ej
+
+    def test_c95_expira_despues_de_las_validaciones_en_curso(self):
+        ej = self.correr(95, 1, 9503, 180)
+        v = ej.V(1)
+        self.assertEqual(v["resultado"], "integrada")
+        self.assertEqual(v["resultado_cierre"], "declinada")
+        self.assertEqual(v["expirada"]["modelos"], ["efimero", "fijo"])
+        # esperó a que terminaran el despliegue efímero y el del fijo: las dos finales quedan con la marca
+        self.assertEqual(sorted(v["expirada"]["finales_registradas"]), ["efimero", "fijo"])
+        self.assertTrue(all(v["final"][m]["expirada"] for m in ("efimero", "fijo")))
+        self.assertGreaterEqual(ejecutor.epoch(v["expirada"]["hora"]), max(v["final"][m]["end"] for m in ("efimero", "fijo")))
+        self.assertEqual(v["cierre"]["efimero"]["repos"]["backend"]["accion_pr"], "close")
+        self.assertEqual(v["cierre"]["fijo"]["repos"]["backend"]["accion_pr"], "close")
+        self.assertEqual(v["cierre"]["efimero"]["destruccion"]["via"], "webhook")
+
+    def test_combinacion_expira_antes_de_abrir_su_segundo_repo(self):
+        # c96-3: backend abre en t=404 y actualiza en t=707. Se corre la apertura del frontend a t=5000 y con
+        # 1200 s la versión vence (y sus builds ya terminaron) antes de esa apertura.
+        def frontend_tarde(e):
+            for ev in e["eventos_ordenados"] + e["versiones"][2]["eventos"]:
+                if ev["repo"] == "frontend":
+                    ev["t"] = 5000
+        ej = self.correr(96, 3, 9603, 1200, frontend_tarde)
+        v = ej.V(3)
+        self.assertIsNotNone(v["expirada"])
+        fe = [ev for ev in ej.eventos_de(3) if ev["repo"] == "frontend"][0]
+        self.assertEqual(fe["estado"], "cancelado")
+        self.assertIn(fe["i"], v["expirada"]["eventos_cancelados"])
+        self.assertEqual(v["cierre"]["efimero"]["repos"]["frontend"]["accion"], "sin_rama")
+        self.assertEqual(v["cierre"]["efimero"]["destruccion"]["via"], "webhook")  # solo backend: destruye sin esperar al otro
+        self.assertEqual(v["cierre"]["fijo"]["repos"]["frontend"]["accion_pr"], "sin_rama")
+        self.assertNotIn("frontend", v["app_pr"])
+        self.assertIsNotNone(v["limpieza"])
+
+    def test_sin_expiracion_por_defecto(self):
+        ej = self.correr(96, 3, 9603, ejecutor.EXPIRACION_SEG)
+        self.assertTrue(all(v["expirada"] is None for v in ej.s["versiones"].values()))
+
+
 if __name__ == "__main__":
     unittest.main()

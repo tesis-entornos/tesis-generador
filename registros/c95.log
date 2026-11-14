@@ -1,0 +1,23 @@
+[2026-11-14T22:04:10Z] t  pre  reset.py
+[2026-11-14T22:15:39Z] t+00:00  t = 0 en 2026-11-14T22:15:39Z; 1 eventos, 1 versiones
+[2026-11-14T22:15:54Z] t+00:15  abrir release/c95-1 backend: PR #6 (2026-11-14T22:15:53Z), commit 3c6ccc7
+[2026-11-14T22:17:37Z] t+01:58  fijo: integra release/c95-1 backend (PR #17, 2026-11-14T22:17:26Z) en dev -> 6b5971b (conflicto: sin_conflicto)
+[2026-11-14T22:17:49Z] t+02:10  build único 7ec6527b release/c95-1 backend SUCCEEDED, tag 3c6ccc7 digest 069996e232e4
+[2026-11-14T22:17:49Z] t+02:10  fijo: build tesis-fijo-desplegar-backend:2d6efe5a-fc40-4cd2-a2d4-90b53a03c76e de la integración de release/c95-1 backend
+[2026-11-14T22:17:50Z] t+02:11  PR tesis-backend-cd#17 (release/c95-1 -> dev) marcado como merged
+[2026-11-14T22:19:00Z] t+03:21  release/c95-1 venció (sin eventos hace más de 180 s); la expiración espera a: tesis-efimero-desplegar-backend:e8552fc3-bd85-4906-92f2-7745d3f1ab1a, tesis-fijo-desplegar-backend:2d6efe5a-fc40-4cd2-a2d4-90b53a03c76e
+[2026-11-14T22:23:17Z] t+07:38  validación fijo release/c95-1 backend 2d6efe5a SUCCEEDED ok digest 069996e232e4 (326 s)
+[2026-11-14T22:23:17Z] t+07:38  fijo: build 2d6efe5a terminó SUCCEEDED (326 s)
+[2026-11-14T22:28:46Z] t+13:07  validación efimero release/c95-1 backend e8552fc3 SUCCEEDED ok digest 069996e232e4 (665 s)
+[2026-11-14T22:28:48Z] t+13:09  EXPIRADA release/c95-1: último evento 2026-11-14T22:15:54Z; se cierra como declinada en efimero, fijo; validación final registrada en: efimero, fijo
+[2026-11-14T22:28:53Z] t+13:14  cierre fijo release/c95-1 backend: PR #18 -> main-fijo, cerrado sin merge
+[2026-11-14T22:28:53Z] t+13:14  CERRADA release/c95-1 en fijo
+[2026-11-14T22:28:58Z] t+13:19  cierre efímero release/c95-1 backend: PR #19 -> main-efimero, cerrado sin merge
+[2026-11-14T22:29:06Z] t+13:27  cierre efímero release/c95-1 backend: build del webhook tesis-efimero-cerrar-backend:dd06deb7-0766-40cd-aa36-5566ace728d6
+[2026-11-14T22:35:21Z] t+19:42  cierre efímero release/c95-1 backend: dd06deb7 SUCCEEDED, accion destruir, resultado ok (366 s)
+[2026-11-14T22:35:21Z] t+19:42  CERRADA release/c95-1 en efímero: entorno destruido por webhook (tesis-efimero-cerrar-backend:dd06deb7-0766-40cd-aa36-5566ace728d6)
+[2026-11-14T22:35:26Z] t+19:47  limpieza release/c95-1: ramas borradas en tesis-backend-cd; PR de la app cerrado y rama borrada
+[2026-11-14T22:35:26Z] t+19:47  corrida c95 terminada en 1187 s desde t = 0
+[2026-11-14T22:35:26Z] t+19:47  depurador
+[2026-11-14T22:35:54Z] t+20:15    depurador: 0 restos encontrados
+[2026-11-14T22:35:56Z] t+20:17  cierre c95: VÁLIDA

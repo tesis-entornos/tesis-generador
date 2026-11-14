@@ -116,3 +116,16 @@ en una tarea one-off, despliegue de la línea base en dev de backend-cd y fronte
 del fijo con build_ok y suite ok), segundo reset de datos, y `main-fijo`/`main-efimero` al SHA de main en los
 dos -cd. El registro va a `registros/reset-c<N>.json`; su `fin` es el t = 0 de la corrida. `--dry-run` solo
 consulta y muestra lo que haría.
+
+## Depurador, expiración y cierre de corrida
+
+- `python3 depurador.py [--solo-buscar]`: busca restos (servicios ACTIVE, disponible.json, reglas no default del ALB,
+  distribuciones con tag corrida, ramas release/*, PR abiertos release/*, builds en curso) y los limpia (cierre manual
+  de entornos vivos, cierre de PR, borrado de ramas, siempre sin builds en curso). El ejecutor lo llama al final
+  (solo búsqueda si la corrida se abortó).
+- `ejecutor.py --expiracion-seg S` (por defecto 4 días): una versión sin eventos propios durante más de S segundos y
+  sin cerrar en algún modelo expira; espera a sus builds en curso, registra la validación final que haya llegado (con
+  marca de expirada) y se cierra como declinada en los modelos abiertos.
+- `python3 cierre_corrida.py --corrida N`: validez de la corrida (con el motivo de cada criterio que falle) y filas de
+  la corrida en `datos/versiones.csv` y `datos/corridas.csv`; informe en `registros/cierre-c<N>.json`. Las versiones
+  expiradas no entran en las estadísticas de corridas.csv.

@@ -36,6 +36,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import acciones
+import cierre_corrida
+import depurador as depurador_mod
 import reset as reset_mod
 
 RAIZ = Path(__file__).resolve().parent
@@ -48,6 +50,7 @@ VUELTA_SEG = 15
 MAX_ESPERA_SEG = 90 * 60
 WEBHOOK_SEG = 120
 MERGED_SEG = 180
+EXPIRACION_SEG = 4 * 24 * 3600
 MODELOS = ("efimero", "fijo")
 
 PERFILES = {"tesis-build-": "tf-compartida", "tesis-efimero-": "tf-efimero", "tesis-fijo-": "tf-fijo"}
@@ -138,6 +141,27 @@ def decidir_cierre(resultados: list, repos: list) -> str:
     if len(resultados) == len(repos) and all(r.get("accion") == "esperar_otro" for r in resultados):
         return "manual"
     return "falla"
+
+
+def ultimo_evento(eventos: list, n: int):
+    """Hora del último evento despachado de la versión n (apertura o actualización de cualquiera de sus repos)."""
+    horas = [ev["despachado"] for ev in eventos if ev["n"] == n and ev.get("despachado") is not None]
+    return max(horas) if horas else None
+
+
+def versiones_que_expiran(versiones: list, eventos: list, ahora: float, umbral: float) -> list:
+    """n de las versiones abiertas cuyo último evento propio es más viejo que el umbral y que siguen sin cerrar
+    (cierre pendiente) en algún modelo."""
+    vencen = []
+    for v in versiones:
+        if v.get("expirada"):
+            continue
+        if not any(v["cierre"][m]["estado"] == "pendiente" for m in MODELOS):
+            continue
+        ultimo = ultimo_evento(eventos, v["n"])
+        if ultimo is not None and ahora - ultimo > umbral:
+            vencen.append(v["n"])
+    return vencen
 
 
 def merge_con_tag(clon, ref: str, mensaje: str) -> str:
@@ -312,6 +336,10 @@ class PlataformaReal:
                       "--environment-variables-override", f"name=RAMA,value={rama},type=PLAINTEXT", "--query", "build.id")
         return b
 
+    def ref_sha(self, repo_gh, rama):
+        r = _correr(["gh", "api", f"repos/{ORG}/{repo_gh}/git/ref/heads/{rama}", "-q", ".object.sha"], check=False)
+        return r.stdout.strip() if r.returncode == 0 and r.stdout.strip() else None
+
     def borrar_rama(self, repo_gh, rama):
         r = _correr(["gh", "api", "-X", "DELETE", f"repos/{ORG}/{repo_gh}/git/refs/heads/{rama}"], check=False)
         if r.returncode != 0 and "Reference does not exist" not in (r.stdout + r.stderr) and "Not Found" not in (r.stdout + r.stderr):
@@ -343,6 +371,7 @@ class PlataformaSimulada:
         self.entornos = set()
         self.fin_rama = {}    # rama -> fin del último despliegue efímero (serialización)
         self.n = 0
+        self.refs = {}        # (cd, rama) -> sha de la punta
 
     def _h(self, *partes):
         self.n += 1
@@ -396,6 +425,7 @@ class PlataformaSimulada:
             self.tags[(cd, rama)] = {"commit": commit, "digest": digest, "rama": rama}
             self.ramas.add((cd, rama))
             cd_commit = self._h("cd", rama)
+            self.refs[(cd, rama)] = cd_commit
             abierto = [p for p in self.prs.get(cd, []) if p["head"] == rama and p["base"] == "dev" and p["state"] == "OPEN"]
             if abierto:
                 abierto[0]["sha"] = cd_commit
@@ -484,6 +514,9 @@ class PlataformaSimulada:
         self.des[b["id"]] = {"accion": "manual", "resultado": "ok", "otra_rama_existe": None, "evento": None, "rama": rama}
         return b["id"]
 
+    def ref_sha(self, repo_gh, rama):
+        return self.refs.get((repo_gh, rama)) if (repo_gh, rama) in self.ramas else None
+
     def borrar_rama(self, repo_gh, rama):
         self.ramas.discard((repo_gh, rama))
         return True
@@ -494,8 +527,9 @@ class PlataformaSimulada:
 
 
 class Ejecutor:
-    def __init__(self, escenario, plataforma, sin_reset=False, escribir=True):
+    def __init__(self, escenario, plataforma, sin_reset=False, escribir=True, expiracion_seg=EXPIRACION_SEG):
         self.e = escenario
+        self.expiracion_seg = expiracion_seg
         self.p = plataforma
         self.c = escenario["corrida"]
         self.sin_reset = sin_reset
@@ -513,6 +547,9 @@ class Ejecutor:
             "merged_pendientes": [],
             "esperas": {},
             "vueltas": 0,
+            "expiracion_seg": expiracion_seg,
+            "depurador": None,
+            "cierre": None,
         }
         for v in escenario["versiones"]:
             self.s["versiones"][str(v["n"])] = {
@@ -522,6 +559,7 @@ class Ejecutor:
                 "cierre": {"efimero": {"estado": "pendiente", "repos": {}, "manual_extra": None, "destruccion": None},
                            "fijo": {"estado": "pendiente", "repos": {}}},
                 "limpieza": None,
+                "expirada": None, "resultado_cierre": None, "cd_commits": [],
             }
         self.builds = {}
 
@@ -657,6 +695,9 @@ class Ejecutor:
                 continue  # el tag.json todavía no refleja este commit; se reintenta en la próxima vuelta
             ev["estado"] = "unico_ok"
             ev["digest"] = tag["digest"]
+            sha = self.p.ref_sha(cd_de(ev["repo"]), v["rama"])
+            if sha and sha not in v["cd_commits"]:
+                v["cd_commits"].append(sha)
             self.listo(f"unico-{ev['i']}")
             ultimo = self.eventos_de(ev["n"], ev["repo"])[-1]
             if ultimo["i"] == ev["i"]:
@@ -689,7 +730,7 @@ class Ejecutor:
         except ErrorEjecutor as error:
             self.aviso_consulta(error)
             return
-        prs = [p for p in prs if any(v["rama"] == p["head"] for v in self.s["versiones"].values())]
+        prs = [p for p in prs if any(v["rama"] == p["head"] and not v["expirada"] for v in self.s["versiones"].values())]
         pr = elegir_pr_cola(prs, self.s["integrados"])
         if pr is None:
             return
@@ -709,8 +750,78 @@ class Ejecutor:
 
     # --- 5. validación final --------------------------------------------------------------------
 
+    # --- expiración por inactividad ------------------------------------------------------------
+
+    def expira_en(self, v, modelo):
+        return bool(v["expirada"]) and modelo in v["expirada"]["modelos"]
+
+    def en_curso_de(self, v):
+        """Builds de la versión que siguen en curso (build único, despliegue efímero, integración en el fijo)."""
+        en_curso = [f"build único de {v['rama']} {ev['repo']}" for ev in self.eventos_de(v["n"]) if ev["estado"] == "despachado"]
+        for repo in v["repos"]:
+            for b in self.builds.get(proyecto("efimero", repo), []):
+                if not b["complete"] and b["resolved"] in v["cd_commits"]:
+                    en_curso.append(b["id"])
+        integ = self.s["cola_fijo"]["en_curso"]
+        if integ is not None and integ["rama"] == v["rama"]:
+            en_curso.append(integ.get("build_id") or f"integración de {v['rama']} {integ['repo']} en el fijo")
+        return en_curso
+
+    def digests_actuales(self, v):
+        """Digest del último evento con build único terminado, por repo (los cancelados no cuentan)."""
+        d = {}
+        for ev in self.eventos_de(v["n"]):
+            if ev["estado"] == "unico_ok":
+                d[ev["repo"]] = ev["digest"]
+        return d
+
+    def expiraciones(self):
+        for n in versiones_que_expiran(list(self.s["versiones"].values()), self.s["eventos"], self.p.ahora(), self.expiracion_seg):
+            v = self.V(n)
+            en_curso = self.en_curso_de(v)
+            if en_curso:
+                if f"expira-{n}" not in self.s["esperas"]:
+                    self.log(f"{v['rama']} venció (sin eventos hace más de {self.expiracion_seg} s); la expiración espera a: {', '.join(en_curso)}")
+                self.esperar(f"expira-{n}", f"builds en curso de {v['rama']} antes de expirar")
+                continue
+            self.listo(f"expira-{n}")
+            ahora = self.p.ahora()
+            modelos = [m for m in MODELOS if v["cierre"][m]["estado"] == "pendiente"]
+            cancelados = []
+            for ev in self.eventos_de(n):
+                if ev["estado"] == "pendiente":
+                    ev["estado"] = "cancelado"
+                    cancelados.append(ev["i"])
+            v["expirada"] = {"hora": iso(ahora), "ultimo_evento": iso(ultimo_evento(self.s["eventos"], n)), "modelos": modelos,
+                             "eventos_cancelados": cancelados, "prs_dev_cerrados": [], "finales_registradas": []}
+            v["resultado_cierre"] = "declinada"
+            digests = self.digests_actuales(v)
+            for m in modelos:
+                self.listo(f"final-{n}-{m}")
+                f = validacion_final([r for r in v["repos"] if r in digests], digests, v["validaciones"][m]) if digests else None
+                if f is not None:
+                    f["tiempo_validacion_seg"] = round(f["end"] - epoch(v["apertura"]), 1)
+                    f["expirada"] = True
+                    v["final"][m] = f
+                    v["expirada"]["finales_registradas"].append(m)
+            if "fijo" in modelos:
+                for pr in self.p.prs_dev():
+                    if pr["head"] == v["rama"] and pr["sha"] not in self.s["integrados"].get(f"{pr['cd']}#{pr['number']}", []):
+                        self.p.pr_cerrar(pr["cd"], pr["number"])
+                        v["expirada"]["prs_dev_cerrados"].append({"cd": pr["cd"], "pr": pr["number"]})
+            self.log(f"EXPIRADA {v['rama']}: último evento {v['expirada']['ultimo_evento']}; se cierra como declinada en "
+                     f"{', '.join(modelos)}; validación final registrada en: {', '.join(v['expirada']['finales_registradas']) or 'ninguno'}"
+                     + (f"; PR -> dev cerrados: {v['expirada']['prs_dev_cerrados']}" if v["expirada"]["prs_dev_cerrados"] else "")
+                     + (f"; eventos cancelados: {cancelados}" if cancelados else ""))
+
+    def vencida(self, v):
+        ultimo = ultimo_evento(self.s["eventos"], v["n"])
+        return ultimo is not None and self.p.ahora() - ultimo > self.expiracion_seg
+
     def finales(self):
         for v in self.s["versiones"].values():
+            if v["expirada"] or (self.vencida(v) and any(v["cierre"][m]["estado"] == "pendiente" for m in MODELOS)):
+                continue
             evs = self.eventos_de(v["n"])
             if any(ev["estado"] != "unico_ok" for ev in evs):
                 continue
@@ -737,16 +848,20 @@ class Ejecutor:
 
     def cierre_efimero(self, v):
         c = v["cierre"]["efimero"]
-        if c["estado"] == "hecho" or v["final"]["efimero"] is None:
+        if c["estado"] == "hecho" or (v["final"]["efimero"] is None and not self.expira_en(v, "efimero")):
             return
         if c["estado"] == "pendiente":
             c["estado"] = "en_curso"
-        integrada = v["resultado"] == "integrada"
+        integrada = (v["resultado_cierre"] or v["resultado"]) == "integrada"
         for repo in v["repos"]:
             r = c["repos"].setdefault(repo, {"fase": "pr"})
             if r["fase"] == "hecho":
                 continue
             cd = cd_de(repo)
+            if r["fase"] == "pr" and self.p.ref_sha(cd, v["rama"]) is None:
+                r.update(fase="hecho", accion="sin_rama", resultado=None)
+                self.log(f"cierre efímero {v['rama']} {repo}: la rama no existe en {cd} (el repo no llegó a desplegarse); nada que cerrar")
+                continue
             if r["fase"] == "pr":
                 pr = self.p.pr_crear(cd, "main-efimero", v["rama"], f"{v['rama']} cierre efimero ({v['resultado']})")
                 r.update(pr=pr, t_accion=self.p.ahora())
@@ -795,7 +910,13 @@ class Ejecutor:
                     raise Abortar(f"el cierre {b['id']} de {v['rama']} {repo} terminó {b['status']}")
                 continue
         # todos los repos cerrados
-        resultados = [c["repos"][r] for r in v["repos"]]
+        con_rama = [r for r in v["repos"] if c["repos"][r].get("accion") != "sin_rama"]
+        if not con_rama:
+            c.update(estado="hecho", destruccion={"via": "sin_entorno", "build_id": None, "end": None, "resultado": None,
+                                                  "motivo_manual": None})
+            self.log(f"CERRADA {v['rama']} en efímero: no llegó a tener entorno")
+            return
+        resultados = [c["repos"][r] for r in con_rama]
         if c["manual_extra"] is not None:
             m = c["manual_extra"]
             b = self._build_por_id(m["repo"], m["build_id"])
@@ -805,7 +926,7 @@ class Ejecutor:
             m.update(status=b["status"], end=b["end"], accion=d["accion"], resultado=d["resultado"])
             resultados = resultados + [m]
             self.log(f"cierre efímero {v['rama']}: manual {b['id'].split(':')[1][:8]} {b['status']}, resultado {d['resultado']}")
-        decision = decidir_cierre(resultados, v["repos"])
+        decision = decidir_cierre(resultados, con_rama)
         if decision == "hecho":
             quien = next(r for r in resultados if r.get("accion") in ("destruir", "manual")
                          and r.get("resultado") in ("ok", "nada que destruir"))
@@ -815,8 +936,8 @@ class Ejecutor:
             self.listo(f"cierre-{v['n']}-extra")
             self.log(f"CERRADA {v['rama']} en efímero: entorno destruido por {via} ({quien['build_id']})")
         elif decision == "manual" and c["manual_extra"] is None:
-            bid = self.p.cierre_manual(v["repos"][0], v["rama"])
-            c["manual_extra"] = {"repo": v["repos"][0], "build_id": bid, "via": "manual", "nota": "los dos cierres esperaron al otro -cd"}
+            bid = self.p.cierre_manual(con_rama[0], v["rama"])
+            c["manual_extra"] = {"repo": con_rama[0], "build_id": bid, "via": "manual", "nota": "los dos cierres esperaron al otro -cd"}
             self.esperar(f"cierre-{v['n']}-extra", f"cierre manual de {v['rama']}")
             self.log(f"cierre efímero {v['rama']}: los dos cierres esperaron al otro -cd; cierre manual {bid}")
         elif decision == "falla" and (c["manual_extra"] is None or c["manual_extra"].get("end") is not None):
@@ -824,11 +945,15 @@ class Ejecutor:
 
     def cierre_fijo(self, v):
         c = v["cierre"]["fijo"]
-        if c["estado"] == "hecho" or v["final"]["fijo"] is None:
+        if c["estado"] == "hecho" or (v["final"]["fijo"] is None and not self.expira_en(v, "fijo")):
             return
-        integrada = v["resultado"] == "integrada"
+        integrada = (v["resultado_cierre"] or v["resultado"]) == "integrada"
         for repo in v["repos"]:
             cd = cd_de(repo)
+            if self.p.ref_sha(cd, v["rama"]) is None:
+                c["repos"][repo] = {"accion_pr": "sin_rama", "hora": iso(self.p.ahora())}
+                self.log(f"cierre fijo {v['rama']} {repo}: la rama no existe en {cd}; nada que cerrar")
+                continue
             pr = self.p.pr_crear(cd, "main-fijo", v["rama"], f"{v['rama']} cierre fijo ({v['resultado']})")
             r = {"pr": pr, "hora": iso(self.p.ahora())}
             if integrada:
@@ -886,7 +1011,7 @@ class Ejecutor:
             for repo in v["repos"]:
                 self.p.borrar_rama(cd_de(repo), v["rama"])
                 hecho["ramas_cd"].append(cd_de(repo))
-            for repo in v["repos"]:
+            for repo in v["app_pr"]:
                 pr = v["app_pr"][repo]["pr"]
                 self.p.pr_cerrar(app_de(repo), pr)
                 self.p.borrar_rama(app_de(repo), v["rama"])
@@ -916,6 +1041,8 @@ class Ejecutor:
                         "por_repo": {r: dict(x, end=iso(x["end"])) for r, x in f["por_repo"].items()}},
                      "tiempo_validacion_seg": None if f is None else f["tiempo_validacion_seg"],
                      "validaciones": [dict(x, start=iso(x["start"]), end=iso(x["end"])) for x in v["validaciones"][modelo]]}
+                if f is not None and f.get("expirada"):
+                    m["validacion_final"]["expirada"] = True
                 if modelo == "fijo":
                     m["integraciones"] = [i for i in self.s["cola_fijo"]["integraciones"] if i["rama"] == v["rama"]]
                     m["cierre"] = v["cierre"]["fijo"]
@@ -923,12 +1050,15 @@ class Ejecutor:
                     m["cierre"] = v["cierre"]["efimero"]
                 fila["modelos"][modelo] = m
             fila["limpieza"] = v["limpieza"]
+            fila["expirada"] = v["expirada"]
+            fila["resultado_cierre"] = v["resultado_cierre"] or v["resultado"]
             versiones.append(fila)
         return {"corrida": self.s["corrida"], "semilla": self.s["semilla"], "nivel": self.s["nivel"], "simulada": self.s["simulada"],
                 "inicio": iso(self.s["inicio"]), "t0": iso(self.s["t0"]), "fin": iso(self.s["fin"]), "resultado": self.s["resultado"],
                 "motivo": self.s["motivo"],
                 "eventos": [{k: (iso(x) if k in ("despachado",) else x) for k, x in ev.items()} for ev in self.s["eventos"]],
-                "versiones": versiones, "merged": self.s.get("merged", []), "integraciones_fijo": self.s["cola_fijo"]["integraciones"]}
+                "versiones": versiones, "merged": self.s.get("merged", []), "integraciones_fijo": self.s["cola_fijo"]["integraciones"],
+                "expiracion_seg": self.expiracion_seg, "depurador": self.s["depurador"], "cierre": self.s["cierre"]}
 
     def escribir_corrida(self):
         if self.escribir:
@@ -958,6 +1088,7 @@ class Ejecutor:
                 self.despachar()
                 self.seguir_unicos()
                 self.cola_fijo()
+                self.expiraciones()
                 self.finales()
                 self.cierres()
                 try:
@@ -985,6 +1116,27 @@ class Ejecutor:
                 self.log("  " + linea)
             return 3
         finally:
+            self.finalizar()
+
+    def finalizar(self):
+        """Depurador (limpia si la corrida terminó; solo busca si se abortó), registro y cierre de corrida."""
+        if not self.p.simulada:
+            abortada = self.s["resultado"] != "ok"
+            try:
+                self.log("depurador" + (" (solo búsqueda: la corrida se abortó)" if abortada else ""))
+                self.s["depurador"] = depurador_mod.depurar(solo_buscar=abortada, log=lambda m: self.log("  " + m))
+            except Exception as error:  # noqa: BLE001
+                self.s["depurador"] = {"error": f"{type(error).__name__}: {error}", "encontrados": [{"tipo": "error_depurador"}]}
+                self.log(f"ERROR del depurador: {error}")
+        self.guardar()
+        self.escribir_corrida()
+        if not self.p.simulada and self.escribir:
+            try:
+                informe = cierre_corrida.cerrar(self.c, depurador=self.s["depurador"], log=self.log)
+                self.s["cierre"] = {"valida": informe["valida"], "motivos": informe["motivos"]}
+            except Exception as error:  # noqa: BLE001
+                self.s["cierre"] = {"valida": False, "motivos": [f"cierre_corrida falló: {type(error).__name__}: {error}"]}
+                self.log(f"ERROR en cierre_corrida: {error}")
             self.guardar()
             self.escribir_corrida()
 
@@ -994,16 +1146,19 @@ def main(argv=None):
     parser.add_argument("--escenario", required=True)
     parser.add_argument("--sin-reset", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--expiracion-seg", type=int, default=EXPIRACION_SEG,
+                        help="una versión sin eventos propios durante más de este tiempo expira (por defecto 4 días)")
     args = parser.parse_args(argv)
     escenario = json.loads(Path(args.escenario).read_text(encoding="utf-8"))
     if args.dry_run:
-        ej = Ejecutor(escenario, PlataformaSimulada(escenario), sin_reset=args.sin_reset, escribir=False)
+        ej = Ejecutor(escenario, PlataformaSimulada(escenario), sin_reset=args.sin_reset, escribir=False,
+                      expiracion_seg=args.expiracion_seg)
         codigo = ej.correr()
         print(json.dumps({v["rama"]: {m: v["modelos"][m]["tiempo_validacion_seg"] for m in MODELOS} | {
             "cierre_efimero": (v["modelos"]["efimero"]["cierre"].get("destruccion") or {}).get("via")}
             for v in ej.resumen()["versiones"]}, ensure_ascii=False))
         return codigo
-    return Ejecutor(escenario, PlataformaReal(escenario), sin_reset=args.sin_reset).correr()
+    return Ejecutor(escenario, PlataformaReal(escenario), sin_reset=args.sin_reset, expiracion_seg=args.expiracion_seg).correr()
 
 
 if __name__ == "__main__":
