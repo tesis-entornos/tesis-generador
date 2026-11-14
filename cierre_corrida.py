@@ -6,7 +6,8 @@
 Lee registros/corrida-c<N>.json (del ejecutor) y escenarios/c<N>.json, baja los validacion.json de cada
 validación (y, si un aprovisionamiento falló, el log del build) y:
   - decide la validez de la corrida y el motivo de cada criterio que falle;
-  - regenera las filas de la corrida en datos/versiones.csv y datos/corridas.csv;
+  - regenera las filas de la corrida en datos/versiones.csv y datos/corridas.csv (--destino datos/pruebas para
+    las corridas de prueba);
   - escribe registros/cierre-c<N>.json.
 
 Criterios de validez: todos los eventos del escenario despachados (los cancelados por expiración cuentan);
@@ -254,7 +255,7 @@ def fecha_commit(repo, sha):
     return epoch(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip() else None
 
 
-def cerrar(n: int, depurador=None, log=print):
+def cerrar(n: int, depurador=None, log=print, destino=DATOS):
     corrida = json.loads((REGISTROS / f"corrida-c{n}.json").read_text(encoding="utf-8"))
     escenario = json.loads((ESCENARIOS / f"c{n}.json").read_text(encoding="utf-8"))
     nota_depurador = None
@@ -283,8 +284,8 @@ def cerrar(n: int, depurador=None, log=print):
             fechas[i["head"]] = fecha_commit(i["cd"], i["head"])
     filas_v = filas_versiones(corrida, escenario, docs, fechas)
     filas_c = filas_corridas(corrida, filas_v, motivos)
-    actualizar_csv(DATOS / "versiones.csv", COLUMNAS_VERSIONES, filas_v, corrida["corrida"])
-    actualizar_csv(DATOS / "corridas.csv", COLUMNAS_CORRIDAS, filas_c, corrida["corrida"])
+    actualizar_csv(Path(destino) / "versiones.csv", COLUMNAS_VERSIONES, filas_v, corrida["corrida"])
+    actualizar_csv(Path(destino) / "corridas.csv", COLUMNAS_CORRIDAS, filas_c, corrida["corrida"])
     informe = {"corrida": corrida["corrida"], "valida": not motivos, "motivos": motivos, "nota_depurador": nota_depurador,
                "depurador": depurador, "versiones": filas_v, "corridas": filas_c, "hora": iso(datetime.now(timezone.utc).timestamp())}
     (REGISTROS / f"cierre-c{n}.json").write_text(json.dumps(informe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -295,8 +296,10 @@ def cerrar(n: int, depurador=None, log=print):
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Validez y tablas de datos de una corrida")
     parser.add_argument("--corrida", type=int, required=True)
+    parser.add_argument("--destino", default=str(DATOS),
+                        help="carpeta de las tablas (por defecto datos/; las corridas de prueba van en datos/pruebas/)")
     args = parser.parse_args(argv)
-    informe = cerrar(args.corrida)
+    informe = cerrar(args.corrida, destino=args.destino)
     return 0 if informe["valida"] else 1
 
 

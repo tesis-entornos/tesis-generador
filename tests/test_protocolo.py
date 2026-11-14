@@ -113,7 +113,8 @@ class Generador(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.d = Path(self.tmp.name)
         git(self.d, "init", "-q", "-b", "main")
-        for f in ("escenario.py", "acciones.py", "ejecutor.py"):
+        for f in ("escenario.py", "acciones.py", "ejecutor.py", "datos/corridas.csv", "protocolo/protocolo-v1.json"):
+            (self.d / f).parent.mkdir(parents=True, exist_ok=True)
             (self.d / f).write_text("x = 1\n")
         git(self.d, "add", ".")
         git(self.d, "commit", "-q", "-m", "base")
@@ -122,28 +123,53 @@ class Generador(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def test_mismo_commit_y_descendiente_que_no_toca_protegidos(self):
-        self.assertEqual(protocolo.verificar_generador(self.base, self.d), [])
-        (self.d / "ejecutor.py").write_text("x = 2\n")
-        git(self.d, "commit", "-q", "-am", "ejecutor")
+    def commit(self, archivos, mensaje="cambio"):
+        for f, texto in archivos.items():
+            (self.d / f).parent.mkdir(parents=True, exist_ok=True)
+            (self.d / f).write_text(texto)
+        git(self.d, "add", ".")
+        git(self.d, "commit", "-q", "-m", mensaje)
+
+    def test_mismo_commit(self):
         self.assertEqual(protocolo.verificar_generador(self.base, self.d), [])
 
-    def test_descendiente_que_toca_escenario(self):
-        (self.d / "escenario.py").write_text("x = 2\n")
-        git(self.d, "commit", "-q", "-am", "cambia el escenario")
-        d = protocolo.verificar_generador(self.base, self.d)
-        self.assertEqual(len(d), 1)
-        self.assertIn("escenario.py", d[0])
+    def test_descendiente_solo_con_registros_datos_escenarios_y_manifiesto(self):
+        self.commit({"registros/c1.log": "log\n", "datos/corridas.csv": "x = 2\n", "escenarios/c1.json": "{}\n",
+                     "datos/pruebas/versiones.csv": "a\n", "protocolo/protocolo-v1.json": "{}\n"})
+        self.assertEqual(protocolo.verificar_generador(self.base, self.d), [])
+
+    def test_descendiente_con_cambios_de_codigo(self):
+        for f in ("ejecutor.py", "escenario.py", "acciones.py", "tests/test_x.py", "protocolo/otro.json", "README.md"):
+            with self.subTest(f=f):
+                self.setUp()
+                self.commit({"datos/corridas.csv": "x = 2\n", f: "x = 9\n"})
+                d = protocolo.verificar_generador(self.base, self.d)
+                self.assertEqual(len(d), 1)
+                self.assertIn(f, d[0])
+                self.assertNotIn("datos/corridas.csv", d[0])
 
     def test_cambio_local_sin_commitear(self):
-        (self.d / "acciones.py").write_text("x = 3\n")
-        self.assertIn("acciones.py", protocolo.verificar_generador(self.base, self.d)[0])
+        (self.d / "ejecutor.py").write_text("x = 3\n")
+        self.assertIn("ejecutor.py", protocolo.verificar_generador(self.base, self.d)[0])
+
+    def test_archivo_nuevo_sin_commitear(self):
+        (self.d / "nuevo.py").write_text("x = 3\n")
+        self.assertIn("nuevo.py", protocolo.verificar_generador(self.base, self.d)[0])
+        (self.d / "nuevo.py").unlink()
+        (self.d / "registros").mkdir()
+        (self.d / "registros" / "estado-c1.json").write_text("{}\n")  # lo que escribe una corrida: permitido
+        self.assertEqual(protocolo.verificar_generador(self.base, self.d), [])
 
     def test_no_descendiente(self):
         git(self.d, "checkout", "-q", "--orphan", "otra")
         git(self.d, "commit", "-q", "-m", "otra historia")
         self.assertIn("no desciende", protocolo.verificar_generador(self.base, self.d)[0])
 
+    def test_permitido(self):
+        self.assertTrue(protocolo.permitido("datos/pruebas/corridas.csv"))
+        self.assertTrue(protocolo.permitido("protocolo/protocolo-v1.json"))
+        self.assertFalse(protocolo.permitido("datosx/a.csv"))
+        self.assertFalse(protocolo.permitido("protocolo.py"))
 
 if __name__ == "__main__":
     unittest.main()

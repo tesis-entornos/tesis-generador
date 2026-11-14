@@ -14,7 +14,8 @@ La verificación (al inicio de cada corrida, antes del reset) compara en vivo: E
 de objetos), tag.json de main de los -cd, imagen de la suite y PLAYWRIGHT_RETRIES en lo publicado, ninguna
 variable de proyecto que pise SUITE_IMAGEN / PLAYWRIGHT_RETRIES / SIMULAR_TRABAJO_SEG, SIMULAR_TRABAJO_SEG en 0,
 commit de terraform de los proyectos efímeros, HEAD de tesis-generador (el del manifiesto o un descendiente
-que no toque escenario.py ni acciones.py, sin cambios locales en ellos) y parámetros del escenario.
+con cambios solo en registros/, datos/, escenarios/ o el propio manifiesto, también sin commitear) y parámetros
+del escenario.
 """
 
 import argparse
@@ -42,7 +43,8 @@ CDS = ["tesis-backend-cd", "tesis-frontend-cd"]
 PROYECTOS_EFIMERO = ["tesis-efimero-desplegar-backend", "tesis-efimero-desplegar-frontend",
                      "tesis-efimero-cerrar-backend", "tesis-efimero-cerrar-frontend"]
 VARIABLES_VIGILADAS = ("SUITE_IMAGEN", "PLAYWRIGHT_RETRIES", "SIMULAR_TRABAJO_SEG")
-PROTEGIDOS = ["escenario.py", "acciones.py"]
+PREFIJOS_PERMITIDOS = ("registros/", "datos/", "escenarios/")
+MANIFIESTO_REL = "protocolo/protocolo-v1.json"
 TERRAFORM_SUBDIR = "entorno"
 
 
@@ -160,7 +162,7 @@ def relevar(terraform_dir=None):
         "simular_trabajo_seg": {"valor_publicado": suite["simular_trabajo_seg"], "fuente": "desplegar-efimero.yml (env.variables)",
                                 "variables_de_proyecto": pisadas},
         "terraform": tf,
-        "generador": {"commit": repos["tesis-generador"], "protegidos": PROTEGIDOS},
+        "generador": {"commit": repos["tesis-generador"], "cambios_permitidos": list(PREFIJOS_PERMITIDOS) + [MANIFIESTO_REL]},
         "escenario": parametros_escenario(),
     }
 
@@ -201,8 +203,15 @@ def comparar(manifiesto: dict, vivo: dict) -> list:
     return d
 
 
+def permitido(ruta: str) -> bool:
+    """Cambios del generador que no tocan el protocolo: datos y registros de corridas, escenarios, y el propio
+    manifiesto (que no puede contener el commit en el que él mismo se guarda)."""
+    return ruta.startswith(PREFIJOS_PERMITIDOS) or ruta == MANIFIESTO_REL
+
+
 def verificar_generador(commit_manifiesto: str, repo_dir=RAIZ) -> list:
-    """HEAD = commit del manifiesto o un descendiente que no toque los protegidos, sin cambios locales en ellos."""
+    """HEAD = commit del manifiesto, o un descendiente cuyos cambios respecto de ese commit estén solo en
+    registros/, datos/ o escenarios/ (o en el propio manifiesto). Lo mismo para los cambios sin commitear."""
     def git(*a):
         return subprocess.run(["git", *a], cwd=repo_dir, text=True, capture_output=True)
     problemas = []
@@ -210,12 +219,14 @@ def verificar_generador(commit_manifiesto: str, repo_dir=RAIZ) -> list:
     if head != commit_manifiesto:
         if git("merge-base", "--is-ancestor", commit_manifiesto, "HEAD").returncode != 0:
             return [f"tesis-generador HEAD {head[:12]} no desciende del commit del manifiesto {commit_manifiesto[:12]}"]
-        tocados = [x for x in git("diff", "--name-only", commit_manifiesto, "HEAD", "--", *PROTEGIDOS).stdout.split() if x]
-        if tocados:
-            problemas.append(f"tesis-generador: {', '.join(tocados)} cambió desde el commit del manifiesto")
-    locales = [x for x in git("status", "--porcelain", "--", *PROTEGIDOS).stdout.splitlines() if x]
+        fuera = [x for x in git("diff", "--name-only", commit_manifiesto, "HEAD").stdout.splitlines() if x and not permitido(x)]
+        if fuera:
+            problemas.append(f"tesis-generador: cambios desde el commit del manifiesto fuera de "
+                             f"{', '.join(PREFIJOS_PERMITIDOS)}: {', '.join(fuera)}")
+    locales = [x for x in git("status", "--porcelain", "--untracked-files=all").stdout.splitlines()
+               if x and not permitido(x[3:].split(" -> ")[-1])]
     if locales:
-        problemas.append(f"tesis-generador: cambios sin commitear en {', '.join(PROTEGIDOS)}: {locales}")
+        problemas.append(f"tesis-generador: cambios sin commitear fuera de {', '.join(PREFIJOS_PERMITIDOS)}: {locales}")
     return problemas
 
 

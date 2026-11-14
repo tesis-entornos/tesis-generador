@@ -1,0 +1,11 @@
+corrida,nivel,semilla,n,rama,tipo,resultado_escenario,modelo,t_apertura,t_fin_validacion_final,tiempo_validacion_s,resultado_validacion_final,validaciones,espera_fijo_s,aprovisionamiento_s,flaky,unexpected,expirada,build_final
+c90,1,9013,1,release/c90-1,combinacion,integrada,efimero,2026-11-14T22:58:26Z,2026-11-14T23:23:13Z,1487.3,ok,4,,301,0,0,false,tesis-efimero-desplegar-backend:8d99aee8-a96d-4872-b05d-1244021c6c87
+c90,1,9013,1,release/c90-1,combinacion,integrada,fijo,2026-11-14T22:58:26Z,2026-11-14T23:22:19Z,1433.1,ok,4,342.0,,0,0,false,tesis-fijo-desplegar-backend:42bf8e83-a79d-47c1-ad83-cdfca4806200
+c95,1,9503,1,release/c95-1,migracion,integrada,efimero,2026-11-14T22:15:53Z,2026-11-14T22:28:31Z,758.9,ok,1,,311,0,0,true,tesis-efimero-desplegar-backend:e8552fc3-bd85-4906-92f2-7745d3f1ab1a
+c95,1,9503,1,release/c95-1,migracion,integrada,fijo,2026-11-14T22:15:53Z,2026-11-14T22:23:04Z,431.4,ok,1,11.0,,0,0,true,tesis-fijo-desplegar-backend:2d6efe5a-fc40-4cd2-a2d4-90b53a03c76e
+c96,3,9603,1,release/c96-1,migracion,declinada,efimero,2026-11-14T20:51:31Z,2026-11-14T21:04:32Z,781.5,ok,1,,338,0,0,false,tesis-efimero-desplegar-backend:b1a83cb9-1bdc-4e01-b26f-71e3763473c5
+c96,3,9603,1,release/c96-1,migracion,declinada,fijo,2026-11-14T20:51:31Z,2026-11-14T20:58:47Z,436.8,ok,1,6.0,,0,0,false,tesis-fijo-desplegar-backend:c10a92a6-0b1e-447b-a81d-f8fdb2537ce0
+c96,3,9603,2,release/c96-2,solo_backend,integrada,efimero,2026-11-14T20:53:32Z,2026-11-14T21:05:52Z,740.3,ok,1,,312,0,0,false,tesis-efimero-desplegar-backend:75ece59e-3ad6-4d8a-a464-34ffe40ac2d1
+c96,3,9603,2,release/c96-2,solo_backend,integrada,fijo,2026-11-14T20:53:32Z,2026-11-14T21:04:28Z,657.0,ok,1,237.0,,0,0,false,tesis-fijo-desplegar-backend:3bbc36d6-e37b-472a-98c2-5bf3bfcc66d7
+c96,3,9603,3,release/c96-3,combinacion,integrada,efimero,2026-11-14T20:58:15Z,2026-11-14T21:18:43Z,1228.5,ok,3,,301,0,0,false,tesis-efimero-desplegar-frontend:6fffa8aa-26c8-42fb-9a13-9abd841fffa7
+c96,3,9603,3,release/c96-3,combinacion,integrada,fijo,2026-11-14T20:58:15Z,2026-11-14T21:18:57Z,1242.3,ok,3,1138.0,,0,0,false,tesis-fijo-desplegar-frontend:60204691-c3ec-4054-a272-c7788439f781
