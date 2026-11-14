@@ -1,0 +1,2 @@
+{"t_real": "2026-11-14T17:08:20.337+00:00", "accion": "apertura", "n": 1, "repo": "backend", "rama": "release/c99-1", "k": 0, "commit": "93ffc8abb3d54f9d5baba905d7fbabe0f31e84ec", "pr": 2, "pr_created_at": "2026-11-14T17:08:18Z", "dry_run": false}
+{"t_real": "2026-11-14T17:21:54.702+00:00", "accion": "actualizacion", "n": 1, "repo": "backend", "rama": "release/c99-1", "k": 1, "commit": "7857667167372c6372556c414e5e72c8b12a17cf", "pr": null, "pr_created_at": null, "dry_run": false}
