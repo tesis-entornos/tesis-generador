@@ -1,0 +1,78 @@
+# tesis-generador
+
+Generador determinista de los escenarios de carga del experimento de la tesis. Para cada corrida `c<N>`
+genera las versiones sintéticas (ramas `release/c<N>-<n>`) y para cada una decide:
+
+- el tipo y los repos que toca;
+- si tiene migración propia;
+- si se integra o se declina;
+- la línea de tiempo de aperturas y actualizaciones.
+
+En cada evento, el contador `actualizacion` es el valor `k` que va al marcador `sintetico.json` del repo.
+Es 0 en la apertura y suma 1 en cada actualización de ese mismo repo.
+
+Usa solo la biblioteca estándar de Python 3, sin dependencias. Toda la aleatoriedad sale de un único
+`random.Random(semilla)`, con los sorteos siempre en el mismo orden. Los mismos `(corrida, nivel,
+semilla)` dan el mismo JSON byte a byte. El archivo registra el commit del generador
+(`generador.commit`) y la versión del formato.
+
+## Uso
+
+```sh
+python3 escenario.py --corrida 1 --nivel 3 --semilla 101 --salida escenarios/c1.json
+python3 escenario.py --ver escenarios/c1.json      # línea de tiempo legible
+python3 -m unittest discover -s tests              # pruebas
+```
+
+Desde Python: `escenario.generar(corrida, nivel, semilla) -> dict` y `escenario.a_json(dict) -> str`.
+
+## Parámetros
+
+Todos los tiempos se miden en segundos desde el inicio de la corrida y son enteros. `U(0, 600)` es un
+entero uniforme entre 0 y 600, con los dos extremos incluidos.
+
+| Parámetro | Valor |
+|---|---|
+| Nivel (versiones por corrida) | 1, 3 o 5; versiones `n = 1..nivel` |
+| Apertura de la versión 1 | t = 0 |
+| Apertura de cada versión siguiente | U(0, 600) desde la apertura de la versión anterior |
+| Tipo | `solo_frontend` 0,19 · `solo_backend` 0,23 · `migracion` 0,41 · `combinacion` 0,17 |
+| Repos | `solo_frontend` → frontend · `solo_backend`, `migracion` → backend · `combinacion` → backend + frontend |
+| Migración propia | `c<N>_<n>` en `migracion` y `combinacion`; `null` en el resto |
+| Combinación | El primer repo (50/50) abre en la apertura de la versión; el segundo, U(0, 600) después |
+| Actualizaciones por versión | 0 (0,57) · 1 (0,28) · 2 (0,08) · 3 (0,07) |
+| Cada actualización | U(0, 600) desde el evento anterior de la cadena, en un repo sorteado entre los ya abiertos |
+| Resultado | `integrada` 0,75 · `declinada` 0,25 |
+
+**Cadena de actualizaciones.** La primera actualización se mide desde la apertura de la versión y cada
+una de las siguientes desde la actualización anterior. En una combinación, la segunda apertura queda
+fija respecto de la primera y no corta la cadena. El repo de cada actualización se sortea entre los repos
+de la versión cuya apertura es anterior o igual a ese instante. Si dos eventos de una versión caen en el
+mismo `t`, la apertura va primero. Con una brecha de 0, la segunda apertura de una combinación puede
+coincidir en `t` con la primera, pero en la lista queda siempre después.
+
+**Orden de los sorteos, por versión.** Primero la brecha de apertura (solo si n > 1). Después el tipo y,
+si es combinación, el primer repo y la brecha del segundo. Luego la cantidad de actualizaciones y, para
+cada una, su brecha y su repo. Al final, el resultado.
+
+## Formato (`version_formato: 1`)
+
+```json
+{
+  "corrida": 1, "nivel": 3, "semilla": 101,
+  "generador": {"commit": "<sha del HEAD o sin-commit>", "version_formato": 1},
+  "parametros": {"...": "todas las proporciones y rangos de la tabla"},
+  "catalogo_migraciones": ["c1_1", "..."],
+  "versiones": [
+    {"n": 1, "rama": "release/c1-1", "tipo": "migracion", "repos": ["backend"], "migracion": "c1_1",
+     "resultado": "integrada",
+     "eventos": [{"t": 0, "repo": "backend", "accion": "apertura", "actualizacion": 0}]}
+  ],
+  "eventos_ordenados": [{"n": 1, "t": 0, "repo": "backend", "accion": "apertura", "actualizacion": 0}]
+}
+```
+
+`eventos_ordenados` contiene los mismos eventos de todas las versiones, cada uno con su `n`, ordenados
+por `t` y después por `n`.
+
+Los escenarios del experimento van en `escenarios/c<N>.json`. Esa carpeta todavía está vacía.
