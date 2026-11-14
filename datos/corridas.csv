@@ -1,5 +1,7 @@
-corrida,nivel,semilla,modelo,valida,motivo_invalidez,versiones,mediana_tiempo_validacion_s,p90_tiempo_validacion_s,versiones_por_hora,espera_acumulada_s,flaky_total,inicio,fin
-c95,1,9503,efimero,true,,0,,,,,0,2026-11-14T22:15:39Z,2026-11-14T22:35:26Z
-c95,1,9503,fijo,true,,0,,,,11.0,0,2026-11-14T22:15:39Z,2026-11-14T22:35:26Z
-c96,3,9603,efimero,true,,3,781.5,1139.1,6.569,,0,2026-11-14T20:51:19Z,2026-11-14T21:26:55Z
-c96,3,9603,fijo,true,,3,657.0,1125.2,6.514,1381.0,0,2026-11-14T20:51:19Z,2026-11-14T21:26:55Z
+corrida,nivel,semilla,modelo,valida,motivo_invalidez,versiones,mediana_tiempo_validacion_s,p90_tiempo_validacion_s,versiones_por_hora,espera_acumulada_s,flaky_total,inicio,fin,protocolo
+c90,1,9013,efimero,true,,1,1487.3,1487.3,2.4,,0,2026-11-14T22:58:13Z,2026-11-14T23:31:08Z,ad759d84bd07fe233ca412a638399784477fa40b994040388a3e4a11aa2f5c29
+c90,1,9013,fijo,true,,1,1433.1,1433.1,2.49,342.0,0,2026-11-14T22:58:13Z,2026-11-14T23:31:08Z,ad759d84bd07fe233ca412a638399784477fa40b994040388a3e4a11aa2f5c29
+c95,1,9503,efimero,true,,0,,,,,0,2026-11-14T22:15:39Z,2026-11-14T22:35:26Z,
+c95,1,9503,fijo,true,,0,,,,11.0,0,2026-11-14T22:15:39Z,2026-11-14T22:35:26Z,
+c96,3,9603,efimero,true,,3,781.5,1139.1,6.569,,0,2026-11-14T20:51:19Z,2026-11-14T21:26:55Z,
+c96,3,9603,fijo,true,,3,657.0,1125.2,6.514,1381.0,0,2026-11-14T20:51:19Z,2026-11-14T21:26:55Z,

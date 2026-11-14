@@ -1,0 +1,4 @@
+{"t_real": "2026-11-14T22:58:27.681+00:00", "accion": "apertura", "n": 1, "repo": "frontend", "rama": "release/c90-1", "k": 0, "commit": "48084d515d6eb3cb8c602d4a93191489a4d7a01b", "pr": 3, "pr_created_at": "2026-11-14T22:58:26Z", "dry_run": false}
+{"t_real": "2026-11-14T23:03:25.400+00:00", "accion": "apertura", "n": 1, "repo": "backend", "rama": "release/c90-1", "k": 0, "commit": "793d99851a9f2220a5cac48591d5352e6c87f265", "pr": 7, "pr_created_at": "2026-11-14T23:03:24Z", "dry_run": false}
+{"t_real": "2026-11-14T23:06:23.530+00:00", "accion": "actualizacion", "n": 1, "repo": "backend", "rama": "release/c90-1", "k": 1, "commit": "b0da1ff1eee0e56230176369e412161403e27f1c", "pr": null, "pr_created_at": null, "dry_run": false}
+{"t_real": "2026-11-14T23:13:07.700+00:00", "accion": "actualizacion", "n": 1, "repo": "backend", "rama": "release/c90-1", "k": 2, "commit": "4d02fb34e27bc77f62706addaa8fbc7f9d9db352", "pr": null, "pr_created_at": null, "dry_run": false}

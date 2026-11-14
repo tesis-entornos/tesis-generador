@@ -1,0 +1,58 @@
+[2026-11-14T22:46:22Z] t  pre  protocolo protocolo-v1 verificado: huella ad759d84bd07fe233ca412a638399784477fa40b994040388a3e4a11aa2f5c29
+[2026-11-14T22:46:22Z] t  pre  reset.py
+[2026-11-14T22:58:13Z] t+00:00  t = 0 en 2026-11-14T22:58:13Z; 4 eventos, 1 versiones
+[2026-11-14T22:58:27Z] t+00:14  abrir release/c90-1 frontend: PR #3 (2026-11-14T22:58:26Z), commit 48084d5
+[2026-11-14T22:59:11Z] t+00:58  fijo: integra release/c90-1 frontend (PR #6, 2026-11-14T22:59:04Z) en dev -> 41ce45f (conflicto: sin_conflicto)
+[2026-11-14T22:59:24Z] t+01:11  build único 6ee3af42 release/c90-1 frontend SUCCEEDED, tag 48084d5 digest b399011564b1
+[2026-11-14T22:59:24Z] t+01:11  fijo: build tesis-fijo-desplegar-frontend:cef3413f-ee13-44eb-ab5a-6a81465bb5d1 de la integración de release/c90-1 frontend
+[2026-11-14T22:59:24Z] t+01:11  PR tesis-frontend-cd#6 (release/c90-1 -> dev) marcado como merged
+[2026-11-14T23:01:35Z] t+03:22  validación fijo release/c90-1 frontend cef3413f SUCCEEDED ok digest b399011564b1 (137 s)
+[2026-11-14T23:01:35Z] t+03:22  fijo: build cef3413f terminó SUCCEEDED (137 s)
+[2026-11-14T23:03:25Z] t+05:12  abrir release/c90-1 backend: PR #7 (2026-11-14T23:03:24Z), commit 793d998
+[2026-11-14T23:05:11Z] t+06:58  fijo: integra release/c90-1 backend (PR #20, 2026-11-14T23:05:03Z) en dev -> 9c58634 (conflicto: sin_conflicto)
+[2026-11-14T23:05:24Z] t+07:11  build único 3fe6ceff release/c90-1 backend SUCCEEDED, tag 793d998 digest bd858217d031
+[2026-11-14T23:05:24Z] t+07:11  fijo: build tesis-fijo-desplegar-backend:bd1e5043-1d6e-4aaf-a2bf-723a632139d6 de la integración de release/c90-1 backend
+[2026-11-14T23:05:24Z] t+07:11  PR tesis-backend-cd#20 (release/c90-1 -> dev) marcado como merged
+[2026-11-14T23:06:23Z] t+08:10  actualizar release/c90-1 backend k=1: commit b0da1ff
+[2026-11-14T23:06:39Z] t+08:26  validación efimero release/c90-1 frontend 1757306f SUCCEEDED ok digest b399011564b1 (447 s)
+[2026-11-14T23:08:08Z] t+09:55  build único 239e5bed release/c90-1 backend SUCCEEDED, tag b0da1ff digest 476a9d945004
+[2026-11-14T23:11:05Z] t+12:52  validación fijo release/c90-1 backend bd1e5043 SUCCEEDED ok digest bd858217d031 (339 s)
+[2026-11-14T23:11:05Z] t+12:52  fijo: build bd1e5043 terminó SUCCEEDED (339 s)
+[2026-11-14T23:11:10Z] t+12:57  fijo: integra release/c90-1 backend (PR #21, 2026-11-14T23:07:57Z) en dev -> b720c6d (conflicto: sin_conflicto)
+[2026-11-14T23:11:19Z] t+13:06  fijo: build tesis-fijo-desplegar-backend:aaa90082-f113-4aca-82bf-7c6b43ff5ef7 de la integración de release/c90-1 backend
+[2026-11-14T23:11:20Z] t+13:07  PR tesis-backend-cd#21 (release/c90-1 -> dev) marcado como merged
+[2026-11-14T23:12:20Z] t+14:07  validación efimero release/c90-1 backend 98531f9e SUCCEEDED ok digest bd858217d031 (425 s)
+[2026-11-14T23:13:07Z] t+14:54  actualizar release/c90-1 backend k=2: commit 4d02fb3
+[2026-11-14T23:14:53Z] t+16:40  build único cb8949ba release/c90-1 backend SUCCEEDED, tag 4d02fb3 digest 1ead0c397ac4
+[2026-11-14T23:16:50Z] t+18:37  validación fijo release/c90-1 backend aaa90082 SUCCEEDED ok digest 476a9d945004 (330 s)
+[2026-11-14T23:16:50Z] t+18:37  fijo: build aaa90082 terminó SUCCEEDED (330 s)
+[2026-11-14T23:16:55Z] t+18:42  fijo: integra release/c90-1 backend (PR #22, 2026-11-14T23:14:41Z) en dev -> 4f92137 (conflicto: sin_conflicto)
+[2026-11-14T23:17:04Z] t+18:51  fijo: build tesis-fijo-desplegar-backend:42bf8e83-a79d-47c1-ad83-cdfca4806200 de la integración de release/c90-1 backend
+[2026-11-14T23:17:05Z] t+18:52  PR tesis-backend-cd#22 (release/c90-1 -> dev) marcado como merged
+[2026-11-14T23:18:05Z] t+19:52  validación efimero release/c90-1 backend e9b729aa SUCCEEDED ok digest 476a9d945004 (597 s)
+[2026-11-14T23:22:35Z] t+24:22  validación fijo release/c90-1 backend 42bf8e83 SUCCEEDED ok digest 1ead0c397ac4 (322 s)
+[2026-11-14T23:22:35Z] t+24:22  fijo: build 42bf8e83 terminó SUCCEEDED (322 s)
+[2026-11-14T23:22:37Z] t+24:24  VALIDACIÓN FINAL release/c90-1 fijo: tesis-fijo-desplegar-backend:42bf8e83-a79d-47c1-ad83-cdfca4806200 ok fin 2026-11-14T23:22:19Z tiempo de validación 1433 s
+[2026-11-14T23:22:42Z] t+24:29  cierre fijo release/c90-1 backend: PR #23 -> main-fijo, merge local y push
+[2026-11-14T23:22:49Z] t+24:36  cierre fijo release/c90-1 frontend: PR #7 -> main-fijo, merge local y push
+[2026-11-14T23:22:49Z] t+24:36  CERRADA release/c90-1 en fijo
+[2026-11-14T23:22:50Z] t+24:37  PR tesis-backend-cd#23 (release/c90-1 -> main-fijo) marcado como merged
+[2026-11-14T23:22:51Z] t+24:38  PR tesis-frontend-cd#7 (release/c90-1 -> main-fijo) marcado como merged
+[2026-11-14T23:23:26Z] t+25:13  validación efimero release/c90-1 backend 8d99aee8 SUCCEEDED ok digest 1ead0c397ac4 (512 s)
+[2026-11-14T23:23:27Z] t+25:14  VALIDACIÓN FINAL release/c90-1 efimero: tesis-efimero-desplegar-backend:8d99aee8-a96d-4872-b05d-1244021c6c87 ok fin 2026-11-14T23:23:13Z tiempo de validación 1487 s
+[2026-11-14T23:23:33Z] t+25:20  cierre efímero release/c90-1 backend: PR #24 -> main-efimero, merge local y push
+[2026-11-14T23:23:44Z] t+25:31  cierre efímero release/c90-1 backend: build del webhook tesis-efimero-cerrar-backend:7b66c200-c240-43cd-b7be-ac6310088b14
+[2026-11-14T23:23:44Z] t+25:31  PR tesis-backend-cd#24 (release/c90-1 -> main-efimero) marcado como merged
+[2026-11-14T23:24:14Z] t+26:01  cierre efímero release/c90-1 backend: 7b66c200 SUCCEEDED, accion esperar_otro, resultado esperando el cierre del otro -cd (23 s)
+[2026-11-14T23:24:20Z] t+26:07  cierre efímero release/c90-1 frontend: PR #8 -> main-efimero, merge local y push
+[2026-11-14T23:24:28Z] t+26:15  cierre efímero release/c90-1 frontend: build del webhook tesis-efimero-cerrar-frontend:0e504ae3-ddad-400b-a733-32fe31951a03
+[2026-11-14T23:24:29Z] t+26:16  PR tesis-frontend-cd#8 (release/c90-1 -> main-efimero) marcado como merged
+[2026-11-14T23:24:59Z] t+26:46  cierre efímero release/c90-1 frontend: 0e504ae3 SUCCEEDED, accion esperar_otro, resultado esperando el cierre del otro -cd (22 s)
+[2026-11-14T23:25:00Z] t+26:47  cierre efímero release/c90-1: los dos cierres esperaron al otro -cd; cierre manual tesis-efimero-cerrar-backend:bc1b0fa4-d88f-40a0-9a7f-6eb237bc86f3
+[2026-11-14T23:30:59Z] t+32:46  cierre efímero release/c90-1: manual bc1b0fa4 SUCCEEDED, resultado ok
+[2026-11-14T23:30:59Z] t+32:46  CERRADA release/c90-1 en efímero: entorno destruido por manual (tesis-efimero-cerrar-backend:bc1b0fa4-d88f-40a0-9a7f-6eb237bc86f3)
+[2026-11-14T23:31:08Z] t+32:55  limpieza release/c90-1: ramas borradas en tesis-backend-cd, tesis-frontend-cd; PR de la app cerrado y rama borrada
+[2026-11-14T23:31:08Z] t+32:55  corrida c90 terminada en 1975 s desde t = 0
+[2026-11-14T23:31:08Z] t+32:55  depurador
+[2026-11-14T23:31:35Z] t+33:22    depurador: 0 restos encontrados
+[2026-11-14T23:31:47Z] t+33:34  cierre c90: VÁLIDA
