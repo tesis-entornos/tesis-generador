@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+.trabajo/
+registros/dryrun-*.jsonl

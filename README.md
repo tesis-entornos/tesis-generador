@@ -76,3 +76,30 @@ cada una, su brecha y su repo. Al final, el resultado.
 por `t` y después por `n`.
 
 Los escenarios del experimento van en `escenarios/c<N>.json`. Esa carpeta todavía está vacía.
+
+## Acciones (`acciones.py`)
+
+```sh
+python3 acciones.py abrir      --escenario escenarios/c1.json --n 1 --repo backend [--dry-run]
+python3 acciones.py actualizar --escenario escenarios/c1.json --n 1 --repo backend --k 1 [--dry-run]
+```
+
+- **abrir**: en el clon de trabajo `.trabajo/<repo>` (no versionado) hace `fetch`, `checkout -B release/c<N>-<n>`
+  desde el commit de línea base (backend `afc16b1d85fc`, frontend `dd2a13341c32`), escribe el contenido
+  sintético con `actualizacion = 0`, hace commit `c<N>-<n> <repo> apertura`, push y `gh pr create` contra `main`.
+- **actualizar**: hace checkout de la rama existente, reescribe solo el marcador con `actualizacion = k`, hace
+  commit `c<N>-<n> <repo> actualizacion <k>` y push.
+- Validaciones previas: la versión toca ese repo; `k` es el siguiente del marcador de la rama y el escenario
+  tiene esa actualización.
+
+Contenido sintético:
+
+- Marcador `app/sintetico.json` (backend) o `public/sintetico.json` (frontend): `{"version": "c<N>-<n>", "actualizacion": k}`.
+- Solo backend, en toda rama de la corrida: `app/alembic/versions/<rev>.py` por cada revisión de
+  `catalogo_migraciones`, todas con `down_revision = "e3acbde9bd2f"`. La propia crea/borra la tabla
+  `tesis_<rev>` (id Integer PK, nota Text nullable); las demás tienen `pass`. `app/alembic/objetivo` tiene la
+  revisión propia o `e3acbde9bd2f` si la versión no tiene migración.
+
+Cada acción agrega una línea JSON a `registros/c<N>.jsonl` (`t_real`, `accion`, `n`, `repo`, `rama`, `k`,
+`commit`, `pr`, `pr_created_at`, `dry_run`). Con `--dry-run` todo queda local (sin push ni PR), se imprime el
+diff contra la línea base y el registro va a `registros/dryrun-c<N>.jsonl`, que no se versiona.
