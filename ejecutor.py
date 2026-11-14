@@ -38,6 +38,7 @@ from pathlib import Path
 import acciones
 import cierre_corrida
 import depurador as depurador_mod
+import protocolo as protocolo_mod
 import reset as reset_mod
 
 RAIZ = Path(__file__).resolve().parent
@@ -527,8 +528,9 @@ class PlataformaSimulada:
 
 
 class Ejecutor:
-    def __init__(self, escenario, plataforma, sin_reset=False, escribir=True, expiracion_seg=EXPIRACION_SEG):
+    def __init__(self, escenario, plataforma, sin_reset=False, escribir=True, expiracion_seg=EXPIRACION_SEG, verificar=True):
         self.e = escenario
+        self.verificar = verificar
         self.expiracion_seg = expiracion_seg
         self.p = plataforma
         self.c = escenario["corrida"]
@@ -550,6 +552,7 @@ class Ejecutor:
             "expiracion_seg": expiracion_seg,
             "depurador": None,
             "cierre": None,
+            "protocolo": None,
         }
         for v in escenario["versiones"]:
             self.s["versiones"][str(v["n"])] = {
@@ -1058,14 +1061,44 @@ class Ejecutor:
                 "motivo": self.s["motivo"],
                 "eventos": [{k: (iso(x) if k in ("despachado",) else x) for k, x in ev.items()} for ev in self.s["eventos"]],
                 "versiones": versiones, "merged": self.s.get("merged", []), "integraciones_fijo": self.s["cola_fijo"]["integraciones"],
-                "expiracion_seg": self.expiracion_seg, "depurador": self.s["depurador"], "cierre": self.s["cierre"]}
+                "expiracion_seg": self.expiracion_seg, "depurador": self.s["depurador"], "cierre": self.s["cierre"],
+                "protocolo": self.s["protocolo"], "protocolo_verificacion": self.s.get("protocolo_verificacion")}
 
     def escribir_corrida(self):
         if self.escribir:
             self.archivo_corrida.write_text(json.dumps(self.resumen(), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
+    def verificar_protocolo(self) -> bool:
+        """Verificación en vivo del manifiesto antes del reset. False: la corrida no arranca."""
+        if self.p.simulada:
+            self.s["protocolo"] = "simulado"
+            return True
+        if not self.verificar:
+            self.s["protocolo"] = "no verificado"
+            self.log("protocolo NO verificado (--sin-verificar): la corrida va a quedar inválida")
+            return True
+        try:
+            m, diferencias = protocolo_mod.verificar_vivo(escenario=self.e)
+        except Exception as error:  # noqa: BLE001 - un manifiesto ilegible o una consulta fallida tampoco arranca
+            m, diferencias = None, [f"no se pudo verificar: {type(error).__name__}: {error}"]
+        self.s["protocolo_verificacion"] = {"hora": iso(self.p.ahora()), "manifiesto": None if m is None else m["nombre"],
+                                            "huella": None if m is None else m["huella"], "diferencias": diferencias}
+        if diferencias:
+            self.log(f"protocolo: {len(diferencias)} diferencias con el manifiesto; la corrida NO arranca")
+            for x in diferencias:
+                self.log(f"  NO COINCIDE: {x}")
+            return False
+        self.s["protocolo"] = m["huella"]
+        self.log(f"protocolo {m['nombre']} verificado: huella {m['huella']}")
+        return True
+
     def correr(self):
         self.s["inicio"] = self.p.ahora()
+        if not self.verificar_protocolo():
+            self.s.update(fin=self.p.ahora(), resultado="no_arrancada", motivo="el protocolo no coincide con el manifiesto")
+            self.guardar()
+            self.escribir_corrida()
+            return 5
         try:
             if self.sin_reset:
                 self.s["t0"] = self.p.ahora()
@@ -1146,6 +1179,8 @@ def main(argv=None):
     parser.add_argument("--escenario", required=True)
     parser.add_argument("--sin-reset", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--sin-verificar", action="store_true",
+                        help="SOLO PARA PRUEBAS: no verifica el manifiesto; protocolo = 'no verificado' y la corrida queda inválida")
     parser.add_argument("--expiracion-seg", type=int, default=EXPIRACION_SEG,
                         help="una versión sin eventos propios durante más de este tiempo expira (por defecto 4 días)")
     args = parser.parse_args(argv)
@@ -1158,7 +1193,8 @@ def main(argv=None):
             "cierre_efimero": (v["modelos"]["efimero"]["cierre"].get("destruccion") or {}).get("via")}
             for v in ej.resumen()["versiones"]}, ensure_ascii=False))
         return codigo
-    return Ejecutor(escenario, PlataformaReal(escenario), sin_reset=args.sin_reset, expiracion_seg=args.expiracion_seg).correr()
+    return Ejecutor(escenario, PlataformaReal(escenario), sin_reset=args.sin_reset, expiracion_seg=args.expiracion_seg,
+                    verificar=not args.sin_verificar).correr()
 
 
 if __name__ == "__main__":

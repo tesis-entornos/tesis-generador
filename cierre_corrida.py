@@ -49,7 +49,7 @@ COLUMNAS_VERSIONES = [
 ]
 COLUMNAS_CORRIDAS = [
     "corrida", "nivel", "semilla", "modelo", "valida", "motivo_invalidez", "versiones", "mediana_tiempo_validacion_s",
-    "p90_tiempo_validacion_s", "versiones_por_hora", "espera_acumulada_s", "flaky_total", "inicio", "fin",
+    "p90_tiempo_validacion_s", "versiones_por_hora", "espera_acumulada_s", "flaky_total", "inicio", "fin", "protocolo",
 ]
 
 
@@ -88,6 +88,9 @@ def evaluar_validez(corrida: dict, escenario: dict, docs: dict, logs: dict, depu
     """Motivos de invalidez (lista vacía si la corrida es válida). docs = {build_id: validacion.json};
     logs = {build_id: texto del log} (solo de los aprovisionamientos fallidos); depurador = informe o None."""
     motivos = []
+    protocolo = corrida.get("protocolo")
+    if protocolo in (None, "no verificado", "simulado"):
+        motivos.append(f"protocolo no verificado ({protocolo or 'corrida previa al protocolo'})")
     if corrida.get("resultado") != "ok":
         motivos.append(f"corrida abortada: {corrida.get('motivo')}")
     eventos = corrida.get("eventos") or []
@@ -177,6 +180,7 @@ def filas_corridas(corrida: dict, filas_v: list, motivos: list) -> list:
             "p90_tiempo_validacion_s": None if p90 is None else round(p90, 1), "versiones_por_hora": por_hora,
             "espera_acumulada_s": round(sum(f["espera_fijo_s"] or 0 for f in mias), 1) if m == "fijo" else None,
             "flaky_total": sum(f["flaky"] for f in mias), "inicio": corrida["t0"], "fin": corrida["fin"],
+            "protocolo": corrida.get("protocolo") or "previo al protocolo",
         })
     return filas
 

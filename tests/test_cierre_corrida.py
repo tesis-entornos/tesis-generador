@@ -30,7 +30,7 @@ def version(n, tiempo_e, tiempo_f, expirada=None, finales=True):
 
 def corrida(versiones=None, resultado="ok", eventos=None):
     return {"corrida": "c7", "nivel": 3, "semilla": 701, "t0": "2026-01-01T00:00:00Z", "fin": "2026-01-01T01:00:00Z",
-            "resultado": resultado, "motivo": None if resultado == "ok" else "espera de más de 90 min",
+            "resultado": resultado, "motivo": None if resultado == "ok" else "espera de más de 90 min", "protocolo": "f" * 64,
             "eventos": eventos if eventos is not None else [
                 {"n": 1, "repo": "backend", "t": 0, "estado": "unico_ok", "unico": {"status": "SUCCEEDED", "build_id": "u1"}},
                 {"n": 2, "repo": "backend", "t": 10, "estado": "unico_ok", "unico": {"status": "SUCCEEDED", "build_id": "u2"}}],
@@ -64,6 +64,14 @@ class Validez(unittest.TestCase):
         vs = [version(1, 600, 400), version(2, None, None, finales=False)]
         m = cc.evaluar_validez(corrida(versiones=vs), escenario(), {}, {}, DEP_OK)
         self.assertEqual(len([x for x in m if "sin validación final" in x]), 2)
+
+    def test_protocolo_no_verificado(self):
+        for valor, texto in (("no verificado", "no verificado"), (None, "previa al protocolo")):
+            c = corrida()
+            c["protocolo"] = valor
+            m = cc.evaluar_validez(c, escenario(), {}, {}, DEP_OK)
+            self.assertEqual(len(m), 1)
+            self.assertIn(texto, m[0])
 
     def test_restos_del_depurador(self):
         m = cc.evaluar_validez(corrida(), escenario(), {}, {}, {"encontrados": [{"tipo": "rama"}, {"tipo": "pr"}]})
@@ -116,6 +124,7 @@ class Filas(unittest.TestCase):
         self.assertEqual(fc["fijo"]["espera_acumulada_s"], 200.0)
         self.assertIsNone(fc["efimero"]["espera_acumulada_s"])
         self.assertTrue(fc["fijo"]["valida"])
+        self.assertEqual(fc["fijo"]["protocolo"], "f" * 64)
         fc = {f["modelo"]: f for f in cc.filas_corridas(corrida(), filas_v, ["x", "y"])}
         self.assertEqual((fc["fijo"]["valida"], fc["fijo"]["motivo_invalidez"]), (False, "x; y"))
 
