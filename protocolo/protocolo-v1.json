@@ -1,6 +1,6 @@
 {
   "nombre": "protocolo-v1",
-  "fecha": "2026-11-14T22:44:45Z",
+  "fecha": "2026-11-14T23:44:47Z",
   "buildspecs": {
     "bucket": "tesis-entornos-buildspecs-582621604637",
     "prefijo": "main/",
@@ -26,7 +26,7 @@
     "tesis-frontend": "dd2a13341c32c57275692bc6e43ef446fe4306d2",
     "tesis-buildspecs": "60318ba4b85e3648d74009e15871d6d1e18c86b6",
     "tesis-terraform": "cec2c7f3835bb569d0a90d49f8cdddccf5acd8c3",
-    "tesis-generador": "6fb55179a149794544d176405a27a7fa3506707a",
+    "tesis-generador": "0e94be1df4856530c85645ebdc7c11c7c4451d78",
     "tesis-backend-cd": "db1881d4ac96c8825f3a25d824f8acb468faafc2",
     "tesis-frontend-cd": "900cda067f24e1b9095ad9604a30a3a0557d1f2b"
   },
@@ -73,10 +73,12 @@
     "fijado_es_ancestro_de_main": true
   },
   "generador": {
-    "commit": "6fb55179a149794544d176405a27a7fa3506707a",
-    "protegidos": [
-      "escenario.py",
-      "acciones.py"
+    "commit": "0e94be1df4856530c85645ebdc7c11c7c4451d78",
+    "cambios_permitidos": [
+      "registros/",
+      "datos/",
+      "escenarios/",
+      "protocolo/protocolo-v1.json"
     ]
   },
   "escenario": {
@@ -146,5 +148,5 @@
       }
     }
   },
-  "huella": "ad759d84bd07fe233ca412a638399784477fa40b994040388a3e4a11aa2f5c29"
+  "huella": "7af3ca58ce7e0765bc1704cc958ab0b4cd82637861d893616ec66f150160d5b7"
 }
