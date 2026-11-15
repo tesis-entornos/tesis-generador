@@ -1,0 +1,222 @@
+{
+  "corrida": 38,
+  "nivel": 5,
+  "semilla": 353721,
+  "generador": {
+    "commit": "197ec00e51056c41763bd986ad217b85b29ea871",
+    "version_formato": 1
+  },
+  "parametros": {
+    "niveles": [
+      1,
+      3,
+      5
+    ],
+    "brecha_apertura_seg": [
+      0,
+      600
+    ],
+    "tipos": {
+      "solo_frontend": 0.19,
+      "solo_backend": 0.23,
+      "migracion": 0.41,
+      "combinacion": 0.17
+    },
+    "repos_por_tipo": {
+      "solo_frontend": [
+        "frontend"
+      ],
+      "solo_backend": [
+        "backend"
+      ],
+      "migracion": [
+        "backend"
+      ],
+      "combinacion": [
+        "backend",
+        "frontend"
+      ]
+    },
+    "tipos_con_migracion": [
+      "migracion",
+      "combinacion"
+    ],
+    "combinacion_primer_repo_backend": 0.5,
+    "brecha_segundo_repo_seg": [
+      0,
+      600
+    ],
+    "actualizaciones": {
+      "0": 0.57,
+      "1": 0.28,
+      "2": 0.08,
+      "3": 0.07
+    },
+    "brecha_actualizacion_seg": [
+      0,
+      600
+    ],
+    "resultados": {
+      "integrada": 0.75,
+      "declinada": 0.25
+    }
+  },
+  "catalogo_migraciones": [
+    "c38_5"
+  ],
+  "versiones": [
+    {
+      "n": 1,
+      "rama": "release/c38-1",
+      "tipo": "solo_backend",
+      "repos": [
+        "backend"
+      ],
+      "migracion": null,
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 0,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "rama": "release/c38-2",
+      "tipo": "solo_frontend",
+      "repos": [
+        "frontend"
+      ],
+      "migracion": null,
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 140,
+          "repo": "frontend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "rama": "release/c38-3",
+      "tipo": "solo_backend",
+      "repos": [
+        "backend"
+      ],
+      "migracion": null,
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 696,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "rama": "release/c38-4",
+      "tipo": "solo_backend",
+      "repos": [
+        "backend"
+      ],
+      "migracion": null,
+      "resultado": "declinada",
+      "eventos": [
+        {
+          "t": 703,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        },
+        {
+          "t": 865,
+          "repo": "backend",
+          "accion": "actualizacion",
+          "actualizacion": 1
+        },
+        {
+          "t": 1086,
+          "repo": "backend",
+          "accion": "actualizacion",
+          "actualizacion": 2
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "rama": "release/c38-5",
+      "tipo": "migracion",
+      "repos": [
+        "backend"
+      ],
+      "migracion": "c38_5",
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 777,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    }
+  ],
+  "eventos_ordenados": [
+    {
+      "n": 1,
+      "t": 0,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 2,
+      "t": 140,
+      "repo": "frontend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 3,
+      "t": 696,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 4,
+      "t": 703,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 5,
+      "t": 777,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 4,
+      "t": 865,
+      "repo": "backend",
+      "accion": "actualizacion",
+      "actualizacion": 1
+    },
+    {
+      "n": 4,
+      "t": 1086,
+      "repo": "backend",
+      "accion": "actualizacion",
+      "actualizacion": 2
+    }
+  ]
+}

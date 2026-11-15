@@ -1,0 +1,154 @@
+{
+  "plan": "nivel 5",
+  "semilla_maestra": 20261116,
+  "metodo": "rng = random.Random(semilla_maestra); rng.randint(1, 10**6) para c31..c37 en ese orden (todas nivel 5); después, con el mismo rng, rng.randint(1, 10**6) para las reservas c38 y c39 (nivel 5)",
+  "corridas": [
+    {
+      "corrida": "c31",
+      "nivel": 5,
+      "semilla": 220587,
+      "escenario": "escenarios/c31.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "solo_frontend",
+          "solo_frontend",
+          "migracion"
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c32",
+      "nivel": 5,
+      "semilla": 992144,
+      "escenario": "escenarios/c32.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "solo_frontend",
+          "solo_backend",
+          "combinacion"
+        ],
+        "actualizaciones": 2
+      }
+    },
+    {
+      "corrida": "c33",
+      "nivel": 5,
+      "semilla": 224361,
+      "escenario": "escenarios/c33.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_frontend",
+          "migracion",
+          "combinacion",
+          "solo_frontend"
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c34",
+      "nivel": 5,
+      "semilla": 666312,
+      "escenario": "escenarios/c34.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "migracion",
+          "solo_frontend",
+          "migracion",
+          "migracion"
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c35",
+      "nivel": 5,
+      "semilla": 424178,
+      "escenario": "escenarios/c35.json",
+      "resumen": {
+        "tipos": [
+          "combinacion",
+          "migracion",
+          "solo_frontend",
+          "migracion",
+          "solo_frontend"
+        ],
+        "actualizaciones": 5
+      }
+    },
+    {
+      "corrida": "c36",
+      "nivel": 5,
+      "semilla": 898495,
+      "escenario": "escenarios/c36.json",
+      "resumen": {
+        "tipos": [
+          "combinacion",
+          "migracion",
+          "migracion",
+          "solo_frontend",
+          "migracion"
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c37",
+      "nivel": 5,
+      "semilla": 975619,
+      "escenario": "escenarios/c37.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "migracion",
+          "migracion",
+          "migracion"
+        ],
+        "actualizaciones": 0
+      }
+    }
+  ],
+  "reservas": [
+    {
+      "corrida": "c38",
+      "nivel": 5,
+      "semilla": 353721,
+      "escenario": "escenarios/c38.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "solo_frontend",
+          "solo_backend",
+          "solo_backend",
+          "migracion"
+        ],
+        "actualizaciones": 2
+      }
+    },
+    {
+      "corrida": "c39",
+      "nivel": 5,
+      "semilla": 528734,
+      "escenario": "escenarios/c39.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_frontend",
+          "solo_frontend",
+          "migracion",
+          "migracion"
+        ],
+        "actualizaciones": 5
+      }
+    }
+  ],
+  "regla_cuota": "una corrida de nivel 5 con cualquier evento de servicio del efímero con 'limit', 'unable to place' o 'capacity', o una tarea que no arrancó por cuota, en su ventana de tiempo, es inválida por cuota"
+}
