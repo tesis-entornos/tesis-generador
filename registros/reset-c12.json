@@ -1,0 +1,276 @@
+{
+  "corrida": "c12",
+  "dry_run": false,
+  "inicio": "2026-11-15T16:04:12Z",
+  "pasos": {
+    "precondiciones": {
+      "inicio": "2026-11-15T16:04:12Z",
+      "builds": {
+        "tesis-build-backend": 10,
+        "tesis-build-frontend": 10,
+        "tesis-efimero-desplegar-backend": 10,
+        "tesis-efimero-desplegar-frontend": 10,
+        "tesis-efimero-cerrar-backend": 10,
+        "tesis-efimero-cerrar-frontend": 5,
+        "tesis-fijo-desplegar-backend": 10,
+        "tesis-fijo-desplegar-frontend": 10
+      },
+      "fallos": [],
+      "fin": "2026-11-15T16:04:32Z",
+      "resultado": "ok"
+    },
+    "reset_1": {
+      "inicio": "2026-11-15T16:04:33Z",
+      "task_definition_servicio": "arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:31",
+      "imagen_servicio": "582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-backend@sha256:5e9d8584c240d59f4747c0a5f4f71e76fc4b5a0e71d6fa61e75c0dc52c0c93ba",
+      "red": {
+        "awsvpcConfiguration": {
+          "subnets": [
+            "subnet-0e3b9d8e94706738a",
+            "subnet-01a24625bdd940f50"
+          ],
+          "securityGroups": [
+            "sg-09f0be417fd96089a"
+          ],
+          "assignPublicIp": "ENABLED"
+        }
+      },
+      "copia": true,
+      "task_definition_usada": "arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:32",
+      "task_arn": "arn:aws:ecs:us-east-2:491265021424:task/fijo-cluster/32b5b58478cc4dc992bcbe67ef2e9aa6",
+      "task_id": "32b5b58478cc4dc992bcbe67ef2e9aa6",
+      "exit_code": 0,
+      "stop_code": "EssentialContainerExited",
+      "stopped_reason": "Essential container in task exited",
+      "started_at": "2026-11-15T13:04:57.298000-03:00",
+      "stopped_at": "2026-11-15T13:05:25.209000-03:00",
+      "log_ultimas": [
+        "INFO:reset_baseline:Dropping database app_compartido",
+        "INFO:reset_baseline:Creating database app_compartido",
+        "INFO:reset_baseline:Applying migrations (upgrade head)",
+        "INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.",
+        "INFO  [alembic.runtime.migration] Will assume transactional DDL.",
+        "INFO  [alembic.runtime.migration] Running upgrade  -> e2412789c190, Initialize models",
+        "INFO  [alembic.runtime.migration] Running upgrade e2412789c190 -> 9c0a54914c78, Add max length for string(varchar) fields in User and Items models",
+        "INFO  [alembic.runtime.migration] Running upgrade 9c0a54914c78 -> d98dd8ec85a3, Edit replace id integers in all models to use UUID instead",
+        "INFO  [alembic.runtime.migration] Running upgrade d98dd8ec85a3 -> 1a31ce608336, Add cascade delete relationships",
+        "INFO  [alembic.runtime.migration] Running upgrade 1a31ce608336 -> fe56fa70289e, Add created_at to User and Item",
+        "INFO  [alembic.runtime.migration] Running upgrade fe56fa70289e -> e3acbde9bd2f, Add file table",
+        "INFO  [reset_baseline] Creating initial data",
+        "INFO  [reset_baseline] Emptying bucket tesis-fijo-compartido-archivos-491265021424 (prefix '')",
+        "INFO  [reset_baseline] Deleting cache keys compartido:*",
+        "{",
+        "  \"baseline_ok\": true,",
+        "  \"cache_deleted\": 1,",
+        "  \"counts\": {",
+        "    \"cache_keys\": 0,",
+        "    \"files\": 0,",
+        "    \"items\": 0,",
+        "    \"s3_objects\": 0,",
+        "    \"superuser_present\": true,",
+        "    \"users\": 1",
+        "  },",
+        "  \"database\": \"app_compartido\",",
+        "  \"s3_deleted\": 14",
+        "}"
+      ],
+      "reporte": {
+        "baseline_ok": true,
+        "cache_deleted": 1,
+        "counts": {
+          "cache_keys": 0,
+          "files": 0,
+          "items": 0,
+          "s3_objects": 0,
+          "superuser_present": true,
+          "users": 1
+        },
+        "database": "app_compartido",
+        "s3_deleted": 14
+      },
+      "resultado": "ok",
+      "copia_desregistrada": "arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:32",
+      "fin": "2026-11-15T16:05:34Z"
+    },
+    "despliegue_tesis-backend-cd": {
+      "inicio": "2026-11-15T16:05:34Z",
+      "repo": "tesis-backend-cd",
+      "proyecto": "tesis-fijo-desplegar-backend",
+      "main": "db1881d4ac96c8825f3a25d824f8acb468faafc2",
+      "dev_previo": "35534dd172045baae2e31da1aa97646365135fd8",
+      "cambia_tag": true,
+      "commit_dev": "237b6e1d16c489a59048d42965c69b198b4cecff",
+      "push": "2026-11-15T16:05:37Z",
+      "build_id": "tesis-fijo-desplegar-backend:e2442e07-41c2-448e-b823-2dc27ff19adb",
+      "build_status": "SUCCEEDED",
+      "build_inicio": "2026-11-15T13:05:38.801000-03:00",
+      "build_fin": "2026-11-15T13:10:52.519000-03:00",
+      "validacion": "s3://tesis-fijo-registros-491265021424/validaciones/corrida=sin-corrida/e2442e07-41c2-448e-b823-2dc27ff19adb/validacion.json",
+      "build_ok": true,
+      "imagen": "582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-backend@sha256:eb07d223d0f4133d7bdd18f932b39d2c399b716cbaab19d3924c619b5a38a99a",
+      "despliegue": "ok",
+      "suite": {
+        "resultado": "ok",
+        "total": 66,
+        "total_esperado": 66,
+        "exit_code": 0,
+        "suite_seg": 80
+      },
+      "fin": "2026-11-15T16:11:34Z",
+      "resultado": "ok"
+    },
+    "despliegue_tesis-frontend-cd": {
+      "inicio": "2026-11-15T16:11:34Z",
+      "repo": "tesis-frontend-cd",
+      "proyecto": "tesis-fijo-desplegar-frontend",
+      "main": "900cda067f24e1b9095ad9604a30a3a0557d1f2b",
+      "dev_previo": "def96f29f5984423c4a1d37ef97cec1f441a6f1c",
+      "cambia_tag": true,
+      "commit_dev": "4f3105beab5e7fdd20c3cac664ee32c205f65ee1",
+      "push": "2026-11-15T16:11:38Z",
+      "build_id": "tesis-fijo-desplegar-frontend:9b4f7af4-0d6d-4380-9cae-f5096fa8be55",
+      "build_status": "SUCCEEDED",
+      "build_inicio": "2026-11-15T13:11:39.594000-03:00",
+      "build_fin": "2026-11-15T13:13:58.446000-03:00",
+      "validacion": "s3://tesis-fijo-registros-491265021424/validaciones/corrida=sin-corrida/9b4f7af4-0d6d-4380-9cae-f5096fa8be55/validacion.json",
+      "build_ok": true,
+      "imagen": "582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-frontend@sha256:a3d8e0fe7d48181e4b1050a62bc18419e50f37b144d8715cea0da57058d33ecc",
+      "despliegue": "ok",
+      "suite": {
+        "resultado": "ok",
+        "total": 66,
+        "total_esperado": 66,
+        "exit_code": 0,
+        "suite_seg": 84
+      },
+      "fin": "2026-11-15T16:14:29Z",
+      "resultado": "ok"
+    },
+    "reset_2": {
+      "inicio": "2026-11-15T16:14:29Z",
+      "task_definition_servicio": "arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:33",
+      "imagen_servicio": "582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-backend@sha256:eb07d223d0f4133d7bdd18f932b39d2c399b716cbaab19d3924c619b5a38a99a",
+      "red": {
+        "awsvpcConfiguration": {
+          "subnets": [
+            "subnet-0e3b9d8e94706738a",
+            "subnet-01a24625bdd940f50"
+          ],
+          "securityGroups": [
+            "sg-09f0be417fd96089a"
+          ],
+          "assignPublicIp": "ENABLED"
+        }
+      },
+      "copia": false,
+      "task_definition_usada": "arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:33",
+      "task_arn": "arn:aws:ecs:us-east-2:491265021424:task/fijo-cluster/4063a93b0f1c4451bd9cc50b2a4dda7e",
+      "task_id": "4063a93b0f1c4451bd9cc50b2a4dda7e",
+      "exit_code": 0,
+      "stop_code": "EssentialContainerExited",
+      "stopped_reason": "Essential container in task exited",
+      "started_at": "2026-11-15T13:14:53.800000-03:00",
+      "stopped_at": "2026-11-15T13:15:20.918000-03:00",
+      "log_ultimas": [
+        "INFO:reset_baseline:Dropping database app_compartido",
+        "INFO:reset_baseline:Creating database app_compartido",
+        "INFO:reset_baseline:Applying migrations (upgrade head)",
+        "INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.",
+        "INFO  [alembic.runtime.migration] Will assume transactional DDL.",
+        "INFO  [alembic.runtime.migration] Running upgrade  -> e2412789c190, Initialize models",
+        "INFO  [alembic.runtime.migration] Running upgrade e2412789c190 -> 9c0a54914c78, Add max length for string(varchar) fields in User and Items models",
+        "INFO  [alembic.runtime.migration] Running upgrade 9c0a54914c78 -> d98dd8ec85a3, Edit replace id integers in all models to use UUID instead",
+        "INFO  [alembic.runtime.migration] Running upgrade d98dd8ec85a3 -> 1a31ce608336, Add cascade delete relationships",
+        "INFO  [alembic.runtime.migration] Running upgrade 1a31ce608336 -> fe56fa70289e, Add created_at to User and Item",
+        "INFO  [alembic.runtime.migration] Running upgrade fe56fa70289e -> e3acbde9bd2f, Add file table",
+        "INFO  [reset_baseline] Creating initial data",
+        "INFO  [reset_baseline] Emptying bucket tesis-fijo-compartido-archivos-491265021424 (prefix '')",
+        "INFO  [reset_baseline] Deleting cache keys compartido:*",
+        "{",
+        "  \"baseline_ok\": true,",
+        "  \"cache_deleted\": 1,",
+        "  \"counts\": {",
+        "    \"cache_keys\": 0,",
+        "    \"files\": 0,",
+        "    \"items\": 0,",
+        "    \"s3_objects\": 0,",
+        "    \"superuser_present\": true,",
+        "    \"users\": 1",
+        "  },",
+        "  \"database\": \"app_compartido\",",
+        "  \"s3_deleted\": 4",
+        "}"
+      ],
+      "reporte": {
+        "baseline_ok": true,
+        "cache_deleted": 1,
+        "counts": {
+          "cache_keys": 0,
+          "files": 0,
+          "items": 0,
+          "s3_objects": 0,
+          "superuser_present": true,
+          "users": 1
+        },
+        "database": "app_compartido",
+        "s3_deleted": 4
+      },
+      "resultado": "ok",
+      "fin": "2026-11-15T16:15:26Z"
+    },
+    "ramas_cierre": {
+      "inicio": "2026-11-15T16:15:26Z",
+      "repos": {
+        "tesis-backend-cd": {
+          "main": "db1881d4ac96c8825f3a25d824f8acb468faafc2",
+          "main-fijo": {
+            "antes": "a8980e5444d440202d70edd9630bcc945ae7db5b",
+            "accion": "actualizar",
+            "despues": "db1881d4ac96c8825f3a25d824f8acb468faafc2"
+          },
+          "main-efimero": {
+            "antes": "4e82e41655720f37006459f82c96900982b43382",
+            "accion": "actualizar",
+            "despues": "db1881d4ac96c8825f3a25d824f8acb468faafc2"
+          }
+        },
+        "tesis-frontend-cd": {
+          "main": "900cda067f24e1b9095ad9604a30a3a0557d1f2b",
+          "main-fijo": {
+            "antes": "ed1035ea4b46840b0927f5b7170f3b98527928ba",
+            "accion": "actualizar",
+            "despues": "900cda067f24e1b9095ad9604a30a3a0557d1f2b"
+          },
+          "main-efimero": {
+            "antes": "af07e792200567222deb8ffb843f9bd93511ae08",
+            "accion": "actualizar",
+            "despues": "900cda067f24e1b9095ad9604a30a3a0557d1f2b"
+          }
+        }
+      },
+      "resultado": "ok",
+      "fin": "2026-11-15T16:15:35Z"
+    }
+  },
+  "linea_base": {
+    "backend": "582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-backend@sha256:eb07d223d0f4133d7bdd18f932b39d2c399b716cbaab19d3924c619b5a38a99a",
+    "frontend": "582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-frontend@sha256:a3d8e0fe7d48181e4b1050a62bc18419e50f37b144d8715cea0da57058d33ecc"
+  },
+  "shas_finales": {
+    "tesis-backend-cd": {
+      "main": "db1881d4ac96c8825f3a25d824f8acb468faafc2",
+      "dev": "237b6e1d16c489a59048d42965c69b198b4cecff",
+      "main-fijo": "db1881d4ac96c8825f3a25d824f8acb468faafc2",
+      "main-efimero": "db1881d4ac96c8825f3a25d824f8acb468faafc2"
+    },
+    "tesis-frontend-cd": {
+      "main": "900cda067f24e1b9095ad9604a30a3a0557d1f2b",
+      "dev": "4f3105beab5e7fdd20c3cac664ee32c205f65ee1",
+      "main-fijo": "900cda067f24e1b9095ad9604a30a3a0557d1f2b",
+      "main-efimero": "900cda067f24e1b9095ad9604a30a3a0557d1f2b"
+    }
+  },
+  "fin": "2026-11-15T16:15:39Z",
+  "t0_corrida": "2026-11-15T16:15:39Z",
+  "resultado": "ok"
+}

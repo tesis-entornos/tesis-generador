@@ -11,3 +11,9 @@ c11,3,921353,2,release/c11-2,migracion,integrada,efimero,2026-11-15T15:32:43Z,20
 c11,3,921353,2,release/c11-2,migracion,integrada,fijo,2026-11-15T15:32:43Z,2026-11-15T15:54:09Z,1286.9,ok,2,581.0,,0,0,false,tesis-fijo-desplegar-backend:27a68659-fb98-49f7-9953-c00e081bbd65
 c11,3,921353,3,release/c11-3,solo_frontend,integrada,efimero,2026-11-15T15:42:44Z,2026-11-15T15:51:06Z,502.9,ok,1,,311,0,0,false,tesis-efimero-desplegar-frontend:9d7b6b38-1381-4795-816f-fb4b038f1f5e
 c11,3,921353,3,release/c11-3,solo_frontend,integrada,fijo,2026-11-15T15:42:44Z,2026-11-15T15:56:59Z,855.2,ok,1,672.0,,0,0,false,tesis-fijo-desplegar-frontend:e0fd16a6-b129-43cc-b210-1a7544799e72
+c12,3,48530,1,release/c12-1,migracion,declinada,efimero,2026-11-15T16:15:52Z,2026-11-15T16:28:15Z,743.8,ok,1,,299,0,0,false,tesis-efimero-desplegar-backend:43479ac8-7485-43a0-991a-e987b6267c2e
+c12,3,48530,1,release/c12-1,migracion,declinada,fijo,2026-11-15T16:15:52Z,2026-11-15T16:22:57Z,425.4,ok,1,5.0,,0,0,false,tesis-fijo-desplegar-backend:551097b5-fe6d-4d1c-98ec-bae5dae273e6
+c12,3,48530,2,release/c12-2,solo_frontend,integrada,efimero,2026-11-15T16:21:35Z,2026-11-15T16:32:14Z,639.0,ok,2,,311,0,0,false,tesis-efimero-desplegar-frontend:4bd6ffaf-4051-4413-8e6f-766b6b6cbde2
+c12,3,48530,2,release/c12-2,solo_frontend,integrada,fijo,2026-11-15T16:21:35Z,2026-11-15T16:29:01Z,446.7,ok,2,61.0,,0,0,false,tesis-fijo-desplegar-frontend:f1089870-83b2-40a5-b124-9373b5ecdc5f
+c12,3,48530,3,release/c12-3,solo_backend,integrada,efimero,2026-11-15T16:30:43Z,2026-11-15T17:04:38Z,2035.5,ok,4,,581,0,0,false,tesis-efimero-desplegar-backend:b93af912-1bb0-4551-b3be-b5d62576885a
+c12,3,48530,3,release/c12-3,solo_backend,integrada,fijo,2026-11-15T16:30:43Z,2026-11-15T16:58:49Z,1686.0,ok,4,531.0,,0,0,false,tesis-fijo-desplegar-backend:f9f4c0ea-0c5d-4374-8ea9-1502b6f45f7a

@@ -1,0 +1,116 @@
+[2026-11-15T16:04:12Z] t  pre  protocolo protocolo-v1 verificado: huella 7af3ca58ce7e0765bc1704cc958ab0b4cd82637861d893616ec66f150160d5b7
+[2026-11-15T16:04:12Z] t  pre  reset.py
+[2026-11-15T16:04:12Z] 1. precondiciones
+[2026-11-15T16:04:32Z]   ok
+[2026-11-15T16:04:33Z]   línea base backend 582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-backend@sha256:eb07d223d0f4133d7bdd18f932b39d2c399b716cbaab19d3924c619b5a38a99a
+[2026-11-15T16:04:33Z] 2. primer reset de datos
+[2026-11-15T16:04:35Z]   copia registrada arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:32
+[2026-11-15T16:04:37Z]   tarea 32b5b58478cc4dc992bcbe67ef2e9aa6 lanzada; esperando que pare
+[2026-11-15T16:05:34Z]   copia arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:32 desregistrada
+[2026-11-15T16:05:34Z] 3. despliegue de la línea base en dev de tesis-backend-cd
+[2026-11-15T16:05:37Z]   tesis-backend-cd: push de 237b6e1 a dev; esperando el build de tesis-fijo-desplegar-backend
+[2026-11-15T16:06:10Z]   build tesis-fijo-desplegar-backend:e2442e07-41c2-448e-b823-2dc27ff19adb
+[2026-11-15T16:11:34Z] 3. despliegue de la línea base en dev de tesis-frontend-cd
+[2026-11-15T16:11:38Z]   tesis-frontend-cd: push de 4f3105b a dev; esperando el build de tesis-fijo-desplegar-frontend
+[2026-11-15T16:12:11Z]   build tesis-fijo-desplegar-frontend:9b4f7af4-0d6d-4380-9cae-f5096fa8be55
+[2026-11-15T16:14:29Z] 4. segundo reset de datos
+[2026-11-15T16:14:33Z]   tarea 4063a93b0f1c4451bd9cc50b2a4dda7e lanzada; esperando que pare
+[2026-11-15T16:15:26Z] 5. ramas de cierre
+[2026-11-15T16:15:28Z]   tesis-backend-cd main-fijo: actualizar -> db1881d
+[2026-11-15T16:15:30Z]   tesis-backend-cd main-efimero: actualizar -> db1881d
+[2026-11-15T16:15:33Z]   tesis-frontend-cd main-fijo: actualizar -> 900cda0
+[2026-11-15T16:15:35Z]   tesis-frontend-cd main-efimero: actualizar -> 900cda0
+[2026-11-15T16:15:39Z] reset c12 terminado; t0 = 2026-11-15T16:15:39Z
+[2026-11-15T16:15:39Z] registro en /Users/martincometta/tesis/aplicacion/tesis-generador/registros/reset-c12.json
+[2026-11-15T16:15:39Z] t+00:00  t = 0 en 2026-11-15T16:15:39Z; 7 eventos, 3 versiones
+[2026-11-15T16:15:54Z] t+00:15  abrir release/c12-1 backend: PR #13 (2026-11-15T16:15:52Z), commit 7712a21
+[2026-11-15T16:17:35Z] t+01:56  fijo: integra release/c12-1 backend (PR #44, 2026-11-15T16:17:30Z) en dev -> fe27327 (conflicto: sin_conflicto)
+[2026-11-15T16:17:49Z] t+02:10  build único 353e0678 release/c12-1 backend SUCCEEDED, tag 7712a21 digest 1c417d8e8280
+[2026-11-15T16:17:49Z] t+02:10  fijo: build tesis-fijo-desplegar-backend:551097b5-fe6d-4d1c-98ec-bae5dae273e6 de la integración de release/c12-1 backend
+[2026-11-15T16:17:49Z] t+02:10  PR tesis-backend-cd#44 (release/c12-1 -> dev) marcado como merged
+[2026-11-15T16:21:36Z] t+05:57  abrir release/c12-2 frontend: PR #6 (2026-11-15T16:21:35Z), commit ac6611c
+[2026-11-15T16:22:20Z] t+06:41  build único 229ec602 release/c12-2 frontend SUCCEEDED, tag ac6611c digest bf21724efdb3
+[2026-11-15T16:23:02Z] t+07:23  validación fijo release/c12-1 backend 551097b5 SUCCEEDED ok digest 1c417d8e8280 (320 s)
+[2026-11-15T16:23:02Z] t+07:23  fijo: build 551097b5 terminó SUCCEEDED (320 s)
+[2026-11-15T16:23:07Z] t+07:28  fijo: integra release/c12-2 frontend (PR #16, 2026-11-15T16:22:12Z) en dev -> e846d9d (conflicto: sin_conflicto)
+[2026-11-15T16:23:07Z] t+07:28  VALIDACIÓN FINAL release/c12-1 fijo: tesis-fijo-desplegar-backend:551097b5-fe6d-4d1c-98ec-bae5dae273e6 ok fin 2026-11-15T16:22:57Z tiempo de validación 425 s
+[2026-11-15T16:23:13Z] t+07:34  cierre fijo release/c12-1 backend: PR #45 -> main-fijo, cerrado sin merge
+[2026-11-15T16:23:13Z] t+07:34  CERRADA release/c12-1 en fijo
+[2026-11-15T16:23:14Z] t+07:35  PR tesis-frontend-cd#16 (release/c12-2 -> dev) marcado como merged
+[2026-11-15T16:23:20Z] t+07:41  fijo: build tesis-fijo-desplegar-frontend:e97148b5-b200-4370-9379-7b83062e538d de la integración de release/c12-2 frontend
+[2026-11-15T16:25:36Z] t+09:57  validación fijo release/c12-2 frontend e97148b5 SUCCEEDED ok digest bf21724efdb3 (132 s)
+[2026-11-15T16:25:36Z] t+09:57  fijo: build e97148b5 terminó SUCCEEDED (132 s)
+[2026-11-15T16:25:52Z] t+10:13  actualizar release/c12-2 frontend k=1: commit ee9d0c4
+[2026-11-15T16:26:41Z] t+11:02  fijo: integra release/c12-2 frontend (PR #17, 2026-11-15T16:26:35Z) en dev -> 5749cbd (conflicto: sin_conflicto)
+[2026-11-15T16:26:53Z] t+11:14  build único f52319f6 release/c12-2 frontend SUCCEEDED, tag ee9d0c4 digest c7bcb4bd8fde
+[2026-11-15T16:26:53Z] t+11:14  fijo: build tesis-fijo-desplegar-frontend:f1089870-83b2-40a5-b124-9373b5ecdc5f de la integración de release/c12-2 frontend
+[2026-11-15T16:26:54Z] t+11:15  PR tesis-frontend-cd#17 (release/c12-2 -> dev) marcado como merged
+[2026-11-15T16:28:36Z] t+12:57  validación efimero release/c12-1 backend 43479ac8 SUCCEEDED ok digest 1c417d8e8280 (646 s)
+[2026-11-15T16:28:36Z] t+12:57  VALIDACIÓN FINAL release/c12-1 efimero: tesis-efimero-desplegar-backend:43479ac8-7485-43a0-991a-e987b6267c2e ok fin 2026-11-15T16:28:15Z tiempo de validación 744 s
+[2026-11-15T16:28:40Z] t+13:01  cierre efímero release/c12-1 backend: PR #46 -> main-efimero, cerrado sin merge
+[2026-11-15T16:28:53Z] t+13:14  cierre efímero release/c12-1 backend: build del webhook tesis-efimero-cerrar-backend:a71c600a-89db-4077-acd4-223abe02b64c
+[2026-11-15T16:29:08Z] t+13:29  validación fijo release/c12-2 frontend f1089870 SUCCEEDED ok digest c7bcb4bd8fde (139 s)
+[2026-11-15T16:29:08Z] t+13:29  fijo: build f1089870 terminó SUCCEEDED (139 s)
+[2026-11-15T16:29:09Z] t+13:30  VALIDACIÓN FINAL release/c12-2 fijo: tesis-fijo-desplegar-frontend:f1089870-83b2-40a5-b124-9373b5ecdc5f ok fin 2026-11-15T16:29:01Z tiempo de validación 447 s
+[2026-11-15T16:29:15Z] t+13:36  cierre fijo release/c12-2 frontend: PR #18 -> main-fijo, merge local y push
+[2026-11-15T16:29:15Z] t+13:36  CERRADA release/c12-2 en fijo
+[2026-11-15T16:29:25Z] t+13:46  PR tesis-frontend-cd#18 (release/c12-2 -> main-fijo) marcado como merged
+[2026-11-15T16:30:09Z] t+14:30  validación efimero release/c12-2 frontend 741392bd SUCCEEDED ok digest bf21724efdb3 (466 s)
+[2026-11-15T16:30:44Z] t+15:05  abrir release/c12-3 backend: PR #14 (2026-11-15T16:30:43Z), commit cf94aea
+[2026-11-15T16:32:28Z] t+16:49  validación efimero release/c12-2 frontend 4bd6ffaf SUCCEEDED ok digest c7bcb4bd8fde (339 s)
+[2026-11-15T16:32:32Z] t+16:53  fijo: integra release/c12-3 backend (PR #47, 2026-11-15T16:32:19Z) en dev -> c40b02c (conflicto: tag.json)
+[2026-11-15T16:32:32Z] t+16:53  VALIDACIÓN FINAL release/c12-2 efimero: tesis-efimero-desplegar-frontend:4bd6ffaf-4051-4413-8e6f-766b6b6cbde2 ok fin 2026-11-15T16:32:14Z tiempo de validación 639 s
+[2026-11-15T16:32:38Z] t+16:59  cierre efímero release/c12-2 frontend: PR #19 -> main-efimero, merge local y push
+[2026-11-15T16:32:39Z] t+17:00  PR tesis-backend-cd#47 (release/c12-3 -> dev) marcado como merged
+[2026-11-15T16:32:52Z] t+17:13  build único ba95693a release/c12-3 backend SUCCEEDED, tag cf94aea digest e01f8b85bd52
+[2026-11-15T16:32:52Z] t+17:13  fijo: build tesis-fijo-desplegar-backend:65c96044-502d-4319-9594-793660cfdd15 de la integración de release/c12-3 backend
+[2026-11-15T16:32:52Z] t+17:13  cierre efímero release/c12-2 frontend: build del webhook tesis-efimero-cerrar-frontend:d5484d7c-e212-43d6-b1f5-6a3ee96f3eb6
+[2026-11-15T16:32:52Z] t+17:13  PR tesis-frontend-cd#19 (release/c12-2 -> main-efimero) marcado como merged
+[2026-11-15T16:34:34Z] t+18:55  cierre efímero release/c12-1 backend: a71c600a SUCCEEDED, accion destruir, resultado ok (338 s)
+[2026-11-15T16:34:34Z] t+18:55  CERRADA release/c12-1 en efímero: entorno destruido por webhook (tesis-efimero-cerrar-backend:a71c600a-89db-4077-acd4-223abe02b64c)
+[2026-11-15T16:38:18Z] t+22:39  validación fijo release/c12-3 backend 65c96044 SUCCEEDED ok digest e01f8b85bd52 (332 s)
+[2026-11-15T16:38:18Z] t+22:39  fijo: build 65c96044 terminó SUCCEEDED (332 s)
+[2026-11-15T16:40:05Z] t+24:26  actualizar release/c12-3 backend k=1: commit 174290a
+[2026-11-15T16:41:06Z] t+25:27  cierre efímero release/c12-2 frontend: d5484d7c SUCCEEDED, accion destruir, resultado ok (493 s)
+[2026-11-15T16:41:06Z] t+25:27  CERRADA release/c12-2 en efímero: entorno destruido por webhook (tesis-efimero-cerrar-frontend:d5484d7c-e212-43d6-b1f5-6a3ee96f3eb6)
+[2026-11-15T16:41:10Z] t+25:31  limpieza release/c12-1: ramas borradas en tesis-backend-cd; PR de la app cerrado y rama borrada
+[2026-11-15T16:41:16Z] t+25:37  limpieza release/c12-2: ramas borradas en tesis-frontend-cd; PR de la app cerrado y rama borrada
+[2026-11-15T16:41:44Z] t+26:05  fijo: integra release/c12-3 backend (PR #48, 2026-11-15T16:41:36Z) en dev -> 7cfed59 (conflicto: sin_conflicto)
+[2026-11-15T16:41:57Z] t+26:18  build único 5f1aef29 release/c12-3 backend SUCCEEDED, tag 174290a digest c30083b41dfa
+[2026-11-15T16:41:57Z] t+26:18  fijo: build tesis-fijo-desplegar-backend:47c0f7a1-b766-49a7-86b2-8bf655f5593f de la integración de release/c12-3 backend
+[2026-11-15T16:41:57Z] t+26:18  PR tesis-backend-cd#48 (release/c12-3 -> dev) marcado como merged
+[2026-11-15T16:42:41Z] t+27:02  actualizar release/c12-3 backend k=2: commit 24c6dd9
+[2026-11-15T16:44:27Z] t+28:48  build único 916b4073 release/c12-3 backend SUCCEEDED, tag 24c6dd9 digest 744e81ed2be7
+[2026-11-15T16:46:26Z] t+30:47  actualizar release/c12-3 backend k=3: commit 3ab33c4
+[2026-11-15T16:47:27Z] t+31:48  validación fijo release/c12-3 backend 47c0f7a1 SUCCEEDED ok digest c30083b41dfa (335 s)
+[2026-11-15T16:47:27Z] t+31:48  fijo: build 47c0f7a1 terminó SUCCEEDED (335 s)
+[2026-11-15T16:47:31Z] t+31:52  fijo: integra release/c12-3 backend (PR #49, 2026-11-15T16:44:14Z) en dev -> 6daa4a5 (conflicto: sin_conflicto)
+[2026-11-15T16:47:41Z] t+32:02  fijo: build tesis-fijo-desplegar-backend:ba3ba844-0a9e-4a29-a27c-9d41c452aa57 de la integración de release/c12-3 backend
+[2026-11-15T16:47:42Z] t+32:03  PR tesis-backend-cd#49 (release/c12-3 -> dev) marcado como merged
+[2026-11-15T16:48:12Z] t+32:33  validación efimero release/c12-3 backend e12285d0 SUCCEEDED ok digest e01f8b85bd52 (935 s)
+[2026-11-15T16:48:13Z] t+32:34  build único 14c5bb57 release/c12-3 backend SUCCEEDED, tag 3ab33c4 digest 3be440985034
+[2026-11-15T16:53:10Z] t+37:31  validación fijo release/c12-3 backend ba3ba844 SUCCEEDED ok digest 744e81ed2be7 (319 s)
+[2026-11-15T16:53:10Z] t+37:31  fijo: build ba3ba844 terminó SUCCEEDED (319 s)
+[2026-11-15T16:53:14Z] t+37:35  fijo: integra release/c12-3 backend (PR #50, 2026-11-15T16:48:01Z) en dev -> 85c0013 (conflicto: sin_conflicto)
+[2026-11-15T16:53:25Z] t+37:46  validación efimero release/c12-3 backend 989cc14f SUCCEEDED ok digest c30083b41dfa (701 s)
+[2026-11-15T16:53:25Z] t+37:46  fijo: build tesis-fijo-desplegar-backend:f9f4c0ea-0c5d-4374-8ea9-1502b6f45f7a de la integración de release/c12-3 backend
+[2026-11-15T16:53:25Z] t+37:46  PR tesis-backend-cd#50 (release/c12-3 -> dev) marcado como merged
+[2026-11-15T16:58:55Z] t+43:16  validación fijo release/c12-3 backend f9f4c0ea SUCCEEDED ok digest 3be440985034 (333 s)
+[2026-11-15T16:58:55Z] t+43:16  fijo: build f9f4c0ea terminó SUCCEEDED (333 s)
+[2026-11-15T16:58:56Z] t+43:17  VALIDACIÓN FINAL release/c12-3 fijo: tesis-fijo-desplegar-backend:f9f4c0ea-0c5d-4374-8ea9-1502b6f45f7a ok fin 2026-11-15T16:58:49Z tiempo de validación 1686 s
+[2026-11-15T16:59:02Z] t+43:23  cierre fijo release/c12-3 backend: PR #51 -> main-fijo, merge local y push
+[2026-11-15T16:59:02Z] t+43:23  CERRADA release/c12-3 en fijo
+[2026-11-15T16:59:11Z] t+43:32  PR tesis-backend-cd#51 (release/c12-3 -> main-fijo) marcado como merged
+[2026-11-15T16:59:25Z] t+43:46  validación efimero release/c12-3 backend 824c697d SUCCEEDED ok digest 744e81ed2be7 (899 s)
+[2026-11-15T17:04:55Z] t+49:16  validación efimero release/c12-3 backend b93af912 SUCCEEDED ok digest 3be440985034 (997 s)
+[2026-11-15T17:04:56Z] t+49:17  VALIDACIÓN FINAL release/c12-3 efimero: tesis-efimero-desplegar-backend:b93af912-1bb0-4551-b3be-b5d62576885a ok fin 2026-11-15T17:04:38Z tiempo de validación 2036 s
+[2026-11-15T17:05:03Z] t+49:24  cierre efímero release/c12-3 backend: PR #52 -> main-efimero, merge local y push
+[2026-11-15T17:05:11Z] t+49:32  cierre efímero release/c12-3 backend: build del webhook tesis-efimero-cerrar-backend:de470782-2128-4be2-a21a-5c33348afb00
+[2026-11-15T17:05:12Z] t+49:33  PR tesis-backend-cd#52 (release/c12-3 -> main-efimero) marcado como merged
+[2026-11-15T17:11:13Z] t+55:34  cierre efímero release/c12-3 backend: de470782 SUCCEEDED, accion destruir, resultado ok (350 s)
+[2026-11-15T17:11:13Z] t+55:34  CERRADA release/c12-3 en efímero: entorno destruido por webhook (tesis-efimero-cerrar-backend:de470782-2128-4be2-a21a-5c33348afb00)
+[2026-11-15T17:11:17Z] t+55:38  limpieza release/c12-3: ramas borradas en tesis-backend-cd; PR de la app cerrado y rama borrada
+[2026-11-15T17:11:17Z] t+55:38  corrida c12 terminada en 3338 s desde t = 0
+[2026-11-15T17:11:17Z] t+55:38  depurador
+[2026-11-15T17:11:45Z] t+56:06    depurador: 0 restos encontrados
+[2026-11-15T17:12:05Z] t+56:26  cierre c12: VÁLIDA
