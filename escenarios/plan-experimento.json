@@ -1,0 +1,219 @@
+{
+  "plan": "experimento",
+  "semilla_maestra": 20261115,
+  "metodo": "rng = random.Random(semilla_maestra); niveles = [1]*6 + [3]*6; rng.shuffle(niveles); luego rng.randint(1, 10**6) por corrida, en el orden resultante (c11..c22); después, con el mismo rng, rng.randint(1, 10**6) para las reservas c23 (nivel 1), c24 (nivel 3), c25 (nivel 1), c26 (nivel 3)",
+  "corridas": [
+    {
+      "corrida": "c11",
+      "nivel": 3,
+      "semilla": 921353,
+      "escenario": "escenarios/c11.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "solo_frontend"
+        ],
+        "actualizaciones": 4
+      }
+    },
+    {
+      "corrida": "c12",
+      "nivel": 3,
+      "semilla": 48530,
+      "escenario": "escenarios/c12.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_frontend",
+          "solo_backend"
+        ],
+        "actualizaciones": 4
+      }
+    },
+    {
+      "corrida": "c13",
+      "nivel": 3,
+      "semilla": 251461,
+      "escenario": "escenarios/c13.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "combinacion",
+          "combinacion"
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c14",
+      "nivel": 3,
+      "semilla": 541353,
+      "escenario": "escenarios/c14.json",
+      "resumen": {
+        "tipos": [
+          "combinacion",
+          "migracion",
+          "combinacion"
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c15",
+      "nivel": 1,
+      "semilla": 715040,
+      "escenario": "escenarios/c15.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "actualizaciones": 0
+      }
+    },
+    {
+      "corrida": "c16",
+      "nivel": 3,
+      "semilla": 195822,
+      "escenario": "escenarios/c16.json",
+      "resumen": {
+        "tipos": [
+          "combinacion",
+          "migracion",
+          "solo_backend"
+        ],
+        "actualizaciones": 4
+      }
+    },
+    {
+      "corrida": "c17",
+      "nivel": 1,
+      "semilla": 157342,
+      "escenario": "escenarios/c17.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c18",
+      "nivel": 1,
+      "semilla": 82644,
+      "escenario": "escenarios/c18.json",
+      "resumen": {
+        "tipos": [
+          "combinacion"
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c19",
+      "nivel": 1,
+      "semilla": 570181,
+      "escenario": "escenarios/c19.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend"
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c20",
+      "nivel": 3,
+      "semilla": 961566,
+      "escenario": "escenarios/c20.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "migracion"
+        ],
+        "actualizaciones": 2
+      }
+    },
+    {
+      "corrida": "c21",
+      "nivel": 1,
+      "semilla": 518975,
+      "escenario": "escenarios/c21.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend"
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c22",
+      "nivel": 1,
+      "semilla": 166668,
+      "escenario": "escenarios/c22.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "actualizaciones": 0
+      }
+    }
+  ],
+  "reservas": [
+    {
+      "corrida": "c23",
+      "nivel": 1,
+      "semilla": 913035,
+      "escenario": "escenarios/c23.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend"
+        ],
+        "actualizaciones": 0
+      }
+    },
+    {
+      "corrida": "c24",
+      "nivel": 3,
+      "semilla": 538552,
+      "escenario": "escenarios/c24.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "combinacion",
+          "solo_backend"
+        ],
+        "actualizaciones": 0
+      }
+    },
+    {
+      "corrida": "c25",
+      "nivel": 1,
+      "semilla": 865227,
+      "escenario": "escenarios/c25.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "actualizaciones": 2
+      }
+    },
+    {
+      "corrida": "c26",
+      "nivel": 3,
+      "semilla": 816608,
+      "escenario": "escenarios/c26.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend",
+          "migracion",
+          "combinacion"
+        ],
+        "actualizaciones": 1
+      }
+    }
+  ],
+  "excluidas": "c2-c4 (plan del piloto, no se corren)",
+  "pendiente": "nivel 5, cuota Fargate"
+}
