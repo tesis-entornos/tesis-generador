@@ -1,0 +1,2 @@
+{"t_real": "2026-11-15T23:21:57.822+00:00", "accion": "apertura", "n": 1, "repo": "backend", "rama": "release/c21-1", "k": 0, "commit": "9166496f301d41548490f712871382ff74823083", "pr": 31, "pr_created_at": "2026-11-15T23:21:56Z", "dry_run": false}
+{"t_real": "2026-11-15T23:26:37.588+00:00", "accion": "actualizacion", "n": 1, "repo": "backend", "rama": "release/c21-1", "k": 1, "commit": "e1ab634e15063b1f43719e8b4080335b1210233d", "pr": null, "pr_created_at": null, "dry_run": false}
