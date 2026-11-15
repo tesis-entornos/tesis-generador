@@ -29,3 +29,5 @@ c14,3,541353,2,release/c14-2,migracion,integrada,efimero,2026-11-15T18:19:49Z,20
 c14,3,541353,2,release/c14-2,migracion,integrada,fijo,2026-11-15T18:19:49Z,2026-11-15T18:33:43Z,834.6,ok,1,421.0,,0,0,false,tesis-fijo-desplegar-backend:0a3b9223-1675-4cb1-917f-cb48223d04f5
 c14,3,541353,3,release/c14-3,combinacion,integrada,efimero,2026-11-15T18:23:38Z,2026-11-15T18:38:37Z,899.0,ok,2,,301,0,0,false,tesis-efimero-desplegar-frontend:444ac758-5653-4dc5-9e09-0f5eeb4df070
 c14,3,541353,3,release/c14-3,combinacion,integrada,fijo,2026-11-15T18:23:38Z,2026-11-15T18:42:19Z,1121.6,ok,2,1373.0,,0,0,false,tesis-fijo-desplegar-frontend:36229eca-f4d3-4ab3-b726-e3d9b50e3325
+c15,1,715040,1,release/c15-1,migracion,integrada,efimero,2026-11-15T18:59:15Z,2026-11-15T19:11:46Z,751.5,ok,1,,314,0,0,false,tesis-efimero-desplegar-backend:822f5afc-1f18-4442-9dce-96939bb6d2f8
+c15,1,715040,1,release/c15-1,migracion,integrada,fijo,2026-11-15T18:59:15Z,2026-11-15T19:06:13Z,418.3,ok,1,12.0,,0,0,false,tesis-fijo-desplegar-backend:483614a8-011f-4a53-8ad6-63f352c27f55
