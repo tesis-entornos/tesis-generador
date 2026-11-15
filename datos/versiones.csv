@@ -1,1 +1,7 @@
 corrida,nivel,semilla,n,rama,tipo,resultado_escenario,modelo,t_apertura,t_fin_validacion_final,tiempo_validacion_s,resultado_validacion_final,validaciones,espera_fijo_s,aprovisionamiento_s,flaky,unexpected,expirada,build_final
+c1,3,529928,1,release/c1-1,migracion,declinada,efimero,2026-11-15T14:11:49Z,2026-11-15T14:23:59Z,730.3,ok,1,,292,0,0,false,tesis-efimero-desplegar-backend:113e1c00-0918-42a7-8030-fd93c7df3fc0
+c1,3,529928,1,release/c1-1,migracion,declinada,fijo,2026-11-15T14:11:49Z,2026-11-15T14:20:50Z,541.9,ok,1,131.0,,0,0,false,tesis-fijo-desplegar-backend:faeae44d-ce8b-4a30-a6f9-17538e6f1c36
+c1,3,529928,2,release/c1-2,combinacion,integrada,efimero,2026-11-15T14:12:05Z,2026-11-15T14:30:13Z,1088.1,ok,4,,301,0,0,false,tesis-efimero-desplegar-backend:2a43d191-c6f9-46ce-bbe6-f7692038f972
+c1,3,529928,2,release/c1-2,combinacion,integrada,fijo,2026-11-15T14:12:05Z,2026-11-15T14:34:54Z,1369.2,ok,3,762.0,,0,0,false,tesis-fijo-desplegar-backend:50252d16-06a4-424b-8aa1-12fdadd47ff0
+c1,3,529928,3,release/c1-3,migracion,integrada,efimero,2026-11-15T14:19:35Z,2026-11-15T14:32:19Z,764.2,ok,1,,328,0,0,false,tesis-efimero-desplegar-backend:88ba2724-2eb6-40cc-b763-f3e7eea16103
+c1,3,529928,3,release/c1-3,migracion,integrada,fijo,2026-11-15T14:19:35Z,2026-11-15T14:29:17Z,582.3,ok,1,152.0,,0,0,false,tesis-fijo-desplegar-backend:893577a9-8d2f-4d3f-9ba7-80f2c30291f3
