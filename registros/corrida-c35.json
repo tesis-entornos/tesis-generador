@@ -1,0 +1,1584 @@
+{
+  "corrida": "c35",
+  "semilla": 424178,
+  "nivel": 5,
+  "simulada": false,
+  "inicio": "2026-11-16T05:57:03Z",
+  "t0": "2026-11-16T06:08:39Z",
+  "fin": "2026-11-16T07:00:04Z",
+  "resultado": "ok",
+  "motivo": null,
+  "eventos": [
+    {
+      "n": 1,
+      "t": 0,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 0,
+      "estado": "unico_ok",
+      "commit": "cbc7e4cb9385ddb9228b157cd8ff65d92b5205c3",
+      "despachado": "2026-11-16T06:08:56Z",
+      "retraso": 17,
+      "unico": {
+        "build_id": "tesis-build-backend:b4465182-5cb5-4d69-abfe-013687f1d656",
+        "status": "SUCCEEDED",
+        "start": 1794809338.089,
+        "end": 1794809433.642
+      },
+      "digest": "sha256:f1db9e72b460a48ec169e019358f8a14a0ae4588fe0cc65814d41101cf8b0fb9"
+    },
+    {
+      "n": 1,
+      "t": 39,
+      "repo": "frontend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 1,
+      "estado": "unico_ok",
+      "commit": "63b825c3f0beaedd3e75c61ec27853af77be2739",
+      "despachado": "2026-11-16T06:09:26Z",
+      "retraso": 8,
+      "unico": {
+        "build_id": "tesis-build-frontend:a5ac81fa-28d0-42b3-a9d2-a297af039b54",
+        "status": "SUCCEEDED",
+        "start": 1794809366.865,
+        "end": 1794809402.57
+      },
+      "digest": "sha256:83f929c0309961fd120dc955e0290af044842ebf47c68aa30ff9180078a9e842"
+    },
+    {
+      "n": 1,
+      "t": 366,
+      "repo": "frontend",
+      "accion": "actualizacion",
+      "actualizacion": 1,
+      "i": 2,
+      "estado": "unico_ok",
+      "commit": "6b87b5451a7cb99a1406e39f330c21bf4a4cb134",
+      "despachado": "2026-11-16T06:14:52Z",
+      "retraso": 7,
+      "unico": {
+        "build_id": "tesis-build-frontend:63e6e6ab-3c8d-4e1a-bc7a-0c916cf0755b",
+        "status": "SUCCEEDED",
+        "start": 1794809694.72,
+        "end": 1794809735.475
+      },
+      "digest": "sha256:490e2a1e8bfb1d6d08ce70cf7b629c2cf3e444e770bd5b95578c6c523e0b8f68"
+    },
+    {
+      "n": 2,
+      "t": 573,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 3,
+      "estado": "unico_ok",
+      "commit": "d5a0053c743bb9302d070384dded41454f8eee71",
+      "despachado": "2026-11-16T06:18:25Z",
+      "retraso": 13,
+      "unico": {
+        "build_id": "tesis-build-backend:d1c12ea7-971d-4dd0-8f7e-7d06bd001554",
+        "status": "SUCCEEDED",
+        "start": 1794809906.629,
+        "end": 1794809998.888
+      },
+      "digest": "sha256:051a85826e14848eae32411877681e1edf3dee771d91d338e8def9792954747c"
+    },
+    {
+      "n": 2,
+      "t": 713,
+      "repo": "backend",
+      "accion": "actualizacion",
+      "actualizacion": 1,
+      "i": 4,
+      "estado": "unico_ok",
+      "commit": "22d54309322c4f809d54cfcbe63a267db61a7ecd",
+      "despachado": "2026-11-16T06:20:39Z",
+      "retraso": 7,
+      "unico": {
+        "build_id": "tesis-build-backend:eac6e721-8db8-4cce-8a64-a2964187bc04",
+        "status": "SUCCEEDED",
+        "start": 1794810041.923,
+        "end": 1794810135.927
+      },
+      "digest": "sha256:95aa406456782b98e37fdc9d527aa817d67bd7d7039fbadb2d1a744feb2745ed"
+    },
+    {
+      "n": 1,
+      "t": 721,
+      "repo": "frontend",
+      "accion": "actualizacion",
+      "actualizacion": 2,
+      "i": 5,
+      "estado": "unico_ok",
+      "commit": "e0c99dd06f86a9844e5daffece1b66a1b3793172",
+      "despachado": "2026-11-16T06:20:56Z",
+      "retraso": 16,
+      "unico": {
+        "build_id": "tesis-build-frontend:bc7b79b8-01a2-4638-8f8d-2c5f9072ca39",
+        "status": "SUCCEEDED",
+        "start": 1794810059.195,
+        "end": 1794810098.579
+      },
+      "digest": "sha256:9b135cc13e31ba18f39137a2d6597857f58fdfc147a93e31774102ac81aee97d"
+    },
+    {
+      "n": 3,
+      "t": 996,
+      "repo": "frontend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 6,
+      "estado": "unico_ok",
+      "commit": "6f2af4f1d8d8f7f432c17c0c65f7b21ad0e3b818",
+      "despachado": "2026-11-16T06:25:29Z",
+      "retraso": 14,
+      "unico": {
+        "build_id": "tesis-build-frontend:18e1a4ef-7988-49b2-a47c-22bbb99f32c7",
+        "status": "SUCCEEDED",
+        "start": 1794810330.174,
+        "end": 1794810367.373
+      },
+      "digest": "sha256:21b2a7fe2d570f1c8676f46c24ebcdffe2ddada04e03897252031182b56ed1d4"
+    },
+    {
+      "n": 4,
+      "t": 1233,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 7,
+      "estado": "unico_ok",
+      "commit": "ea7db208e38806c0c8699b7804d1db68c76e8011",
+      "despachado": "2026-11-16T06:29:30Z",
+      "retraso": 18,
+      "unico": {
+        "build_id": "tesis-build-backend:90701989-1028-4acc-a211-580dda91c8df",
+        "status": "SUCCEEDED",
+        "start": 1794810572.937,
+        "end": 1794810663.969
+      },
+      "digest": "sha256:66c848a4461fc25ec868205915ec737be4aa763c882fffc48873fed39f580ba8"
+    },
+    {
+      "n": 5,
+      "t": 1332,
+      "repo": "frontend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 8,
+      "estado": "unico_ok",
+      "commit": "ebcf3d697a7bac555a0b11b2cb62f0b7ccf47f78",
+      "despachado": "2026-11-16T06:31:03Z",
+      "retraso": 12,
+      "unico": {
+        "build_id": "tesis-build-frontend:d163ab59-2a86-4520-baa7-edbdd421de34",
+        "status": "SUCCEEDED",
+        "start": 1794810664.408,
+        "end": 1794810704.512
+      },
+      "digest": "sha256:69432e3ecac8d998d1cf3fd3c8a9c12906ebdaa3a6209b9776bc3218d05ad964"
+    },
+    {
+      "n": 4,
+      "t": 1366,
+      "repo": "backend",
+      "accion": "actualizacion",
+      "actualizacion": 1,
+      "i": 9,
+      "estado": "unico_ok",
+      "commit": "d24d86ca07d0341703f96cce701108f1bd383a0a",
+      "despachado": "2026-11-16T06:31:47Z",
+      "retraso": 22,
+      "unico": {
+        "build_id": "tesis-build-backend:00258800-641a-435a-99f4-b430dcfc100e",
+        "status": "SUCCEEDED",
+        "start": 1794810710.089,
+        "end": 1794810804.943
+      },
+      "digest": "sha256:e9e19efcc3cb9de65abf5a8d907d5ef7abd404dd141668681732ade64670cac3"
+    },
+    {
+      "n": 4,
+      "t": 1696,
+      "repo": "backend",
+      "accion": "actualizacion",
+      "actualizacion": 2,
+      "i": 10,
+      "estado": "unico_ok",
+      "commit": "87d2e2162b9a067195bd6ed97872abdeabc163a9",
+      "despachado": "2026-11-16T06:37:10Z",
+      "retraso": 15,
+      "unico": {
+        "build_id": "tesis-build-backend:caddd563-4cd4-48ff-81b6-2be559cff8ca",
+        "status": "SUCCEEDED",
+        "start": 1794811033.268,
+        "end": 1794811124.893
+      },
+      "digest": "sha256:bc348446d8da24af2a47ff5a2b664a4d22c420111e8a85067e07c603f231b38a"
+    }
+  ],
+  "versiones": [
+    {
+      "n": 1,
+      "rama": "release/c35-1",
+      "tipo": "combinacion",
+      "repos": [
+        "backend",
+        "frontend"
+      ],
+      "resultado_escenario": "declinada",
+      "apertura": "2026-11-16T06:08:55Z",
+      "app_pr": {
+        "backend": {
+          "pr": 50,
+          "created_at": "2026-11-16T06:08:55Z"
+        },
+        "frontend": {
+          "pr": 25,
+          "created_at": "2026-11-16T06:09:24Z"
+        }
+      },
+      "digest": {
+        "backend": "sha256:f1db9e72b460a48ec169e019358f8a14a0ae4588fe0cc65814d41101cf8b0fb9",
+        "frontend": "sha256:9b135cc13e31ba18f39137a2d6597857f58fdfc147a93e31774102ac81aee97d"
+      },
+      "modelos": {
+        "efimero": {
+          "validacion_final": {
+            "build_id": "tesis-efimero-desplegar-frontend:2f3d81e9-e884-4458-a402-a0b942de460b",
+            "repo": "frontend",
+            "end": "2026-11-16T06:27:44Z",
+            "resultado": "ok",
+            "por_repo": {
+              "backend": {
+                "build_id": "tesis-efimero-desplegar-backend:d118ae39-426d-4bdb-aaa4-3f49c5b98630",
+                "end": "2026-11-16T06:22:51Z",
+                "resultado": "ok"
+              },
+              "frontend": {
+                "build_id": "tesis-efimero-desplegar-frontend:2f3d81e9-e884-4458-a402-a0b942de460b",
+                "end": "2026-11-16T06:27:44Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 1129.5,
+          "validaciones": [
+            {
+              "repo": "frontend",
+              "build_id": "tesis-efimero-desplegar-frontend:47cab93d-c527-428c-8cd6-49d1e3e22271",
+              "digest": "sha256:83f929c0309961fd120dc955e0290af044842ebf47c68aa30ff9180078a9e842",
+              "start": "2026-11-16T06:10:00Z",
+              "end": "2026-11-16T06:17:28Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            },
+            {
+              "repo": "backend",
+              "build_id": "tesis-efimero-desplegar-backend:d118ae39-426d-4bdb-aaa4-3f49c5b98630",
+              "digest": "sha256:f1db9e72b460a48ec169e019358f8a14a0ae4588fe0cc65814d41101cf8b0fb9",
+              "start": "2026-11-16T06:10:30Z",
+              "end": "2026-11-16T06:22:51Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            },
+            {
+              "repo": "frontend",
+              "build_id": "tesis-efimero-desplegar-frontend:a3eba5a2-16b5-4295-ae87-ac352b04b10c",
+              "digest": "sha256:490e2a1e8bfb1d6d08ce70cf7b629c2cf3e444e770bd5b95578c6c523e0b8f68",
+              "start": "2026-11-16T06:15:33Z",
+              "end": "2026-11-16T06:25:18Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            },
+            {
+              "repo": "frontend",
+              "build_id": "tesis-efimero-desplegar-frontend:2f3d81e9-e884-4458-a402-a0b942de460b",
+              "digest": "sha256:9b135cc13e31ba18f39137a2d6597857f58fdfc147a93e31774102ac81aee97d",
+              "start": "2026-11-16T06:21:36Z",
+              "end": "2026-11-16T06:27:44Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "backend": {
+                "fase": "hecho",
+                "pr": 173,
+                "t_accion": 1794810478.4433,
+                "accion_pr": "close",
+                "build_id": "tesis-efimero-cerrar-backend:6c65a769-966d-4d9f-a3fd-940ad48daf49",
+                "via": "webhook",
+                "status": "SUCCEEDED",
+                "end": 1794810504.512,
+                "accion": "esperar_otro",
+                "resultado": "esperando el cierre del otro -cd",
+                "otra_rama_existe": true,
+                "cierre_resultado": "declinada"
+              },
+              "frontend": {
+                "fase": "hecho",
+                "pr": 79,
+                "t_accion": 1794810525.256445,
+                "accion_pr": "close",
+                "build_id": "tesis-efimero-cerrar-frontend:63272c79-4f7b-47e6-b649-12929939d375",
+                "via": "webhook",
+                "status": "SUCCEEDED",
+                "end": 1794810550.404,
+                "accion": "esperar_otro",
+                "resultado": "esperando el cierre del otro -cd",
+                "otra_rama_existe": true,
+                "cierre_resultado": "declinada"
+              }
+            },
+            "manual_extra": {
+              "repo": "backend",
+              "build_id": "tesis-efimero-cerrar-backend:ed1be15c-27ce-48bb-b6f9-108935ed507f",
+              "via": "manual",
+              "nota": "los dos cierres esperaron al otro -cd",
+              "status": "SUCCEEDED",
+              "end": 1794810921.103,
+              "accion": "manual",
+              "resultado": "ok"
+            },
+            "destruccion": {
+              "via": "manual",
+              "build_id": "tesis-efimero-cerrar-backend:ed1be15c-27ce-48bb-b6f9-108935ed507f",
+              "end": 1794810921.103,
+              "resultado": "ok",
+              "motivo_manual": "los dos cierres esperaron al otro -cd"
+            }
+          }
+        },
+        "fijo": {
+          "validacion_final": {
+            "build_id": "tesis-fijo-desplegar-frontend:93f741a6-9778-4c92-9f2f-8412c656a907",
+            "repo": "frontend",
+            "end": "2026-11-16T06:29:47Z",
+            "resultado": "ok",
+            "por_repo": {
+              "backend": {
+                "build_id": "tesis-fijo-desplegar-backend:833ef6c5-52f6-413d-b699-a3e4ce073b6c",
+                "end": "2026-11-16T06:18:36Z",
+                "resultado": "ok"
+              },
+              "frontend": {
+                "build_id": "tesis-fijo-desplegar-frontend:93f741a6-9778-4c92-9f2f-8412c656a907",
+                "end": "2026-11-16T06:29:47Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 1252.5,
+          "validaciones": [
+            {
+              "repo": "frontend",
+              "build_id": "tesis-fijo-desplegar-frontend:289428b8-3f6b-453d-823b-5e885605465a",
+              "digest": "sha256:83f929c0309961fd120dc955e0290af044842ebf47c68aa30ff9180078a9e842",
+              "start": "2026-11-16T06:10:11Z",
+              "end": "2026-11-16T06:12:27Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            },
+            {
+              "repo": "backend",
+              "build_id": "tesis-fijo-desplegar-backend:833ef6c5-52f6-413d-b699-a3e4ce073b6c",
+              "digest": "sha256:f1db9e72b460a48ec169e019358f8a14a0ae4588fe0cc65814d41101cf8b0fb9",
+              "start": "2026-11-16T06:12:40Z",
+              "end": "2026-11-16T06:18:36Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            },
+            {
+              "repo": "frontend",
+              "build_id": "tesis-fijo-desplegar-frontend:5e3e7f4c-937b-42a0-8393-29dde34fc3e2",
+              "digest": "sha256:490e2a1e8bfb1d6d08ce70cf7b629c2cf3e444e770bd5b95578c6c523e0b8f68",
+              "start": "2026-11-16T06:19:00Z",
+              "end": "2026-11-16T06:21:21Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            },
+            {
+              "repo": "frontend",
+              "build_id": "tesis-fijo-desplegar-frontend:93f741a6-9778-4c92-9f2f-8412c656a907",
+              "digest": "sha256:9b135cc13e31ba18f39137a2d6597857f58fdfc147a93e31774102ac81aee97d",
+              "start": "2026-11-16T06:27:30Z",
+              "end": "2026-11-16T06:29:47Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            }
+          ],
+          "integraciones": [
+            {
+              "version": "c35-1",
+              "rama": "release/c35-1",
+              "repo": "frontend",
+              "cd": "tesis-frontend-cd",
+              "pr": 75,
+              "pr_created_at": "2026-11-16T06:10:01Z",
+              "head": "c5a4af0261b2ad520ba936c41c8c28047cb79709",
+              "commit_dev": "4052dfbcbe204d4c45db14178c7c528d1d0ba976",
+              "conflicto": "sin_conflicto",
+              "hora": "2026-11-16T06:10:10Z",
+              "build_id": "tesis-fijo-desplegar-frontend:289428b8-3f6b-453d-823b-5e885605465a",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794809547.077
+            },
+            {
+              "version": "c35-1",
+              "rama": "release/c35-1",
+              "repo": "backend",
+              "cd": "tesis-backend-cd",
+              "pr": 170,
+              "pr_created_at": "2026-11-16T06:10:32Z",
+              "head": "25c180062a08faa45f75a6fd4e9ad7daf21d709f",
+              "commit_dev": "da9981272b50a29658204da86891dfce504f311a",
+              "conflicto": "sin_conflicto",
+              "hora": "2026-11-16T06:12:39Z",
+              "build_id": "tesis-fijo-desplegar-backend:833ef6c5-52f6-413d-b699-a3e4ce073b6c",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794809916.162
+            },
+            {
+              "version": "c35-1",
+              "rama": "release/c35-1",
+              "repo": "frontend",
+              "cd": "tesis-frontend-cd",
+              "pr": 76,
+              "pr_created_at": "2026-11-16T06:15:34Z",
+              "head": "fb80e76b371ce9302ca8ac8e070ee54a0f775e73",
+              "commit_dev": "ad62d8fdfbf526984a479a83ba66eff62eb8d384",
+              "conflicto": "sin_conflicto",
+              "hora": "2026-11-16T06:18:59Z",
+              "build_id": "tesis-fijo-desplegar-frontend:5e3e7f4c-937b-42a0-8393-29dde34fc3e2",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794810081.217
+            },
+            {
+              "version": "c35-1",
+              "rama": "release/c35-1",
+              "repo": "frontend",
+              "cd": "tesis-frontend-cd",
+              "pr": 77,
+              "pr_created_at": "2026-11-16T06:21:37Z",
+              "head": "ad0f4e0f432ace424021a560c44628d7f9cdbd24",
+              "commit_dev": "401b217c202ee1f1d30b5c128a824eae504a2844",
+              "conflicto": "sin_conflicto",
+              "hora": "2026-11-16T06:27:28Z",
+              "build_id": "tesis-fijo-desplegar-frontend:93f741a6-9778-4c92-9f2f-8412c656a907",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794810587.497
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "backend": {
+                "pr": 174,
+                "hora": "2026-11-16T06:30:08Z",
+                "accion_pr": "close"
+              },
+              "frontend": {
+                "pr": 80,
+                "hora": "2026-11-16T06:30:13Z",
+                "accion_pr": "close"
+              }
+            }
+          }
+        }
+      },
+      "limpieza": {
+        "hora": "2026-11-16T06:45:40Z",
+        "ramas_cd": [
+          "tesis-backend-cd",
+          "tesis-frontend-cd"
+        ],
+        "app": [
+          {
+            "repo": "tesis-backend",
+            "pr": 50
+          },
+          {
+            "repo": "tesis-frontend",
+            "pr": 25
+          }
+        ]
+      },
+      "expirada": null,
+      "resultado_cierre": "declinada"
+    },
+    {
+      "n": 2,
+      "rama": "release/c35-2",
+      "tipo": "migracion",
+      "repos": [
+        "backend"
+      ],
+      "resultado_escenario": "declinada",
+      "apertura": "2026-11-16T06:18:24Z",
+      "app_pr": {
+        "backend": {
+          "pr": 51,
+          "created_at": "2026-11-16T06:18:24Z"
+        }
+      },
+      "digest": {
+        "backend": "sha256:95aa406456782b98e37fdc9d527aa817d67bd7d7039fbadb2d1a744feb2745ed"
+      },
+      "modelos": {
+        "efimero": {
+          "validacion_final": {
+            "build_id": "tesis-efimero-desplegar-backend:d3effbec-e87d-4670-9784-1e58526d1206",
+            "repo": "backend",
+            "end": "2026-11-16T06:36:54Z",
+            "resultado": "ok",
+            "por_repo": {
+              "backend": {
+                "build_id": "tesis-efimero-desplegar-backend:d3effbec-e87d-4670-9784-1e58526d1206",
+                "end": "2026-11-16T06:36:54Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 1110.3,
+          "validaciones": [
+            {
+              "repo": "backend",
+              "build_id": "tesis-efimero-desplegar-backend:e58352f3-95f6-4bec-b010-75bdef925771",
+              "digest": "sha256:051a85826e14848eae32411877681e1edf3dee771d91d338e8def9792954747c",
+              "start": "2026-11-16T06:19:56Z",
+              "end": "2026-11-16T06:30:56Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            },
+            {
+              "repo": "backend",
+              "build_id": "tesis-efimero-desplegar-backend:d3effbec-e87d-4670-9784-1e58526d1206",
+              "digest": "sha256:95aa406456782b98e37fdc9d527aa817d67bd7d7039fbadb2d1a744feb2745ed",
+              "start": "2026-11-16T06:22:13Z",
+              "end": "2026-11-16T06:36:54Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "backend": {
+                "fase": "hecho",
+                "pr": 177,
+                "t_accion": 1794811035.789344,
+                "accion_pr": "close",
+                "build_id": "tesis-efimero-cerrar-backend:61b0d0be-1e85-48f1-b245-7ff23a68ea51",
+                "via": "webhook",
+                "status": "SUCCEEDED",
+                "end": 1794811385.128,
+                "accion": "destruir",
+                "resultado": "ok",
+                "otra_rama_existe": false,
+                "cierre_resultado": "declinada"
+              }
+            },
+            "manual_extra": null,
+            "destruccion": {
+              "via": "webhook",
+              "build_id": "tesis-efimero-cerrar-backend:61b0d0be-1e85-48f1-b245-7ff23a68ea51",
+              "end": 1794811385.128,
+              "resultado": "ok",
+              "motivo_manual": null
+            }
+          }
+        },
+        "fijo": {
+          "validacion_final": {
+            "build_id": "tesis-fijo-desplegar-backend:27595be7-f225-4a79-96d5-e8b145239ffb",
+            "repo": "backend",
+            "end": "2026-11-16T06:35:35Z",
+            "resultado": "ok",
+            "por_repo": {
+              "backend": {
+                "build_id": "tesis-fijo-desplegar-backend:27595be7-f225-4a79-96d5-e8b145239ffb",
+                "end": "2026-11-16T06:35:35Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 1031.4,
+          "validaciones": [
+            {
+              "repo": "backend",
+              "build_id": "tesis-fijo-desplegar-backend:be1cd559-44e3-4966-b641-fde3fdb6319a",
+              "digest": "sha256:051a85826e14848eae32411877681e1edf3dee771d91d338e8def9792954747c",
+              "start": "2026-11-16T06:21:30Z",
+              "end": "2026-11-16T06:27:12Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            },
+            {
+              "repo": "backend",
+              "build_id": "tesis-fijo-desplegar-backend:27595be7-f225-4a79-96d5-e8b145239ffb",
+              "digest": "sha256:95aa406456782b98e37fdc9d527aa817d67bd7d7039fbadb2d1a744feb2745ed",
+              "start": "2026-11-16T06:30:06Z",
+              "end": "2026-11-16T06:35:35Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            }
+          ],
+          "integraciones": [
+            {
+              "version": "c35-2",
+              "rama": "release/c35-2",
+              "repo": "backend",
+              "cd": "tesis-backend-cd",
+              "pr": 171,
+              "pr_created_at": "2026-11-16T06:19:57Z",
+              "head": "931f2a73eb3d882654475d90a96363192e368889",
+              "commit_dev": "58ab4e8f1d962f696788a181dbf52640f83adacd",
+              "conflicto": "tag.json",
+              "hora": "2026-11-16T06:21:30Z",
+              "build_id": "tesis-fijo-desplegar-backend:be1cd559-44e3-4966-b641-fde3fdb6319a",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794810432.811
+            },
+            {
+              "version": "c35-2",
+              "rama": "release/c35-2",
+              "repo": "backend",
+              "cd": "tesis-backend-cd",
+              "pr": 172,
+              "pr_created_at": "2026-11-16T06:22:14Z",
+              "head": "08c7265a344970676bbc8d5a2d908b4a800a39df",
+              "commit_dev": "55c8ced85934462fd0896c334b38d2912a5554e1",
+              "conflicto": "sin_conflicto",
+              "hora": "2026-11-16T06:30:05Z",
+              "build_id": "tesis-fijo-desplegar-backend:27595be7-f225-4a79-96d5-e8b145239ffb",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794810935.427
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "backend": {
+                "pr": 176,
+                "hora": "2026-11-16T06:35:55Z",
+                "accion_pr": "close"
+              }
+            }
+          }
+        }
+      },
+      "limpieza": {
+        "hora": "2026-11-16T06:45:49Z",
+        "ramas_cd": [
+          "tesis-backend-cd"
+        ],
+        "app": [
+          {
+            "repo": "tesis-backend",
+            "pr": 51
+          }
+        ]
+      },
+      "expirada": null,
+      "resultado_cierre": "declinada"
+    },
+    {
+      "n": 3,
+      "rama": "release/c35-3",
+      "tipo": "solo_frontend",
+      "repos": [
+        "frontend"
+      ],
+      "resultado_escenario": "integrada",
+      "apertura": "2026-11-16T06:25:28Z",
+      "app_pr": {
+        "frontend": {
+          "pr": 26,
+          "created_at": "2026-11-16T06:25:28Z"
+        }
+      },
+      "digest": {
+        "frontend": "sha256:21b2a7fe2d570f1c8676f46c24ebcdffe2ddada04e03897252031182b56ed1d4"
+      },
+      "modelos": {
+        "efimero": {
+          "validacion_final": {
+            "build_id": "tesis-efimero-desplegar-frontend:e0e9aa82-dccd-4622-a4e9-61fa69fc1daf",
+            "repo": "frontend",
+            "end": "2026-11-16T06:33:33Z",
+            "resultado": "ok",
+            "por_repo": {
+              "frontend": {
+                "build_id": "tesis-efimero-desplegar-frontend:e0e9aa82-dccd-4622-a4e9-61fa69fc1daf",
+                "end": "2026-11-16T06:33:33Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 486.0,
+          "validaciones": [
+            {
+              "repo": "frontend",
+              "build_id": "tesis-efimero-desplegar-frontend:e0e9aa82-dccd-4622-a4e9-61fa69fc1daf",
+              "digest": "sha256:21b2a7fe2d570f1c8676f46c24ebcdffe2ddada04e03897252031182b56ed1d4",
+              "start": "2026-11-16T06:26:05Z",
+              "end": "2026-11-16T06:33:33Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "frontend": {
+                "fase": "hecho",
+                "pr": 82,
+                "t_accion": 1794810832.633259,
+                "accion_pr": "merge",
+                "commit": "77a37c3a03760e6880be0a0ab7a3bf73932b2641",
+                "conflicto": "sin_conflicto",
+                "build_id": "tesis-efimero-cerrar-frontend:8e3d6005-edf5-4bf6-8832-d44db45c69f6",
+                "via": "webhook",
+                "status": "SUCCEEDED",
+                "end": 1794811176.628,
+                "accion": "destruir",
+                "resultado": "ok",
+                "otra_rama_existe": false,
+                "cierre_resultado": "integrada"
+              }
+            },
+            "manual_extra": null,
+            "destruccion": {
+              "via": "webhook",
+              "build_id": "tesis-efimero-cerrar-frontend:8e3d6005-edf5-4bf6-8832-d44db45c69f6",
+              "end": 1794811176.628,
+              "resultado": "ok",
+              "motivo_manual": null
+            }
+          }
+        },
+        "fijo": {
+          "validacion_final": {
+            "build_id": "tesis-fijo-desplegar-frontend:cd544376-70c9-4db0-a65d-6f53a78e9c31",
+            "repo": "frontend",
+            "end": "2026-11-16T06:38:10Z",
+            "resultado": "ok",
+            "por_repo": {
+              "frontend": {
+                "build_id": "tesis-fijo-desplegar-frontend:cd544376-70c9-4db0-a65d-6f53a78e9c31",
+                "end": "2026-11-16T06:38:10Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 762.9,
+          "validaciones": [
+            {
+              "repo": "frontend",
+              "build_id": "tesis-fijo-desplegar-frontend:cd544376-70c9-4db0-a65d-6f53a78e9c31",
+              "digest": "sha256:21b2a7fe2d570f1c8676f46c24ebcdffe2ddada04e03897252031182b56ed1d4",
+              "start": "2026-11-16T06:35:53Z",
+              "end": "2026-11-16T06:38:10Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            }
+          ],
+          "integraciones": [
+            {
+              "version": "c35-3",
+              "rama": "release/c35-3",
+              "repo": "frontend",
+              "cd": "tesis-frontend-cd",
+              "pr": 78,
+              "pr_created_at": "2026-11-16T06:26:06Z",
+              "head": "d5d27757e09ec49cca0e6f662db1f60a2345707c",
+              "commit_dev": "800368109737f8bf43fc49b598db2e92d0790fdd",
+              "conflicto": "tag.json",
+              "hora": "2026-11-16T06:35:52Z",
+              "build_id": "tesis-fijo-desplegar-frontend:cd544376-70c9-4db0-a65d-6f53a78e9c31",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794811090.861
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "frontend": {
+                "pr": 83,
+                "hora": "2026-11-16T06:38:37Z",
+                "accion_pr": "merge",
+                "commit": "d732d26de6812db2f62c913fc70071ed8392f28f",
+                "conflicto": "sin_conflicto"
+              }
+            }
+          }
+        }
+      },
+      "limpieza": {
+        "hora": "2026-11-16T06:45:53Z",
+        "ramas_cd": [
+          "tesis-frontend-cd"
+        ],
+        "app": [
+          {
+            "repo": "tesis-frontend",
+            "pr": 26
+          }
+        ]
+      },
+      "expirada": null,
+      "resultado_cierre": "integrada"
+    },
+    {
+      "n": 4,
+      "rama": "release/c35-4",
+      "tipo": "migracion",
+      "repos": [
+        "backend"
+      ],
+      "resultado_escenario": "integrada",
+      "apertura": "2026-11-16T06:29:29Z",
+      "app_pr": {
+        "backend": {
+          "pr": 52,
+          "created_at": "2026-11-16T06:29:29Z"
+        }
+      },
+      "digest": {
+        "backend": "sha256:bc348446d8da24af2a47ff5a2b664a4d22c420111e8a85067e07c603f231b38a"
+      },
+      "modelos": {
+        "efimero": {
+          "validacion_final": {
+            "build_id": "tesis-efimero-desplegar-backend:0e749afe-ed29-41f1-a5bf-6bebafc0049b",
+            "repo": "backend",
+            "end": "2026-11-16T06:53:38Z",
+            "resultado": "ok",
+            "por_repo": {
+              "backend": {
+                "build_id": "tesis-efimero-desplegar-backend:0e749afe-ed29-41f1-a5bf-6bebafc0049b",
+                "end": "2026-11-16T06:53:38Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 1449.5,
+          "validaciones": [
+            {
+              "repo": "backend",
+              "build_id": "tesis-efimero-desplegar-backend:83ca3db3-c3e6-4afe-be7c-7cbb66f0189e",
+              "digest": "sha256:66c848a4461fc25ec868205915ec737be4aa763c882fffc48873fed39f580ba8",
+              "start": "2026-11-16T06:31:02Z",
+              "end": "2026-11-16T06:42:07Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            },
+            {
+              "repo": "backend",
+              "build_id": "tesis-efimero-desplegar-backend:02b6755b-8dbd-4407-87c7-c649648d553f",
+              "digest": "sha256:e9e19efcc3cb9de65abf5a8d907d5ef7abd404dd141668681732ade64670cac3",
+              "start": "2026-11-16T06:33:24Z",
+              "end": "2026-11-16T06:47:56Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            },
+            {
+              "repo": "backend",
+              "build_id": "tesis-efimero-desplegar-backend:0e749afe-ed29-41f1-a5bf-6bebafc0049b",
+              "digest": "sha256:bc348446d8da24af2a47ff5a2b664a4d22c420111e8a85067e07c603f231b38a",
+              "start": "2026-11-16T06:38:42Z",
+              "end": "2026-11-16T06:53:38Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "backend": {
+                "fase": "hecho",
+                "pr": 180,
+                "t_accion": 1794812046.235723,
+                "accion_pr": "merge",
+                "commit": "fbfd21829bc79608f8af91e3a6666439f8a84576",
+                "conflicto": "sin_conflicto",
+                "build_id": "tesis-efimero-cerrar-backend:a3aa3548-836b-44b8-8499-f11123bd0b0e",
+                "via": "webhook",
+                "status": "SUCCEEDED",
+                "end": 1794812393.342,
+                "accion": "destruir",
+                "resultado": "ok",
+                "otra_rama_existe": false,
+                "cierre_resultado": "integrada"
+              }
+            },
+            "manual_extra": null,
+            "destruccion": {
+              "via": "webhook",
+              "build_id": "tesis-efimero-cerrar-backend:a3aa3548-836b-44b8-8499-f11123bd0b0e",
+              "end": 1794812393.342,
+              "resultado": "ok",
+              "motivo_manual": null
+            }
+          }
+        },
+        "fijo": {
+          "validacion_final": {
+            "build_id": "tesis-fijo-desplegar-backend:5451e902-536c-41d1-ac4c-2b2475acf5a1",
+            "repo": "backend",
+            "end": "2026-11-16T06:52:14Z",
+            "resultado": "ok",
+            "por_repo": {
+              "backend": {
+                "build_id": "tesis-fijo-desplegar-backend:5451e902-536c-41d1-ac4c-2b2475acf5a1",
+                "end": "2026-11-16T06:52:14Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 1365.5,
+          "validaciones": [
+            {
+              "repo": "backend",
+              "build_id": "tesis-fijo-desplegar-backend:b38f3281-3c94-4a8e-9565-edcf611d5e01",
+              "digest": "sha256:e9e19efcc3cb9de65abf5a8d907d5ef7abd404dd141668681732ade64670cac3",
+              "start": "2026-11-16T06:38:34Z",
+              "end": "2026-11-16T06:44:12Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            },
+            {
+              "repo": "backend",
+              "build_id": "tesis-fijo-desplegar-backend:5451e902-536c-41d1-ac4c-2b2475acf5a1",
+              "digest": "sha256:bc348446d8da24af2a47ff5a2b664a4d22c420111e8a85067e07c603f231b38a",
+              "start": "2026-11-16T06:46:56Z",
+              "end": "2026-11-16T06:52:14Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            }
+          ],
+          "integraciones": [
+            {
+              "version": "c35-4",
+              "rama": "release/c35-4",
+              "repo": "backend",
+              "cd": "tesis-backend-cd",
+              "pr": 175,
+              "pr_created_at": "2026-11-16T06:31:02Z",
+              "head": "dc551e3ab2112fa2ecdfe3d79ddc1f1dcc652e34",
+              "commit_dev": "896b0d7f0f57cf8074b845dd39317fdafc0d2235",
+              "conflicto": "tag.json",
+              "hora": "2026-11-16T06:38:33Z",
+              "build_id": "tesis-fijo-desplegar-backend:b38f3281-3c94-4a8e-9565-edcf611d5e01",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794811452.176
+            },
+            {
+              "version": "c35-4",
+              "rama": "release/c35-4",
+              "repo": "backend",
+              "cd": "tesis-backend-cd",
+              "pr": 178,
+              "pr_created_at": "2026-11-16T06:38:43Z",
+              "head": "f1aecc8ba7826c0c169954b4ad3d5b0a45f2f55b",
+              "commit_dev": "f6309eb73f302c0244e4c320cb801dcb73bf2bbf",
+              "conflicto": "sin_conflicto",
+              "hora": "2026-11-16T06:46:55Z",
+              "build_id": "tesis-fijo-desplegar-backend:5451e902-536c-41d1-ac4c-2b2475acf5a1",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794811934.453
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "backend": {
+                "pr": 179,
+                "hora": "2026-11-16T06:52:33Z",
+                "accion_pr": "merge",
+                "commit": "ea12b2c898a9b19f737f86755ae78319848ff6c4",
+                "conflicto": "sin_conflicto"
+              }
+            }
+          }
+        }
+      },
+      "limpieza": {
+        "hora": "2026-11-16T07:00:00Z",
+        "ramas_cd": [
+          "tesis-backend-cd"
+        ],
+        "app": [
+          {
+            "repo": "tesis-backend",
+            "pr": 52
+          }
+        ]
+      },
+      "expirada": null,
+      "resultado_cierre": "integrada"
+    },
+    {
+      "n": 5,
+      "rama": "release/c35-5",
+      "tipo": "solo_frontend",
+      "repos": [
+        "frontend"
+      ],
+      "resultado_escenario": "declinada",
+      "apertura": "2026-11-16T06:31:02Z",
+      "app_pr": {
+        "frontend": {
+          "pr": 27,
+          "created_at": "2026-11-16T06:31:02Z"
+        }
+      },
+      "digest": {
+        "frontend": "sha256:69432e3ecac8d998d1cf3fd3c8a9c12906ebdaa3a6209b9776bc3218d05ad964"
+      },
+      "modelos": {
+        "efimero": {
+          "validacion_final": {
+            "build_id": "tesis-efimero-desplegar-frontend:1543c78f-ef6c-4eef-a5b6-cf5b9748181b",
+            "repo": "frontend",
+            "end": "2026-11-16T06:39:38Z",
+            "resultado": "ok",
+            "por_repo": {
+              "frontend": {
+                "build_id": "tesis-efimero-desplegar-frontend:1543c78f-ef6c-4eef-a5b6-cf5b9748181b",
+                "end": "2026-11-16T06:39:38Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 516.8,
+          "validaciones": [
+            {
+              "repo": "frontend",
+              "build_id": "tesis-efimero-desplegar-frontend:1543c78f-ef6c-4eef-a5b6-cf5b9748181b",
+              "digest": "sha256:69432e3ecac8d998d1cf3fd3c8a9c12906ebdaa3a6209b9776bc3218d05ad964",
+              "start": "2026-11-16T06:31:42Z",
+              "end": "2026-11-16T06:39:38Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": "ok"
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "frontend": {
+                "fase": "hecho",
+                "pr": 84,
+                "t_accion": 1794811199.248899,
+                "accion_pr": "close",
+                "build_id": "tesis-efimero-cerrar-frontend:a5a699ea-bff2-4240-973f-19861636094f",
+                "via": "webhook",
+                "status": "SUCCEEDED",
+                "end": 1794811534.177,
+                "accion": "destruir",
+                "resultado": "ok",
+                "otra_rama_existe": false,
+                "cierre_resultado": "declinada"
+              }
+            },
+            "manual_extra": null,
+            "destruccion": {
+              "via": "webhook",
+              "build_id": "tesis-efimero-cerrar-frontend:a5a699ea-bff2-4240-973f-19861636094f",
+              "end": 1794811534.177,
+              "resultado": "ok",
+              "motivo_manual": null
+            }
+          }
+        },
+        "fijo": {
+          "validacion_final": {
+            "build_id": "tesis-fijo-desplegar-frontend:b3a30bae-b6d3-45e6-818d-afa8fba668f3",
+            "repo": "frontend",
+            "end": "2026-11-16T06:46:47Z",
+            "resultado": "ok",
+            "por_repo": {
+              "frontend": {
+                "build_id": "tesis-fijo-desplegar-frontend:b3a30bae-b6d3-45e6-818d-afa8fba668f3",
+                "end": "2026-11-16T06:46:47Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 945.4,
+          "validaciones": [
+            {
+              "repo": "frontend",
+              "build_id": "tesis-fijo-desplegar-frontend:b3a30bae-b6d3-45e6-818d-afa8fba668f3",
+              "digest": "sha256:69432e3ecac8d998d1cf3fd3c8a9c12906ebdaa3a6209b9776bc3218d05ad964",
+              "start": "2026-11-16T06:44:31Z",
+              "end": "2026-11-16T06:46:47Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            }
+          ],
+          "integraciones": [
+            {
+              "version": "c35-5",
+              "rama": "release/c35-5",
+              "repo": "frontend",
+              "cd": "tesis-frontend-cd",
+              "pr": 81,
+              "pr_created_at": "2026-11-16T06:31:43Z",
+              "head": "8e20e413e8765d4d069f86b58960ffb9c6f17387",
+              "commit_dev": "ec5ff7c2ffaf4ad96151d48e8bcf31bac7cfbf87",
+              "conflicto": "tag.json",
+              "hora": "2026-11-16T06:44:30Z",
+              "build_id": "tesis-fijo-desplegar-frontend:b3a30bae-b6d3-45e6-818d-afa8fba668f3",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794811607.393
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "frontend": {
+                "pr": 85,
+                "hora": "2026-11-16T06:46:58Z",
+                "accion_pr": "close"
+              }
+            }
+          }
+        }
+      },
+      "limpieza": {
+        "hora": "2026-11-16T06:47:00Z",
+        "ramas_cd": [
+          "tesis-frontend-cd"
+        ],
+        "app": [
+          {
+            "repo": "tesis-frontend",
+            "pr": 27
+          }
+        ]
+      },
+      "expirada": null,
+      "resultado_cierre": "declinada"
+    }
+  ],
+  "merged": [
+    {
+      "repo_gh": "tesis-frontend-cd",
+      "pr": 75,
+      "base": "dev",
+      "rama": "release/c35-1",
+      "desde": 1794809410.0989802,
+      "integracion": 0,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:10:23Z"
+    },
+    {
+      "repo_gh": "tesis-backend-cd",
+      "pr": 170,
+      "base": "dev",
+      "rama": "release/c35-1",
+      "desde": 1794809559.8107479,
+      "integracion": 1,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:12:49Z"
+    },
+    {
+      "repo_gh": "tesis-frontend-cd",
+      "pr": 76,
+      "base": "dev",
+      "rama": "release/c35-1",
+      "desde": 1794809939.382071,
+      "integracion": 2,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:19:09Z"
+    },
+    {
+      "repo_gh": "tesis-backend-cd",
+      "pr": 171,
+      "base": "dev",
+      "rama": "release/c35-2",
+      "desde": 1794810090.031807,
+      "integracion": 3,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:21:41Z"
+    },
+    {
+      "repo_gh": "tesis-frontend-cd",
+      "pr": 77,
+      "base": "dev",
+      "rama": "release/c35-1",
+      "desde": 1794810448.900876,
+      "integracion": 4,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:27:37Z"
+    },
+    {
+      "repo_gh": "tesis-backend-cd",
+      "pr": 172,
+      "base": "dev",
+      "rama": "release/c35-2",
+      "desde": 1794810605.324803,
+      "integracion": 5,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:30:15Z"
+    },
+    {
+      "repo_gh": "tesis-frontend-cd",
+      "pr": 82,
+      "base": "main-efimero",
+      "rama": "release/c35-3",
+      "desde": 1794810832.6332538,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:34:03Z"
+    },
+    {
+      "repo_gh": "tesis-frontend-cd",
+      "pr": 78,
+      "base": "dev",
+      "rama": "release/c35-3",
+      "desde": 1794810952.5396008,
+      "integracion": 6,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:35:58Z"
+    },
+    {
+      "repo_gh": "tesis-backend-cd",
+      "pr": 175,
+      "base": "dev",
+      "rama": "release/c35-4",
+      "desde": 1794811113.625925,
+      "integracion": 7,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:38:41Z"
+    },
+    {
+      "repo_gh": "tesis-frontend-cd",
+      "pr": 83,
+      "base": "main-fijo",
+      "rama": "release/c35-3",
+      "desde": 1794811121.220261,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:38:55Z"
+    },
+    {
+      "repo_gh": "tesis-frontend-cd",
+      "pr": 81,
+      "base": "dev",
+      "rama": "release/c35-5",
+      "desde": 1794811470.827667,
+      "integracion": 8,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:44:39Z"
+    },
+    {
+      "repo_gh": "tesis-backend-cd",
+      "pr": 178,
+      "base": "dev",
+      "rama": "release/c35-4",
+      "desde": 1794811615.688163,
+      "integracion": 9,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:47:00Z"
+    },
+    {
+      "repo_gh": "tesis-backend-cd",
+      "pr": 179,
+      "base": "main-fijo",
+      "rama": "release/c35-4",
+      "desde": 1794811956.050868,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:52:44Z"
+    },
+    {
+      "repo_gh": "tesis-backend-cd",
+      "pr": 180,
+      "base": "main-efimero",
+      "rama": "release/c35-4",
+      "desde": 1794812046.2357178,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T06:54:15Z"
+    }
+  ],
+  "integraciones_fijo": [
+    {
+      "version": "c35-1",
+      "rama": "release/c35-1",
+      "repo": "frontend",
+      "cd": "tesis-frontend-cd",
+      "pr": 75,
+      "pr_created_at": "2026-11-16T06:10:01Z",
+      "head": "c5a4af0261b2ad520ba936c41c8c28047cb79709",
+      "commit_dev": "4052dfbcbe204d4c45db14178c7c528d1d0ba976",
+      "conflicto": "sin_conflicto",
+      "hora": "2026-11-16T06:10:10Z",
+      "build_id": "tesis-fijo-desplegar-frontend:289428b8-3f6b-453d-823b-5e885605465a",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794809547.077
+    },
+    {
+      "version": "c35-1",
+      "rama": "release/c35-1",
+      "repo": "backend",
+      "cd": "tesis-backend-cd",
+      "pr": 170,
+      "pr_created_at": "2026-11-16T06:10:32Z",
+      "head": "25c180062a08faa45f75a6fd4e9ad7daf21d709f",
+      "commit_dev": "da9981272b50a29658204da86891dfce504f311a",
+      "conflicto": "sin_conflicto",
+      "hora": "2026-11-16T06:12:39Z",
+      "build_id": "tesis-fijo-desplegar-backend:833ef6c5-52f6-413d-b699-a3e4ce073b6c",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794809916.162
+    },
+    {
+      "version": "c35-1",
+      "rama": "release/c35-1",
+      "repo": "frontend",
+      "cd": "tesis-frontend-cd",
+      "pr": 76,
+      "pr_created_at": "2026-11-16T06:15:34Z",
+      "head": "fb80e76b371ce9302ca8ac8e070ee54a0f775e73",
+      "commit_dev": "ad62d8fdfbf526984a479a83ba66eff62eb8d384",
+      "conflicto": "sin_conflicto",
+      "hora": "2026-11-16T06:18:59Z",
+      "build_id": "tesis-fijo-desplegar-frontend:5e3e7f4c-937b-42a0-8393-29dde34fc3e2",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794810081.217
+    },
+    {
+      "version": "c35-2",
+      "rama": "release/c35-2",
+      "repo": "backend",
+      "cd": "tesis-backend-cd",
+      "pr": 171,
+      "pr_created_at": "2026-11-16T06:19:57Z",
+      "head": "931f2a73eb3d882654475d90a96363192e368889",
+      "commit_dev": "58ab4e8f1d962f696788a181dbf52640f83adacd",
+      "conflicto": "tag.json",
+      "hora": "2026-11-16T06:21:30Z",
+      "build_id": "tesis-fijo-desplegar-backend:be1cd559-44e3-4966-b641-fde3fdb6319a",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794810432.811
+    },
+    {
+      "version": "c35-1",
+      "rama": "release/c35-1",
+      "repo": "frontend",
+      "cd": "tesis-frontend-cd",
+      "pr": 77,
+      "pr_created_at": "2026-11-16T06:21:37Z",
+      "head": "ad0f4e0f432ace424021a560c44628d7f9cdbd24",
+      "commit_dev": "401b217c202ee1f1d30b5c128a824eae504a2844",
+      "conflicto": "sin_conflicto",
+      "hora": "2026-11-16T06:27:28Z",
+      "build_id": "tesis-fijo-desplegar-frontend:93f741a6-9778-4c92-9f2f-8412c656a907",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794810587.497
+    },
+    {
+      "version": "c35-2",
+      "rama": "release/c35-2",
+      "repo": "backend",
+      "cd": "tesis-backend-cd",
+      "pr": 172,
+      "pr_created_at": "2026-11-16T06:22:14Z",
+      "head": "08c7265a344970676bbc8d5a2d908b4a800a39df",
+      "commit_dev": "55c8ced85934462fd0896c334b38d2912a5554e1",
+      "conflicto": "sin_conflicto",
+      "hora": "2026-11-16T06:30:05Z",
+      "build_id": "tesis-fijo-desplegar-backend:27595be7-f225-4a79-96d5-e8b145239ffb",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794810935.427
+    },
+    {
+      "version": "c35-3",
+      "rama": "release/c35-3",
+      "repo": "frontend",
+      "cd": "tesis-frontend-cd",
+      "pr": 78,
+      "pr_created_at": "2026-11-16T06:26:06Z",
+      "head": "d5d27757e09ec49cca0e6f662db1f60a2345707c",
+      "commit_dev": "800368109737f8bf43fc49b598db2e92d0790fdd",
+      "conflicto": "tag.json",
+      "hora": "2026-11-16T06:35:52Z",
+      "build_id": "tesis-fijo-desplegar-frontend:cd544376-70c9-4db0-a65d-6f53a78e9c31",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794811090.861
+    },
+    {
+      "version": "c35-4",
+      "rama": "release/c35-4",
+      "repo": "backend",
+      "cd": "tesis-backend-cd",
+      "pr": 175,
+      "pr_created_at": "2026-11-16T06:31:02Z",
+      "head": "dc551e3ab2112fa2ecdfe3d79ddc1f1dcc652e34",
+      "commit_dev": "896b0d7f0f57cf8074b845dd39317fdafc0d2235",
+      "conflicto": "tag.json",
+      "hora": "2026-11-16T06:38:33Z",
+      "build_id": "tesis-fijo-desplegar-backend:b38f3281-3c94-4a8e-9565-edcf611d5e01",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794811452.176
+    },
+    {
+      "version": "c35-5",
+      "rama": "release/c35-5",
+      "repo": "frontend",
+      "cd": "tesis-frontend-cd",
+      "pr": 81,
+      "pr_created_at": "2026-11-16T06:31:43Z",
+      "head": "8e20e413e8765d4d069f86b58960ffb9c6f17387",
+      "commit_dev": "ec5ff7c2ffaf4ad96151d48e8bcf31bac7cfbf87",
+      "conflicto": "tag.json",
+      "hora": "2026-11-16T06:44:30Z",
+      "build_id": "tesis-fijo-desplegar-frontend:b3a30bae-b6d3-45e6-818d-afa8fba668f3",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794811607.393
+    },
+    {
+      "version": "c35-4",
+      "rama": "release/c35-4",
+      "repo": "backend",
+      "cd": "tesis-backend-cd",
+      "pr": 178,
+      "pr_created_at": "2026-11-16T06:38:43Z",
+      "head": "f1aecc8ba7826c0c169954b4ad3d5b0a45f2f55b",
+      "commit_dev": "f6309eb73f302c0244e4c320cb801dcb73bf2bbf",
+      "conflicto": "sin_conflicto",
+      "hora": "2026-11-16T06:46:55Z",
+      "build_id": "tesis-fijo-desplegar-backend:5451e902-536c-41d1-ac4c-2b2475acf5a1",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794811934.453
+    }
+  ],
+  "expiracion_seg": 345600,
+  "depurador": {
+    "inicio": "2026-11-16T07:00:04Z",
+    "encontrados": [],
+    "acciones": [],
+    "restantes": [],
+    "fin": "2026-11-16T07:00:32Z"
+  },
+  "cierre": {
+    "valida": true,
+    "motivos": []
+  },
+  "protocolo": "7af3ca58ce7e0765bc1704cc958ab0b4cd82637861d893616ec66f150160d5b7",
+  "protocolo_verificacion": {
+    "hora": "2026-11-16T05:57:11Z",
+    "manifiesto": "protocolo-v1",
+    "huella": "7af3ca58ce7e0765bc1704cc958ab0b4cd82637861d893616ec66f150160d5b7",
+    "diferencias": []
+  }
+}
