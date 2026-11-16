@@ -1,0 +1,456 @@
+{
+  "corrida": "c24",
+  "semilla": 538552,
+  "nivel": 3,
+  "simulada": false,
+  "inicio": "2026-11-16T00:47:24Z",
+  "t0": "2026-11-16T00:58:49Z",
+  "fin": "2026-11-16T01:09:02Z",
+  "resultado": "invalida",
+  "motivo": "falló git push --quiet origin HEAD:refs/heads/dev: fatal: unable to access 'https://github.com/tesis-entornos/tesis-frontend-cd.git/': The requested URL returned error: 503",
+  "eventos": [
+    {
+      "n": 1,
+      "t": 0,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 0,
+      "estado": "unico_ok",
+      "commit": "2b95f7ae287772fb6acd1afa0cb34d5b91c31441",
+      "despachado": "2026-11-16T00:59:04Z",
+      "retraso": 15,
+      "unico": {
+        "build_id": "tesis-build-backend:b9cb0c8b-9f97-4e3d-a20f-7771554a32ca",
+        "status": "SUCCEEDED",
+        "start": 1794790745.406,
+        "end": 1794790834.693
+      },
+      "digest": "sha256:ef7c227d9de2382851264aed8ce825e17782ca7ccbda32bef3f71f1d68ce7a78"
+    },
+    {
+      "n": 2,
+      "t": 558,
+      "repo": "frontend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 1,
+      "estado": "unico_ok",
+      "commit": "0cb32ce01dcdfaa7f4f102f0aad2a46ff3e908aa",
+      "despachado": "2026-11-16T01:08:16Z",
+      "retraso": 9,
+      "unico": {
+        "build_id": "tesis-build-frontend:870a40c5-3d55-4d24-8202-b79ad3ac7a0c",
+        "status": "SUCCEEDED",
+        "start": 1794791297.972,
+        "end": 1794791332.896
+      },
+      "digest": "sha256:fd22555f4a0fbd41350144f12120b6390326c3360f0ad54bd66b1f6b32eb30ec"
+    },
+    {
+      "n": 3,
+      "t": 847,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 2,
+      "estado": "pendiente"
+    },
+    {
+      "n": 2,
+      "t": 1069,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0,
+      "i": 3,
+      "estado": "pendiente"
+    }
+  ],
+  "versiones": [
+    {
+      "n": 1,
+      "rama": "release/c24-1",
+      "tipo": "migracion",
+      "repos": [
+        "backend"
+      ],
+      "resultado_escenario": "declinada",
+      "apertura": "2026-11-16T00:59:03Z",
+      "app_pr": {
+        "backend": {
+          "pr": 33,
+          "created_at": "2026-11-16T00:59:03Z"
+        }
+      },
+      "digest": {
+        "backend": "sha256:ef7c227d9de2382851264aed8ce825e17782ca7ccbda32bef3f71f1d68ce7a78"
+      },
+      "modelos": {
+        "efimero": {
+          "validacion_final": null,
+          "tiempo_validacion_seg": null,
+          "validaciones": [],
+          "cierre": {
+            "estado": "pendiente",
+            "repos": {},
+            "manual_extra": null,
+            "destruccion": null
+          }
+        },
+        "fijo": {
+          "validacion_final": {
+            "build_id": "tesis-fijo-desplegar-backend:46116598-1e04-4d26-ac87-bd42d9ab3baa",
+            "repo": "backend",
+            "end": "2026-11-16T01:06:32Z",
+            "resultado": "ok",
+            "por_repo": {
+              "backend": {
+                "build_id": "tesis-fijo-desplegar-backend:46116598-1e04-4d26-ac87-bd42d9ab3baa",
+                "end": "2026-11-16T01:06:32Z",
+                "resultado": "ok"
+              }
+            }
+          },
+          "tiempo_validacion_seg": 449.3,
+          "validaciones": [
+            {
+              "repo": "backend",
+              "build_id": "tesis-fijo-desplegar-backend:46116598-1e04-4d26-ac87-bd42d9ab3baa",
+              "digest": "sha256:ef7c227d9de2382851264aed8ce825e17782ca7ccbda32bef3f71f1d68ce7a78",
+              "start": "2026-11-16T01:00:48Z",
+              "end": "2026-11-16T01:06:32Z",
+              "status": "SUCCEEDED",
+              "resultado": "ok",
+              "detalle": {
+                "build_ok": true,
+                "despliegue": "ok",
+                "espera": "ok",
+                "suite": "ok"
+              }
+            }
+          ],
+          "integraciones": [
+            {
+              "version": "c24-1",
+              "rama": "release/c24-1",
+              "repo": "backend",
+              "cd": "tesis-backend-cd",
+              "pr": 116,
+              "pr_created_at": "2026-11-16T01:00:33Z",
+              "head": "46cb10e22a568905388201944ad8726fbbb583fe",
+              "commit_dev": "73830f0af803dab70593500caba2e13f1661f124",
+              "conflicto": "sin_conflicto",
+              "hora": "2026-11-16T01:00:48Z",
+              "build_id": "tesis-fijo-desplegar-backend:46116598-1e04-4d26-ac87-bd42d9ab3baa",
+              "pr_merged": true,
+              "build_status": "SUCCEEDED",
+              "build_end": 1794791192.335
+            }
+          ],
+          "cierre": {
+            "estado": "hecho",
+            "repos": {
+              "backend": {
+                "pr": 117,
+                "hora": "2026-11-16T01:06:46Z",
+                "accion_pr": "close"
+              }
+            }
+          }
+        }
+      },
+      "limpieza": null,
+      "expirada": null,
+      "resultado_cierre": "declinada"
+    },
+    {
+      "n": 2,
+      "rama": "release/c24-2",
+      "tipo": "combinacion",
+      "repos": [
+        "backend",
+        "frontend"
+      ],
+      "resultado_escenario": "declinada",
+      "apertura": "2026-11-16T01:08:15Z",
+      "app_pr": {
+        "frontend": {
+          "pr": 14,
+          "created_at": "2026-11-16T01:08:15Z"
+        }
+      },
+      "digest": {
+        "frontend": "sha256:fd22555f4a0fbd41350144f12120b6390326c3360f0ad54bd66b1f6b32eb30ec"
+      },
+      "modelos": {
+        "efimero": {
+          "validacion_final": null,
+          "tiempo_validacion_seg": null,
+          "validaciones": [],
+          "cierre": {
+            "estado": "pendiente",
+            "repos": {},
+            "manual_extra": null,
+            "destruccion": null
+          }
+        },
+        "fijo": {
+          "validacion_final": null,
+          "tiempo_validacion_seg": null,
+          "validaciones": [],
+          "integraciones": [],
+          "cierre": {
+            "estado": "pendiente",
+            "repos": {}
+          }
+        }
+      },
+      "limpieza": null,
+      "expirada": null,
+      "resultado_cierre": "declinada"
+    },
+    {
+      "n": 3,
+      "rama": "release/c24-3",
+      "tipo": "solo_backend",
+      "repos": [
+        "backend"
+      ],
+      "resultado_escenario": "integrada",
+      "apertura": null,
+      "app_pr": {},
+      "digest": {},
+      "modelos": {
+        "efimero": {
+          "validacion_final": null,
+          "tiempo_validacion_seg": null,
+          "validaciones": [],
+          "cierre": {
+            "estado": "pendiente",
+            "repos": {},
+            "manual_extra": null,
+            "destruccion": null
+          }
+        },
+        "fijo": {
+          "validacion_final": null,
+          "tiempo_validacion_seg": null,
+          "validaciones": [],
+          "integraciones": [],
+          "cierre": {
+            "estado": "pendiente",
+            "repos": {}
+          }
+        }
+      },
+      "limpieza": null,
+      "expirada": null,
+      "resultado_cierre": "integrada"
+    }
+  ],
+  "merged": [
+    {
+      "repo_gh": "tesis-backend-cd",
+      "pr": 116,
+      "base": "dev",
+      "rama": "release/c24-1",
+      "desde": 1794790848.430816,
+      "integracion": 0,
+      "merged": true,
+      "state": "MERGED",
+      "verificado": "2026-11-16T01:00:56Z"
+    }
+  ],
+  "integraciones_fijo": [
+    {
+      "version": "c24-1",
+      "rama": "release/c24-1",
+      "repo": "backend",
+      "cd": "tesis-backend-cd",
+      "pr": 116,
+      "pr_created_at": "2026-11-16T01:00:33Z",
+      "head": "46cb10e22a568905388201944ad8726fbbb583fe",
+      "commit_dev": "73830f0af803dab70593500caba2e13f1661f124",
+      "conflicto": "sin_conflicto",
+      "hora": "2026-11-16T01:00:48Z",
+      "build_id": "tesis-fijo-desplegar-backend:46116598-1e04-4d26-ac87-bd42d9ab3baa",
+      "pr_merged": true,
+      "build_status": "SUCCEEDED",
+      "build_end": 1794791192.335
+    }
+  ],
+  "expiracion_seg": 345600,
+  "depurador": {
+    "inicio": "2026-11-16T01:09:02Z",
+    "encontrados": [
+      {
+        "tipo": "servicio",
+        "nombre": "efimero-release-c24-1-backend",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "disponible",
+        "clave": "entornos/release-c24-1/disponible.json",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "regla_alb",
+        "prioridad": "10",
+        "hosts": [
+          "release-c24-1-origin.efimero.tesis-entornos.click"
+        ]
+      },
+      {
+        "tipo": "cloudfront",
+        "arn": "arn:aws:cloudfront::398846004421:distribution/E39WY11QJ9TE56",
+        "corrida": "c24",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-backend",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-backend",
+        "numero": 33,
+        "head": "release/c24-1",
+        "base": "main"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-frontend",
+        "rama": "release/c24-2"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-frontend",
+        "numero": 14,
+        "head": "release/c24-2",
+        "base": "main"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-backend-cd",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-frontend-cd",
+        "rama": "release/c24-2"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-frontend-cd",
+        "numero": 43,
+        "head": "release/c24-2",
+        "base": "dev"
+      },
+      {
+        "tipo": "build",
+        "id": "tesis-efimero-desplegar-backend:9cc85d94-7501-4133-a6c4-272d89a6972c"
+      },
+      {
+        "tipo": "build",
+        "id": "tesis-efimero-desplegar-frontend:2d4132ea-04c1-47a4-bcba-8f0f5d63e426"
+      }
+    ],
+    "acciones": [],
+    "restantes": [
+      {
+        "tipo": "servicio",
+        "nombre": "efimero-release-c24-1-backend",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "disponible",
+        "clave": "entornos/release-c24-1/disponible.json",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "regla_alb",
+        "prioridad": "10",
+        "hosts": [
+          "release-c24-1-origin.efimero.tesis-entornos.click"
+        ]
+      },
+      {
+        "tipo": "cloudfront",
+        "arn": "arn:aws:cloudfront::398846004421:distribution/E39WY11QJ9TE56",
+        "corrida": "c24",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-backend",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-backend",
+        "numero": 33,
+        "head": "release/c24-1",
+        "base": "main"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-frontend",
+        "rama": "release/c24-2"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-frontend",
+        "numero": 14,
+        "head": "release/c24-2",
+        "base": "main"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-backend-cd",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-frontend-cd",
+        "rama": "release/c24-2"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-frontend-cd",
+        "numero": 43,
+        "head": "release/c24-2",
+        "base": "dev"
+      },
+      {
+        "tipo": "build",
+        "id": "tesis-efimero-desplegar-backend:9cc85d94-7501-4133-a6c4-272d89a6972c"
+      },
+      {
+        "tipo": "build",
+        "id": "tesis-efimero-desplegar-frontend:2d4132ea-04c1-47a4-bcba-8f0f5d63e426"
+      }
+    ],
+    "fin": "2026-11-16T01:09:32Z"
+  },
+  "cierre": {
+    "valida": false,
+    "motivos": [
+      "corrida abortada: falló git push --quiet origin HEAD:refs/heads/dev: fatal: unable to access 'https://github.com/tesis-entornos/tesis-frontend-cd.git/': The requested URL returned error: 503",
+      "eventos sin despachar: c24-3 backend t=847, c24-2 backend t=1069",
+      "release/c24-1 sin validación final en efimero ni expiración",
+      "release/c24-2 sin validación final en efimero ni expiración",
+      "release/c24-2 sin validación final en fijo ni expiración",
+      "release/c24-3 sin validación final en efimero ni expiración",
+      "release/c24-3 sin validación final en fijo ni expiración",
+      "el depurador encontró 13 restos: build, cloudfront, disponible, pr, rama, regla_alb, servicio"
+    ]
+  },
+  "protocolo": "7af3ca58ce7e0765bc1704cc958ab0b4cd82637861d893616ec66f150160d5b7",
+  "protocolo_verificacion": {
+    "hora": "2026-11-16T00:47:32Z",
+    "manifiesto": "protocolo-v1",
+    "huella": "7af3ca58ce7e0765bc1704cc958ab0b4cd82637861d893616ec66f150160d5b7",
+    "diferencias": []
+  }
+}

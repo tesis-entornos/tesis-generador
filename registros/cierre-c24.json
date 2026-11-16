@@ -1,0 +1,333 @@
+{
+  "corrida": "c24",
+  "valida": false,
+  "motivos": [
+    "corrida abortada: falló git push --quiet origin HEAD:refs/heads/dev: fatal: unable to access 'https://github.com/tesis-entornos/tesis-frontend-cd.git/': The requested URL returned error: 503",
+    "eventos sin despachar: c24-3 backend t=847, c24-2 backend t=1069",
+    "release/c24-1 sin validación final en efimero ni expiración",
+    "release/c24-2 sin validación final en efimero ni expiración",
+    "release/c24-2 sin validación final en fijo ni expiración",
+    "release/c24-3 sin validación final en efimero ni expiración",
+    "release/c24-3 sin validación final en fijo ni expiración",
+    "el depurador encontró 13 restos: build, cloudfront, disponible, pr, rama, regla_alb, servicio"
+  ],
+  "nota_depurador": null,
+  "depurador": {
+    "inicio": "2026-11-16T01:09:02Z",
+    "encontrados": [
+      {
+        "tipo": "servicio",
+        "nombre": "efimero-release-c24-1-backend",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "disponible",
+        "clave": "entornos/release-c24-1/disponible.json",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "regla_alb",
+        "prioridad": "10",
+        "hosts": [
+          "release-c24-1-origin.efimero.tesis-entornos.click"
+        ]
+      },
+      {
+        "tipo": "cloudfront",
+        "arn": "arn:aws:cloudfront::398846004421:distribution/E39WY11QJ9TE56",
+        "corrida": "c24",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-backend",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-backend",
+        "numero": 33,
+        "head": "release/c24-1",
+        "base": "main"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-frontend",
+        "rama": "release/c24-2"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-frontend",
+        "numero": 14,
+        "head": "release/c24-2",
+        "base": "main"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-backend-cd",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-frontend-cd",
+        "rama": "release/c24-2"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-frontend-cd",
+        "numero": 43,
+        "head": "release/c24-2",
+        "base": "dev"
+      },
+      {
+        "tipo": "build",
+        "id": "tesis-efimero-desplegar-backend:9cc85d94-7501-4133-a6c4-272d89a6972c"
+      },
+      {
+        "tipo": "build",
+        "id": "tesis-efimero-desplegar-frontend:2d4132ea-04c1-47a4-bcba-8f0f5d63e426"
+      }
+    ],
+    "acciones": [],
+    "restantes": [
+      {
+        "tipo": "servicio",
+        "nombre": "efimero-release-c24-1-backend",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "disponible",
+        "clave": "entornos/release-c24-1/disponible.json",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "regla_alb",
+        "prioridad": "10",
+        "hosts": [
+          "release-c24-1-origin.efimero.tesis-entornos.click"
+        ]
+      },
+      {
+        "tipo": "cloudfront",
+        "arn": "arn:aws:cloudfront::398846004421:distribution/E39WY11QJ9TE56",
+        "corrida": "c24",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-backend",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-backend",
+        "numero": 33,
+        "head": "release/c24-1",
+        "base": "main"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-frontend",
+        "rama": "release/c24-2"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-frontend",
+        "numero": 14,
+        "head": "release/c24-2",
+        "base": "main"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-backend-cd",
+        "rama": "release/c24-1"
+      },
+      {
+        "tipo": "rama",
+        "repo": "tesis-frontend-cd",
+        "rama": "release/c24-2"
+      },
+      {
+        "tipo": "pr",
+        "repo": "tesis-frontend-cd",
+        "numero": 43,
+        "head": "release/c24-2",
+        "base": "dev"
+      },
+      {
+        "tipo": "build",
+        "id": "tesis-efimero-desplegar-backend:9cc85d94-7501-4133-a6c4-272d89a6972c"
+      },
+      {
+        "tipo": "build",
+        "id": "tesis-efimero-desplegar-frontend:2d4132ea-04c1-47a4-bcba-8f0f5d63e426"
+      }
+    ],
+    "fin": "2026-11-16T01:09:32Z"
+  },
+  "versiones": [
+    {
+      "corrida": "c24",
+      "nivel": 3,
+      "semilla": 538552,
+      "n": 1,
+      "rama": "release/c24-1",
+      "tipo": "migracion",
+      "resultado_escenario": "declinada",
+      "modelo": "efimero",
+      "t_apertura": "2026-11-16T00:59:03Z",
+      "t_fin_validacion_final": null,
+      "tiempo_validacion_s": null,
+      "resultado_validacion_final": null,
+      "validaciones": 0,
+      "espera_fijo_s": null,
+      "aprovisionamiento_s": null,
+      "flaky": 0,
+      "unexpected": 0,
+      "expirada": false,
+      "build_final": null
+    },
+    {
+      "corrida": "c24",
+      "nivel": 3,
+      "semilla": 538552,
+      "n": 1,
+      "rama": "release/c24-1",
+      "tipo": "migracion",
+      "resultado_escenario": "declinada",
+      "modelo": "fijo",
+      "t_apertura": "2026-11-16T00:59:03Z",
+      "t_fin_validacion_final": "2026-11-16T01:06:32Z",
+      "tiempo_validacion_s": 449.3,
+      "resultado_validacion_final": "ok",
+      "validaciones": 1,
+      "espera_fijo_s": 15.0,
+      "aprovisionamiento_s": null,
+      "flaky": 0,
+      "unexpected": 0,
+      "expirada": false,
+      "build_final": "tesis-fijo-desplegar-backend:46116598-1e04-4d26-ac87-bd42d9ab3baa"
+    },
+    {
+      "corrida": "c24",
+      "nivel": 3,
+      "semilla": 538552,
+      "n": 2,
+      "rama": "release/c24-2",
+      "tipo": "combinacion",
+      "resultado_escenario": "declinada",
+      "modelo": "efimero",
+      "t_apertura": "2026-11-16T01:08:15Z",
+      "t_fin_validacion_final": null,
+      "tiempo_validacion_s": null,
+      "resultado_validacion_final": null,
+      "validaciones": 0,
+      "espera_fijo_s": null,
+      "aprovisionamiento_s": null,
+      "flaky": 0,
+      "unexpected": 0,
+      "expirada": false,
+      "build_final": null
+    },
+    {
+      "corrida": "c24",
+      "nivel": 3,
+      "semilla": 538552,
+      "n": 2,
+      "rama": "release/c24-2",
+      "tipo": "combinacion",
+      "resultado_escenario": "declinada",
+      "modelo": "fijo",
+      "t_apertura": "2026-11-16T01:08:15Z",
+      "t_fin_validacion_final": null,
+      "tiempo_validacion_s": null,
+      "resultado_validacion_final": null,
+      "validaciones": 0,
+      "espera_fijo_s": 0,
+      "aprovisionamiento_s": null,
+      "flaky": 0,
+      "unexpected": 0,
+      "expirada": false,
+      "build_final": null
+    },
+    {
+      "corrida": "c24",
+      "nivel": 3,
+      "semilla": 538552,
+      "n": 3,
+      "rama": "release/c24-3",
+      "tipo": "solo_backend",
+      "resultado_escenario": "integrada",
+      "modelo": "efimero",
+      "t_apertura": null,
+      "t_fin_validacion_final": null,
+      "tiempo_validacion_s": null,
+      "resultado_validacion_final": null,
+      "validaciones": 0,
+      "espera_fijo_s": null,
+      "aprovisionamiento_s": null,
+      "flaky": 0,
+      "unexpected": 0,
+      "expirada": false,
+      "build_final": null
+    },
+    {
+      "corrida": "c24",
+      "nivel": 3,
+      "semilla": 538552,
+      "n": 3,
+      "rama": "release/c24-3",
+      "tipo": "solo_backend",
+      "resultado_escenario": "integrada",
+      "modelo": "fijo",
+      "t_apertura": null,
+      "t_fin_validacion_final": null,
+      "tiempo_validacion_s": null,
+      "resultado_validacion_final": null,
+      "validaciones": 0,
+      "espera_fijo_s": 0,
+      "aprovisionamiento_s": null,
+      "flaky": 0,
+      "unexpected": 0,
+      "expirada": false,
+      "build_final": null
+    }
+  ],
+  "corridas": [
+    {
+      "corrida": "c24",
+      "nivel": 3,
+      "semilla": 538552,
+      "modelo": "efimero",
+      "valida": false,
+      "motivo_invalidez": "corrida abortada: falló git push --quiet origin HEAD:refs/heads/dev: fatal: unable to access 'https://github.com/tesis-entornos/tesis-frontend-cd.git/': The requested URL returned error: 503; eventos sin despachar: c24-3 backend t=847, c24-2 backend t=1069; release/c24-1 sin validación final en efimero ni expiración; release/c24-2 sin validación final en efimero ni expiración; release/c24-2 sin validación final en fijo ni expiración; release/c24-3 sin validación final en efimero ni expiración; release/c24-3 sin validación final en fijo ni expiración; el depurador encontró 13 restos: build, cloudfront, disponible, pr, rama, regla_alb, servicio",
+      "versiones": 0,
+      "mediana_tiempo_validacion_s": null,
+      "p90_tiempo_validacion_s": null,
+      "versiones_por_hora": null,
+      "espera_acumulada_s": null,
+      "flaky_total": 0,
+      "inicio": "2026-11-16T00:58:49Z",
+      "fin": "2026-11-16T01:09:02Z",
+      "protocolo": "7af3ca58ce7e0765bc1704cc958ab0b4cd82637861d893616ec66f150160d5b7"
+    },
+    {
+      "corrida": "c24",
+      "nivel": 3,
+      "semilla": 538552,
+      "modelo": "fijo",
+      "valida": false,
+      "motivo_invalidez": "corrida abortada: falló git push --quiet origin HEAD:refs/heads/dev: fatal: unable to access 'https://github.com/tesis-entornos/tesis-frontend-cd.git/': The requested URL returned error: 503; eventos sin despachar: c24-3 backend t=847, c24-2 backend t=1069; release/c24-1 sin validación final en efimero ni expiración; release/c24-2 sin validación final en efimero ni expiración; release/c24-2 sin validación final en fijo ni expiración; release/c24-3 sin validación final en efimero ni expiración; release/c24-3 sin validación final en fijo ni expiración; el depurador encontró 13 restos: build, cloudfront, disponible, pr, rama, regla_alb, servicio",
+      "versiones": 1,
+      "mediana_tiempo_validacion_s": 449.3,
+      "p90_tiempo_validacion_s": 449.3,
+      "versiones_por_hora": 7.775,
+      "espera_acumulada_s": 15.0,
+      "flaky_total": 0,
+      "inicio": "2026-11-16T00:58:49Z",
+      "fin": "2026-11-16T01:09:02Z",
+      "protocolo": "7af3ca58ce7e0765bc1704cc958ab0b4cd82637861d893616ec66f150160d5b7"
+    }
+  ],
+  "hora": "2026-11-16T01:09:34Z"
+}

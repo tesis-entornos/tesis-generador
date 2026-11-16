@@ -1,0 +1,32 @@
+[2026-11-16T00:47:32Z] t  pre  protocolo protocolo-v1 verificado: huella 7af3ca58ce7e0765bc1704cc958ab0b4cd82637861d893616ec66f150160d5b7
+[2026-11-16T00:47:32Z] t  pre  reset.py
+[2026-11-16T00:58:50Z] t+00:01  t = 0 en 2026-11-16T00:58:49Z; 4 eventos, 3 versiones
+[2026-11-16T00:59:04Z] t+00:15  abrir release/c24-1 backend: PR #33 (2026-11-16T00:59:03Z), commit 2b95f7a
+[2026-11-16T01:00:43Z] t+01:54  build único b9cb0c8b release/c24-1 backend SUCCEEDED, tag 2b95f7a digest ef7c227d9de2
+[2026-11-16T01:00:48Z] t+01:59  fijo: integra release/c24-1 backend (PR #116, 2026-11-16T01:00:33Z) en dev -> 73830f0 (conflicto: sin_conflicto)
+[2026-11-16T01:00:56Z] t+02:07  fijo: build tesis-fijo-desplegar-backend:46116598-1e04-4d26-ac87-bd42d9ab3baa de la integración de release/c24-1 backend
+[2026-11-16T01:00:56Z] t+02:07  PR tesis-backend-cd#116 (release/c24-1 -> dev) marcado como merged
+[2026-11-16T01:06:42Z] t+07:53  validación fijo release/c24-1 backend 46116598 SUCCEEDED ok digest ef7c227d9de2 (343 s)
+[2026-11-16T01:06:42Z] t+07:53  fijo: build 46116598 terminó SUCCEEDED (343 s)
+[2026-11-16T01:06:43Z] t+07:54  VALIDACIÓN FINAL release/c24-1 fijo: tesis-fijo-desplegar-backend:46116598-1e04-4d26-ac87-bd42d9ab3baa ok fin 2026-11-16T01:06:32Z tiempo de validación 449 s
+[2026-11-16T01:06:48Z] t+07:59  cierre fijo release/c24-1 backend: PR #117 -> main-fijo, cerrado sin merge
+[2026-11-16T01:06:48Z] t+07:59  CERRADA release/c24-1 en fijo
+[2026-11-16T01:08:16Z] t+09:27  abrir release/c24-2 frontend: PR #14 (2026-11-16T01:08:15Z), commit 0cb32ce
+[2026-11-16T01:08:59Z] t+10:10  build único 870a40c5 release/c24-2 frontend SUCCEEDED, tag 0cb32ce digest fd22555f4a0f
+[2026-11-16T01:09:02Z] t+10:13  CORRIDA ABORTADA (inválida): falló git push --quiet origin HEAD:refs/heads/dev: fatal: unable to access 'https://github.com/tesis-entornos/tesis-frontend-cd.git/': The requested URL returned error: 503
+[2026-11-16T01:09:02Z] t+10:13  depurador (solo búsqueda: la corrida se abortó)
+[2026-11-16T01:09:32Z] t+10:43    depurador: 13 restos encontrados
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "servicio", "nombre": "efimero-release-c24-1-backend", "rama": "release/c24-1"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "disponible", "clave": "entornos/release-c24-1/disponible.json", "rama": "release/c24-1"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "regla_alb", "prioridad": "10", "hosts": ["release-c24-1-origin.efimero.tesis-entornos.click"]}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "cloudfront", "arn": "arn:aws:cloudfront::398846004421:distribution/E39WY11QJ9TE56", "corrida": "c24", "rama": "release/c24-1"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "rama", "repo": "tesis-backend", "rama": "release/c24-1"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "pr", "repo": "tesis-backend", "numero": 33, "head": "release/c24-1", "base": "main"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "rama", "repo": "tesis-frontend", "rama": "release/c24-2"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "pr", "repo": "tesis-frontend", "numero": 14, "head": "release/c24-2", "base": "main"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "rama", "repo": "tesis-backend-cd", "rama": "release/c24-1"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "rama", "repo": "tesis-frontend-cd", "rama": "release/c24-2"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "pr", "repo": "tesis-frontend-cd", "numero": 43, "head": "release/c24-2", "base": "dev"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "build", "id": "tesis-efimero-desplegar-backend:9cc85d94-7501-4133-a6c4-272d89a6972c"}
+[2026-11-16T01:09:32Z] t+10:43      resto {"tipo": "build", "id": "tesis-efimero-desplegar-frontend:2d4132ea-04c1-47a4-bcba-8f0f5d63e426"}
+[2026-11-16T01:09:34Z] t+10:45  cierre c24: INVÁLIDA - corrida abortada: falló git push --quiet origin HEAD:refs/heads/dev: fatal: unable to access 'https://github.com/tesis-entornos/tesis-frontend-cd.git/': The requested URL returned error: 503; eventos sin despachar: c24-3 backend t=847, c24-2 backend t=1069; release/c24-1 sin validación final en efimero ni expiración; release/c24-2 sin validación final en efimero ni expiración; release/c24-2 sin validación final en fijo ni expiración; release/c24-3 sin validación final en efimero ni expiración; release/c24-3 sin validación final en fijo ni expiración; el depurador encontró 13 restos: build, cloudfront, disponible, pr, rama, regla_alb, servicio

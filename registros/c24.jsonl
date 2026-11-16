@@ -1,0 +1,2 @@
+{"t_real": "2026-11-16T00:59:04.673+00:00", "accion": "apertura", "n": 1, "repo": "backend", "rama": "release/c24-1", "k": 0, "commit": "2b95f7ae287772fb6acd1afa0cb34d5b91c31441", "pr": 33, "pr_created_at": "2026-11-16T00:59:03Z", "dry_run": false}
+{"t_real": "2026-11-16T01:08:16.409+00:00", "accion": "apertura", "n": 2, "repo": "frontend", "rama": "release/c24-2", "k": 0, "commit": "0cb32ce01dcdfaa7f4f102f0aad2a46ff3e908aa", "pr": 14, "pr_created_at": "2026-11-16T01:08:15Z", "dry_run": false}
