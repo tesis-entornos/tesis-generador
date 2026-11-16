@@ -137,3 +137,13 @@ c37,5,975619,4,release/c37-4,migracion,integrada,efimero,2026-11-16T08:32:16Z,20
 c37,5,975619,4,release/c37-4,migracion,integrada,fijo,2026-11-16T08:32:16Z,2026-11-16T08:39:39Z,443.1,ok,1,21.0,,0,0,false,tesis-fijo-desplegar-backend:89332e8c-8501-4f5b-a301-51f4794b885f
 c37,5,975619,5,release/c37-5,migracion,integrada,efimero,2026-11-16T08:40:09Z,2026-11-16T08:52:40Z,751.4,ok,1,,301,0,0,false,tesis-efimero-desplegar-backend:79f7a54c-7078-421f-aa36-bc17c5c314a3
 c37,5,975619,5,release/c37-5,migracion,integrada,fijo,2026-11-16T08:40:09Z,2026-11-16T08:47:13Z,424.1,ok,1,14.0,,0,0,false,tesis-fijo-desplegar-backend:783b2ba9-c57a-4f36-9c4f-74b139666a58
+c40,5,564253,1,release/c40-1,migracion,integrada,efimero,2026-11-16T16:40:30Z,2026-11-16T17:03:39Z,1389.0,ok,2,,577,1,0,false,tesis-efimero-desplegar-backend:dbfae4e2-ad9c-4d29-9ccc-38d1671d7901
+c40,5,564253,1,release/c40-1,migracion,integrada,fijo,2026-11-16T16:40:30Z,2026-11-16T16:54:01Z,811.8,ok,2,220.0,,0,0,false,tesis-fijo-desplegar-backend:3743a2e7-3633-4dfa-aa5b-14f64dcf0b22
+c40,5,564253,2,release/c40-2,solo_frontend,integrada,efimero,2026-11-16T16:46:59Z,2026-11-16T17:00:24Z,805.6,ok,3,,314,0,0,false,tesis-efimero-desplegar-frontend:cb7d2d29-4019-4396-8489-37a37bbe695b
+c40,5,564253,2,release/c40-2,solo_frontend,integrada,fijo,2026-11-16T16:46:59Z,2026-11-16T17:19:52Z,1973.3,ok,2,1545.0,,0,0,false,tesis-fijo-desplegar-frontend:7c2bd236-7f8c-467a-ab39-ed1f95ed1a4c
+c40,5,564253,3,release/c40-3,migracion,declinada,efimero,2026-11-16T16:48:59Z,2026-11-16T17:06:59Z,1080.9,ok,2,,312,0,0,false,tesis-efimero-desplegar-backend:c40f660a-bf6f-45b6-9588-f37cee402f14
+c40,5,564253,3,release/c40-3,migracion,declinada,fijo,2026-11-16T16:48:59Z,2026-11-16T17:25:38Z,2199.8,ok,2,1689.0,,0,0,false,tesis-fijo-desplegar-backend:0affa756-4b9d-44c9-ba33-1bafe1ccdb0e
+c40,5,564253,4,release/c40-4,combinacion,integrada,efimero,2026-11-16T16:50:18Z,2026-11-16T17:04:33Z,855.9,ok,2,,332,0,0,false,tesis-efimero-desplegar-backend:bbf50772-77ff-4877-bf40-4580fd3d5a5e
+c40,5,564253,4,release/c40-4,combinacion,integrada,fijo,2026-11-16T16:50:18Z,2026-11-16T17:17:12Z,1614.2,ok,2,1888.0,,0,0,false,tesis-fijo-desplegar-backend:c59bc64c-abac-4169-9220-34fcef6b1c57
+c40,5,564253,5,release/c40-5,solo_backend,declinada,efimero,2026-11-16T16:50:26Z,2026-11-16T17:03:08Z,762.3,ok,1,,322,0,0,false,tesis-efimero-desplegar-backend:3af0ddac-7cb2-49ed-8b2f-54bc43fdcaa4
+c40,5,564253,5,release/c40-5,solo_backend,declinada,fijo,2026-11-16T16:50:26Z,2026-11-16T17:11:19Z,1253.4,ok,1,807.0,,0,0,false,tesis-fijo-desplegar-backend:94a06227-9c98-4080-85fa-6b2d44952658
