@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Protocolo congelado del experimento: manifiesto versionado y verificación en vivo.
 
-    python protocolo.py --generar protocolo/protocolo-v1.json   # relevamiento (solo lectura) y manifiesto
-    python protocolo.py --verificar [protocolo/protocolo-v1.json]
+    python protocolo.py --generar protocolo/protocolo-v2.json   # relevamiento (solo lectura) y manifiesto
+    python protocolo.py --verificar [protocolo/protocolo-v2.json]
 
 El manifiesto registra los ETags de main/ del bucket de buildspecs, los commits de main de los repos, el
 tag.json de main de los -cd, la imagen de la suite y PLAYWRIGHT_RETRIES, el commit de terraform fijado en los
@@ -32,7 +32,7 @@ import escenario as escenario_mod
 import reset as reset_mod
 
 RAIZ = Path(__file__).resolve().parent
-MANIFIESTO = RAIZ / "protocolo" / "protocolo-v1.json"
+MANIFIESTO = RAIZ / "protocolo" / "protocolo-v2.json"
 REGION = "us-east-2"
 ORG = "tesis-entornos"
 BUCKET = "tesis-entornos-buildspecs-582621604637"
@@ -44,7 +44,7 @@ PROYECTOS_EFIMERO = ["tesis-efimero-desplegar-backend", "tesis-efimero-desplegar
                      "tesis-efimero-cerrar-backend", "tesis-efimero-cerrar-frontend"]
 VARIABLES_VIGILADAS = ("SUITE_IMAGEN", "PLAYWRIGHT_RETRIES", "SIMULAR_TRABAJO_SEG")
 PREFIJOS_PERMITIDOS = ("registros/", "datos/", "escenarios/")
-MANIFIESTO_REL = "protocolo/protocolo-v1.json"
+MANIFIESTO_RE = re.compile(r"^protocolo/protocolo-v[0-9]+\.json$")
 TERRAFORM_SUBDIR = "entorno"
 
 
@@ -136,7 +136,10 @@ def parametros_escenario():
             "brecha": list(escenario_mod.BRECHA), "parametros": escenario_mod.PARAMETROS}
 
 
-def relevar(terraform_dir=None):
+def relevar(terraform_dir=None, ruta=MANIFIESTO):
+    """El nombre ("protocolo-vN") y la ruta del manifiesto salen del archivo de salida."""
+    ruta = Path(ruta).resolve()
+    ruta_rel = ruta.relative_to(RAIZ).as_posix()
     etags, suite = relevar_buildspecs()
     pisadas, terraform = relevar_proyectos()
     repos = {r: ref_main(r) for r in REPOS}
@@ -151,7 +154,7 @@ def relevar(terraform_dir=None):
             ["git", "merge-base", "--is-ancestor", fijados[0], repos["tesis-terraform"]], cwd=terraform_dir).returncode == 0
     imagenes = set(suite["imagenes"].values())
     return {
-        "nombre": "protocolo-v1",
+        "nombre": ruta.stem,
         "fecha": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "buildspecs": {"bucket": BUCKET, "prefijo": PREFIJO, "etags": etags},
         "repos_main": repos,
@@ -162,7 +165,7 @@ def relevar(terraform_dir=None):
         "simular_trabajo_seg": {"valor_publicado": suite["simular_trabajo_seg"], "fuente": "desplegar-efimero.yml (env.variables)",
                                 "variables_de_proyecto": pisadas},
         "terraform": tf,
-        "generador": {"commit": repos["tesis-generador"], "cambios_permitidos": list(PREFIJOS_PERMITIDOS) + [MANIFIESTO_REL]},
+        "generador": {"commit": repos["tesis-generador"], "cambios_permitidos": list(PREFIJOS_PERMITIDOS) + [ruta_rel]},
         "escenario": parametros_escenario(),
     }
 
@@ -206,7 +209,7 @@ def comparar(manifiesto: dict, vivo: dict) -> list:
 def permitido(ruta: str) -> bool:
     """Cambios del generador que no tocan el protocolo: datos y registros de corridas, escenarios, y el propio
     manifiesto (que no puede contener el commit en el que él mismo se guarda)."""
-    return ruta.startswith(PREFIJOS_PERMITIDOS) or ruta == MANIFIESTO_REL
+    return ruta.startswith(PREFIJOS_PERMITIDOS) or bool(MANIFIESTO_RE.match(ruta))
 
 
 def verificar_generador(commit_manifiesto: str, repo_dir=RAIZ) -> list:
@@ -257,7 +260,7 @@ def main(argv=None):
     g.add_argument("--verificar", metavar="ARCHIVO", nargs="?", const=str(MANIFIESTO))
     args = parser.parse_args(argv)
     if args.generar:
-        m = relevar(terraform_dir=RAIZ.parent / "tesis-terraform")
+        m = relevar(terraform_dir=RAIZ.parent / "tesis-terraform", ruta=args.generar)
         m["huella"] = huella(m)
         ruta = Path(args.generar)
         ruta.parent.mkdir(parents=True, exist_ok=True)

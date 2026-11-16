@@ -14,6 +14,12 @@ import ejecutor  # noqa: E402
 import escenario  # noqa: E402
 
 
+def escenario_c96():
+    """c96 (nivel 3, semilla 9603) tal como se generó con el sorteo de v1 (commit 9c93b47): los tests de abajo
+    dependen de su línea de tiempo, que el sorteo de aperturas de v2 cambia."""
+    return json.loads((RAIZ / "escenarios" / "c96.json").read_text(encoding="utf-8"))
+
+
 def pr(cd, number, created, sha="s"):
     return {"cd": cd, "number": number, "created": created, "sha": sha, "head": f"release/c1-{number}"}
 
@@ -151,7 +157,7 @@ class MergeTagJson(unittest.TestCase):
 
 class CorridaSimulada(unittest.TestCase):
     def test_c96_completa(self):
-        e = escenario.generar(96, 3, 9603)
+        e = escenario_c96()
         ej = ejecutor.Ejecutor(e, ejecutor.PlataformaSimulada(e, inicio=1_800_000_000.0), escribir=False)
         with redirect_stdout(io.StringIO()):
             self.assertEqual(ej.correr(), 0)
@@ -175,7 +181,7 @@ class CorridaSimulada(unittest.TestCase):
         self.assertEqual(vals[f]["digest"], por["release/c96-3"]["digest"]["backend"])
 
     def test_aborta_si_espera_demasiado(self):
-        e = escenario.generar(96, 3, 9603)
+        e = escenario_c96()
         p = ejecutor.PlataformaSimulada(e, inicio=1_800_000_000.0)
         p.validacion = lambda modelo, repo, build_id: None  # nunca aparece un registro
         ej = ejecutor.Ejecutor(e, p, escribir=False)
@@ -215,7 +221,7 @@ class Expiracion(unittest.TestCase):
 
 class CorridaSimuladaConExpiracion(unittest.TestCase):
     def correr(self, corrida, nivel, semilla, umbral, ajustar=None):
-        e = escenario.generar(corrida, nivel, semilla)
+        e = escenario_c96() if (corrida, nivel, semilla) == (96, 3, 9603) else escenario.generar(corrida, nivel, semilla)
         if ajustar:
             ajustar(e)
         ej = ejecutor.Ejecutor(e, ejecutor.PlataformaSimulada(e, inicio=1_800_000_000.0), escribir=False, expiracion_seg=umbral)

@@ -43,6 +43,7 @@ PRIMER_REPO_COMBINACION = 0.5  # probabilidad de que el backend abra primero
 PARAMETROS = {
     "niveles": list(NIVELES),
     "brecha_apertura_seg": list(BRECHA),
+    "aperturas": "ventana única: primera apertura en t=0, resto uniforme en (0, 600) s",
     "tipos": TIPOS,
     "repos_por_tipo": REPOS_POR_TIPO,
     "tipos_con_migracion": list(TIPOS_CON_MIGRACION),
@@ -96,14 +97,15 @@ def generar(corrida: int, nivel: int, semilla: int) -> dict:
 
     rng = random.Random(semilla)
     versiones = []
-    apertura = 0
+    # Aperturas en una ventana única: la primera en t = 0 y las otras nivel - 1 en instantes de BRECHA,
+    # sorteados juntos al principio y ordenados de menor a mayor.
+    instantes = [0] + sorted(_brecha(rng) for _ in range(nivel - 1))
 
-    # Orden de los sorteos, por versión n = 1..nivel:
-    #   1. brecha de apertura (solo n > 1)  2. tipo  3. combinación: primer repo y brecha del segundo
-    #   4. cantidad de actualizaciones  5. por actualización: brecha y repo  6. resultado
+    # Orden de los sorteos: 0. los nivel - 1 instantes de apertura; después, por versión n = 1..nivel:
+    #   1. tipo  2. combinación: primer repo y brecha del segundo
+    #   3. cantidad de actualizaciones  4. por actualización: brecha y repo  5. resultado
     for n in range(1, nivel + 1):
-        if n > 1:
-            apertura += _brecha(rng)
+        apertura = instantes[n - 1]
         tipo = _sortear(rng, TIPOS)
         repos = list(REPOS_POR_TIPO[tipo])
 
