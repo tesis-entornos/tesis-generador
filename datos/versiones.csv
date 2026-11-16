@@ -173,3 +173,13 @@ c43,5,370785,4,release/c43-4,migracion,integrada,efimero,2026-11-16T19:35:34Z,20
 c43,5,370785,4,release/c43-4,migracion,integrada,fijo,2026-11-16T19:35:34Z,2026-11-16T20:04:08Z,1714.8,ok,2,1224.0,,0,0,false,tesis-fijo-desplegar-backend:0e292e7f-f4ee-4c19-b871-32ee0fd2d85d
 c43,5,370785,5,release/c43-5,migracion,integrada,efimero,2026-11-16T19:35:53Z,2026-11-16T19:54:30Z,1117.5,ok,2,,302,0,0,false,tesis-efimero-desplegar-backend:0b1ac885-19be-4ca3-895f-10bfa99af445
 c43,5,370785,5,release/c43-5,migracion,integrada,fijo,2026-11-16T19:35:53Z,2026-11-16T19:55:26Z,1173.5,ok,1,389.0,,0,0,false,tesis-fijo-desplegar-backend:81e4ba97-f292-479a-b97a-5760612d219d
+c44,5,307553,1,release/c44-1,solo_backend,declinada,efimero,2026-11-16T20:18:07Z,2026-11-16T20:37:55Z,1188.3,ok,1,,751,0,0,false,tesis-efimero-desplegar-backend:efcbcd18-3907-4a11-b005-abd746a02d5a
+c44,5,307553,1,release/c44-1,solo_backend,declinada,fijo,2026-11-16T20:18:07Z,2026-11-16T20:25:25Z,438.7,ok,1,5.0,,0,0,false,tesis-fijo-desplegar-backend:df53c709-75b3-4b1d-bc68-3978fb816390
+c44,5,307553,2,release/c44-2,solo_backend,integrada,efimero,2026-11-16T20:18:51Z,2026-11-16T20:44:51Z,1560.4,ok,1,,1134,0,0,false,tesis-efimero-desplegar-backend:c8820a4d-dea1-4b57-8017-ecdac525a50c
+c44,5,307553,2,release/c44-2,solo_backend,integrada,fijo,2026-11-16T20:18:51Z,2026-11-16T20:31:14Z,743.7,ok,1,313.0,,0,0,false,tesis-fijo-desplegar-backend:ea6dddc5-6977-486e-ab3c-dd0d88fc2395
+c44,5,307553,3,release/c44-3,migracion,integrada,efimero,2026-11-16T20:23:51Z,2026-11-16T20:44:57Z,1266.8,ok,1,,830,0,0,false,tesis-efimero-desplegar-backend:96078510-a0b5-417a-a545-341697f07b33
+c44,5,307553,3,release/c44-3,migracion,integrada,fijo,2026-11-16T20:23:51Z,2026-11-16T20:36:57Z,787.0,ok,1,353.0,,0,0,false,tesis-fijo-desplegar-backend:f5006fda-61a3-4b20-887e-08cf1d63b54a
+c44,5,307553,4,release/c44-4,migracion,integrada,efimero,2026-11-16T20:26:40Z,2026-11-16T20:50:39Z,1439.8,ok,2,,661,0,0,false,tesis-efimero-desplegar-backend:7b994f3e-d06e-473e-be08-3ae3353d9b25
+c44,5,307553,4,release/c44-4,migracion,integrada,fijo,2026-11-16T20:26:40Z,2026-11-16T20:42:53Z,973.6,ok,1,19.0,,0,0,false,tesis-fijo-desplegar-backend:d3f6289d-e780-40f7-941e-358c9c47d69e
+c44,5,307553,5,release/c44-5,solo_frontend,declinada,efimero,2026-11-16T20:27:42Z,2026-11-16T20:44:20Z,998.6,ok,2,,666,0,0,false,tesis-efimero-desplegar-frontend:a5ea4eac-815c-4334-a9b5-2ab131d09a8f
+c44,5,307553,5,release/c44-5,solo_frontend,declinada,fijo,2026-11-16T20:27:42Z,2026-11-16T20:45:35Z,1073.5,ok,1,804.0,,0,0,false,tesis-fijo-desplegar-frontend:4ed15735-6669-464c-8f7d-3f59dc1e7e9b
