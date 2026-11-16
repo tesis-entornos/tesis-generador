@@ -1,0 +1,252 @@
+{
+  "corrida": 54,
+  "nivel": 5,
+  "semilla": 180837,
+  "generador": {
+    "commit": "8b87de9df4c8b0df74dfeafc6a14227dfc5c4a9a",
+    "version_formato": 1
+  },
+  "parametros": {
+    "niveles": [
+      1,
+      3,
+      5
+    ],
+    "brecha_apertura_seg": [
+      0,
+      600
+    ],
+    "aperturas": "ventana única: primera apertura en t=0, resto uniforme en (0, 600) s",
+    "tipos": {
+      "solo_frontend": 0.19,
+      "solo_backend": 0.23,
+      "migracion": 0.41,
+      "combinacion": 0.17
+    },
+    "repos_por_tipo": {
+      "solo_frontend": [
+        "frontend"
+      ],
+      "solo_backend": [
+        "backend"
+      ],
+      "migracion": [
+        "backend"
+      ],
+      "combinacion": [
+        "backend",
+        "frontend"
+      ]
+    },
+    "tipos_con_migracion": [
+      "migracion",
+      "combinacion"
+    ],
+    "combinacion_primer_repo_backend": 0.5,
+    "brecha_segundo_repo_seg": [
+      0,
+      600
+    ],
+    "actualizaciones": {
+      "0": 0.57,
+      "1": 0.28,
+      "2": 0.08,
+      "3": 0.07
+    },
+    "brecha_actualizacion_seg": [
+      0,
+      600
+    ],
+    "resultados": {
+      "integrada": 0.75,
+      "declinada": 0.25
+    }
+  },
+  "catalogo_migraciones": [
+    "c54_1",
+    "c54_3",
+    "c54_5"
+  ],
+  "versiones": [
+    {
+      "n": 1,
+      "rama": "release/c54-1",
+      "tipo": "migracion",
+      "repos": [
+        "backend"
+      ],
+      "migracion": "c54_1",
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 0,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "rama": "release/c54-2",
+      "tipo": "solo_frontend",
+      "repos": [
+        "frontend"
+      ],
+      "migracion": null,
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 80,
+          "repo": "frontend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "rama": "release/c54-3",
+      "tipo": "migracion",
+      "repos": [
+        "backend"
+      ],
+      "migracion": "c54_3",
+      "resultado": "declinada",
+      "eventos": [
+        {
+          "t": 267,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "rama": "release/c54-4",
+      "tipo": "solo_backend",
+      "repos": [
+        "backend"
+      ],
+      "migracion": null,
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 327,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        },
+        {
+          "t": 897,
+          "repo": "backend",
+          "accion": "actualizacion",
+          "actualizacion": 1
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "rama": "release/c54-5",
+      "tipo": "combinacion",
+      "repos": [
+        "backend",
+        "frontend"
+      ],
+      "migracion": "c54_5",
+      "resultado": "integrada",
+      "eventos": [
+        {
+          "t": 568,
+          "repo": "frontend",
+          "accion": "apertura",
+          "actualizacion": 0
+        },
+        {
+          "t": 837,
+          "repo": "backend",
+          "accion": "apertura",
+          "actualizacion": 0
+        },
+        {
+          "t": 916,
+          "repo": "frontend",
+          "accion": "actualizacion",
+          "actualizacion": 1
+        },
+        {
+          "t": 1001,
+          "repo": "backend",
+          "accion": "actualizacion",
+          "actualizacion": 1
+        }
+      ]
+    }
+  ],
+  "eventos_ordenados": [
+    {
+      "n": 1,
+      "t": 0,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 2,
+      "t": 80,
+      "repo": "frontend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 3,
+      "t": 267,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 4,
+      "t": 327,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 5,
+      "t": 568,
+      "repo": "frontend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 5,
+      "t": 837,
+      "repo": "backend",
+      "accion": "apertura",
+      "actualizacion": 0
+    },
+    {
+      "n": 4,
+      "t": 897,
+      "repo": "backend",
+      "accion": "actualizacion",
+      "actualizacion": 1
+    },
+    {
+      "n": 5,
+      "t": 916,
+      "repo": "frontend",
+      "accion": "actualizacion",
+      "actualizacion": 1
+    },
+    {
+      "n": 5,
+      "t": 1001,
+      "repo": "backend",
+      "accion": "actualizacion",
+      "actualizacion": 1
+    }
+  ]
+}
