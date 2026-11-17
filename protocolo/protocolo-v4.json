@@ -1,0 +1,375 @@
+{
+  "nombre": "protocolo-v4",
+  "fecha": "2026-11-17T21:37:38Z",
+  "buildspecs": {
+    "bucket": "tesis-entornos-buildspecs-582621604637",
+    "prefijo": "main/",
+    "etags": {
+      ".gitkeep": "d41d8cd98f00b204e9800998ecf8427e",
+      "build-backend.yml": "c6225aaf353aa78bf76082fd0f500863",
+      "build-frontend.yml": "a521c8bb57f5a6fc8dbd0b45c16fcb2b",
+      "desplegar-efimero.yml": "ae91bc39abdcf11788b4c6b5ee432330",
+      "desplegar-fijo.yml": "513776b9123bf12a42adb17a93670e6a",
+      "destruir-efimero.yml": "6b4e7b416052f1ecdc235b52f6908239",
+      "scripts/borrar-datos.py": "da1c724e4aa37325281479c3e70cb22c",
+      "scripts/crear-entorno.sh": "2152a5a07326bb9c9ed51833140ac8b9",
+      "scripts/desplegar-backend.sh": "06400a0860b5a715780031b325018529",
+      "scripts/desplegar-frontend.sh": "df9450e7f7b1831f74c826dc1bcb8a79",
+      "scripts/destruir-entorno.sh": "0d6f7718a2e1674a92813f4ec766b9c9",
+      "scripts/ejecutar-suite.sh": "5421edc490be1774bd51d20024bd1335",
+      "scripts/esperar-entorno.sh": "69befea5ae2aadaff680aeb8cc584294",
+      "scripts/esperar-turno.sh": "7e1f3cb91543ea4e7bcbdf1af6885acd"
+    }
+  },
+  "repos_main": {
+    "tesis-backend": "afc16b1d85fc0e87e0998d2e69a2109520ed9719",
+    "tesis-frontend": "dd2a13341c32c57275692bc6e43ef446fe4306d2",
+    "tesis-buildspecs": "47d03fdcd1f0a41c7b9c2984922154c5248da5fa",
+    "tesis-terraform": "ae5c13b6490b99a3df6047aaa06019e111f282d1",
+    "tesis-generador": "442a6386a207c1b3509a3e5667b3e538e8edcc6e",
+    "tesis-backend-cd": "db1881d4ac96c8825f3a25d824f8acb468faafc2",
+    "tesis-frontend-cd": "900cda067f24e1b9095ad9604a30a3a0557d1f2b"
+  },
+  "tag_json_main": {
+    "tesis-backend-cd": {
+      "repo": "582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-backend",
+      "commit": "afc16b1d85fc0e87e0998d2e69a2109520ed9719",
+      "tag": "afc16b1",
+      "digest": "sha256:eb07d223d0f4133d7bdd18f932b39d2c399b716cbaab19d3924c619b5a38a99a"
+    },
+    "tesis-frontend-cd": {
+      "repo": "582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-frontend",
+      "commit": "dd2a13341c32c57275692bc6e43ef446fe4306d2",
+      "tag": "dd2a133",
+      "digest": "sha256:a3d8e0fe7d48181e4b1050a62bc18419e50f37b144d8715cea0da57058d33ecc"
+    }
+  },
+  "suite": {
+    "imagen": "582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-playwright@sha256:2d5ba44a607236a8d07dc55308e8c0a9e4289caf4c0cf413821d56920e32c9b9",
+    "fuentes": [
+      "desplegar-efimero.yml",
+      "desplegar-fijo.yml"
+    ],
+    "playwright_retries": 2,
+    "playwright_retries_fuente": "scripts/ejecutar-suite.sh"
+  },
+  "simular_trabajo_seg": {
+    "valor_publicado": "600",
+    "fuente": "desplegar-efimero.yml y desplegar-fijo.yml (env.variables); un solo sleep en cada uno",
+    "variables_de_proyecto": []
+  },
+  "terraform": {
+    "main": "ae5c13b6490b99a3df6047aaa06019e111f282d1",
+    "fijado": "47032ae0df2c7b9ccbd9b7930565a157ef535ed1",
+    "proyectos": {
+      "tesis-efimero-desplegar-backend": "47032ae0df2c7b9ccbd9b7930565a157ef535ed1",
+      "tesis-efimero-desplegar-frontend": "47032ae0df2c7b9ccbd9b7930565a157ef535ed1",
+      "tesis-efimero-cerrar-backend": "47032ae0df2c7b9ccbd9b7930565a157ef535ed1",
+      "tesis-efimero-cerrar-frontend": "47032ae0df2c7b9ccbd9b7930565a157ef535ed1"
+    },
+    "subdir": "entorno",
+    "arbol_subdir_fijado": "50a9e94e1e2c58b5b2ea9e75c00e045c7e1a19ca",
+    "arbol_subdir_main": "50a9e94e1e2c58b5b2ea9e75c00e045c7e1a19ca",
+    "fijado_es_ancestro_de_main": true
+  },
+  "generador": {
+    "commit": "442a6386a207c1b3509a3e5667b3e538e8edcc6e",
+    "cambios_permitidos": [
+      "registros/",
+      "datos/",
+      "escenarios/",
+      "protocolo/protocolo-v4.json"
+    ]
+  },
+  "escenario": {
+    "version_formato": 1,
+    "niveles": [
+      1,
+      3,
+      5
+    ],
+    "brecha": [
+      0,
+      600
+    ],
+    "parametros": {
+      "niveles": [
+        1,
+        3,
+        5
+      ],
+      "brecha_apertura_seg": [
+        0,
+        600
+      ],
+      "aperturas": "ventana única: primera apertura en t=0, resto uniforme en (0, 600) s",
+      "tipos": {
+        "solo_frontend": 0.19,
+        "solo_backend": 0.23,
+        "migracion": 0.41,
+        "combinacion": 0.17
+      },
+      "repos_por_tipo": {
+        "solo_frontend": [
+          "frontend"
+        ],
+        "solo_backend": [
+          "backend"
+        ],
+        "migracion": [
+          "backend"
+        ],
+        "combinacion": [
+          "backend",
+          "frontend"
+        ]
+      },
+      "tipos_con_migracion": [
+        "migracion",
+        "combinacion"
+      ],
+      "combinacion_primer_repo_backend": 0.5,
+      "brecha_segundo_repo_seg": [
+        0,
+        600
+      ],
+      "actualizaciones": {
+        "0": 0.285,
+        "1": 0.46558139534883725,
+        "2": 0.1330232558139535,
+        "3": 0.11639534883720931
+      },
+      "actualizaciones_calibracion": {
+        "0": 0.57,
+        "1": 0.28,
+        "2": 0.08,
+        "3": 0.07
+      },
+      "actualizaciones_regla": "P(0) a la mitad de la calibración; resto en la proporción medida",
+      "brecha_actualizacion_seg": [
+        0,
+        600
+      ],
+      "resultados": {
+        "integrada": 0.75,
+        "declinada": 0.25
+      }
+    }
+  },
+  "webhooks": {
+    "tesis-build-backend": {
+      "buildType": "BUILD",
+      "status": "ACTIVE",
+      "filterGroups": [
+        [
+          {
+            "type": "EVENT",
+            "pattern": "PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "BASE_REF",
+            "pattern": "^refs/heads/main$",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "HEAD_REF",
+            "pattern": "^refs/heads/release/(efimero|fijo)/c[0-9]+-[0-9]+$",
+            "excludeMatchedPattern": false
+          }
+        ]
+      ],
+      "pullRequestBuildPolicy": {
+        "requiresCommentApproval": "DISABLED"
+      }
+    },
+    "tesis-build-frontend": {
+      "buildType": "BUILD",
+      "status": "ACTIVE",
+      "filterGroups": [
+        [
+          {
+            "type": "EVENT",
+            "pattern": "PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "BASE_REF",
+            "pattern": "^refs/heads/main$",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "HEAD_REF",
+            "pattern": "^refs/heads/release/(efimero|fijo)/c[0-9]+-[0-9]+$",
+            "excludeMatchedPattern": false
+          }
+        ]
+      ],
+      "pullRequestBuildPolicy": {
+        "requiresCommentApproval": "DISABLED"
+      }
+    },
+    "tesis-efimero-desplegar-backend": {
+      "buildType": "BUILD",
+      "status": "ACTIVE",
+      "filterGroups": [
+        [
+          {
+            "type": "EVENT",
+            "pattern": "PUSH",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "HEAD_REF",
+            "pattern": "^refs/heads/release/c[0-9]+-[0-9]+$",
+            "excludeMatchedPattern": false
+          }
+        ]
+      ],
+      "pullRequestBuildPolicy": {
+        "requiresCommentApproval": "ALL_PULL_REQUESTS",
+        "approverRoles": [
+          "GITHUB_WRITE",
+          "GITHUB_MAINTAIN",
+          "GITHUB_ADMIN"
+        ]
+      }
+    },
+    "tesis-efimero-desplegar-frontend": {
+      "buildType": "BUILD",
+      "status": "ACTIVE",
+      "filterGroups": [
+        [
+          {
+            "type": "EVENT",
+            "pattern": "PUSH",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "HEAD_REF",
+            "pattern": "^refs/heads/release/c[0-9]+-[0-9]+$",
+            "excludeMatchedPattern": false
+          }
+        ]
+      ],
+      "pullRequestBuildPolicy": {
+        "requiresCommentApproval": "ALL_PULL_REQUESTS",
+        "approverRoles": [
+          "GITHUB_WRITE",
+          "GITHUB_MAINTAIN",
+          "GITHUB_ADMIN"
+        ]
+      }
+    },
+    "tesis-efimero-cerrar-backend": {
+      "buildType": "BUILD",
+      "status": "ACTIVE",
+      "filterGroups": [
+        [
+          {
+            "type": "EVENT",
+            "pattern": "PULL_REQUEST_MERGED,PULL_REQUEST_CLOSED",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "BASE_REF",
+            "pattern": "^refs/heads/main-efimero$",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "HEAD_REF",
+            "pattern": "^refs/heads/release/c[0-9]+-[0-9]+$",
+            "excludeMatchedPattern": false
+          }
+        ]
+      ],
+      "pullRequestBuildPolicy": {
+        "requiresCommentApproval": "DISABLED"
+      }
+    },
+    "tesis-efimero-cerrar-frontend": {
+      "buildType": "BUILD",
+      "status": "ACTIVE",
+      "filterGroups": [
+        [
+          {
+            "type": "EVENT",
+            "pattern": "PULL_REQUEST_MERGED,PULL_REQUEST_CLOSED",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "BASE_REF",
+            "pattern": "^refs/heads/main-efimero$",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "HEAD_REF",
+            "pattern": "^refs/heads/release/c[0-9]+-[0-9]+$",
+            "excludeMatchedPattern": false
+          }
+        ]
+      ],
+      "pullRequestBuildPolicy": {
+        "requiresCommentApproval": "DISABLED"
+      }
+    },
+    "tesis-fijo-desplegar-backend": {
+      "buildType": "BUILD",
+      "status": "ACTIVE",
+      "filterGroups": [
+        [
+          {
+            "type": "EVENT",
+            "pattern": "PUSH",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "HEAD_REF",
+            "pattern": "^refs/heads/dev$",
+            "excludeMatchedPattern": false
+          }
+        ]
+      ],
+      "pullRequestBuildPolicy": {
+        "requiresCommentApproval": "ALL_PULL_REQUESTS",
+        "approverRoles": [
+          "GITHUB_WRITE",
+          "GITHUB_MAINTAIN",
+          "GITHUB_ADMIN"
+        ]
+      }
+    },
+    "tesis-fijo-desplegar-frontend": {
+      "buildType": "BUILD",
+      "status": "ACTIVE",
+      "filterGroups": [
+        [
+          {
+            "type": "EVENT",
+            "pattern": "PUSH",
+            "excludeMatchedPattern": false
+          },
+          {
+            "type": "HEAD_REF",
+            "pattern": "^refs/heads/dev$",
+            "excludeMatchedPattern": false
+          }
+        ]
+      ],
+      "pullRequestBuildPolicy": {
+        "requiresCommentApproval": "ALL_PULL_REQUESTS",
+        "approverRoles": [
+          "GITHUB_WRITE",
+          "GITHUB_MAINTAIN",
+          "GITHUB_ADMIN"
+        ]
+      }
+    }
+  },
+  "ejecutor": {
+    "esquema": 2,
+    "regla_actualizacion": "dos ramas por modelo; la actualización k se hace en la rama de cada modelo en F_m + b_k, con F_m = fin de la última validación de la versión en ese modelo cuando no queda ninguna validación, build ni entrega en curso de la versión en ese modelo (backend y frontend) y el evento anterior de la cadena ya se validó ahí, y b_k = t_k - t del evento anterior de la cadena del escenario (la misma para los dos modelos); el fijo integra el commit k, de a uno, por orden de entrega",
+    "max_espera_seg": 21600
+  },
+  "huella": "7db62ac6249b5c27fd8fbd2e4e68114110bc79161970853c7865fbe7cee39bc0"
+}
