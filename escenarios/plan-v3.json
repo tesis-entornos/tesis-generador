@@ -1,0 +1,748 @@
+{
+  "plan": "protocolo v3",
+  "semilla_maestra": 20261118,
+  "metodo": "rng = random.Random(semilla_maestra); orden = [1]*7 + [3]*7 + [5]*7; rng.shuffle(orden); luego rng.randint(1, 10**6) por corrida, en este orden: c61..c81 según orden; reservas c82 y c83 (nivel 1), c84 y c85 (nivel 3), c86 y c87 (nivel 5); piloto c60 (nivel 5), con su semilla sorteada al final",
+  "protocolo": {
+    "nombre": "protocolo-v3",
+    "huella": "3ca5c348859d602b3ecd9683ae09f570cd0af1e996e41370ca08ae80b01a00f7",
+    "generador": "451c5c0f0df14a32941b049ecf05285db523663f"
+  },
+  "corridas": [
+    {
+      "corrida": "c61",
+      "nivel": 5,
+      "semilla": 288776,
+      "escenario": "escenarios/c61.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_frontend",
+          "combinacion",
+          "combinacion",
+          "combinacion"
+        ],
+        "aperturas": [
+          0,
+          401,
+          476,
+          477,
+          575
+        ],
+        "actualizaciones_por_version": [
+          1,
+          3,
+          1,
+          0,
+          2
+        ],
+        "actualizaciones": 7
+      }
+    },
+    {
+      "corrida": "c62",
+      "nivel": 3,
+      "semilla": 372839,
+      "escenario": "escenarios/c62.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          145,
+          501
+        ],
+        "actualizaciones_por_version": [
+          3,
+          3,
+          0
+        ],
+        "actualizaciones": 6
+      }
+    },
+    {
+      "corrida": "c63",
+      "nivel": 3,
+      "semilla": 779559,
+      "escenario": "escenarios/c63.json",
+      "resumen": {
+        "tipos": [
+          "combinacion",
+          "solo_backend",
+          "solo_frontend"
+        ],
+        "aperturas": [
+          0,
+          155,
+          181
+        ],
+        "actualizaciones_por_version": [
+          1,
+          3,
+          1
+        ],
+        "actualizaciones": 5
+      }
+    },
+    {
+      "corrida": "c64",
+      "nivel": 3,
+      "semilla": 101162,
+      "escenario": "escenarios/c64.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          470,
+          586
+        ],
+        "actualizaciones_por_version": [
+          0,
+          0,
+          3
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c65",
+      "nivel": 3,
+      "semilla": 597710,
+      "escenario": "escenarios/c65.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "combinacion",
+          "solo_backend"
+        ],
+        "aperturas": [
+          0,
+          267,
+          321
+        ],
+        "actualizaciones_por_version": [
+          1,
+          1,
+          1
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c66",
+      "nivel": 1,
+      "semilla": 990695,
+      "escenario": "escenarios/c66.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend"
+        ],
+        "aperturas": [
+          0
+        ],
+        "actualizaciones_por_version": [
+          1
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c67",
+      "nivel": 5,
+      "semilla": 965235,
+      "escenario": "escenarios/c67.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_frontend",
+          "solo_backend",
+          "solo_frontend",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          124,
+          185,
+          217,
+          324
+        ],
+        "actualizaciones_por_version": [
+          0,
+          1,
+          1,
+          0,
+          0
+        ],
+        "actualizaciones": 2
+      }
+    },
+    {
+      "corrida": "c68",
+      "nivel": 5,
+      "semilla": 543456,
+      "escenario": "escenarios/c68.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend",
+          "solo_frontend",
+          "migracion",
+          "migracion",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          219,
+          332,
+          355,
+          559
+        ],
+        "actualizaciones_por_version": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "actualizaciones": 5
+      }
+    },
+    {
+      "corrida": "c69",
+      "nivel": 5,
+      "semilla": 218540,
+      "escenario": "escenarios/c69.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "combinacion",
+          "migracion",
+          "migracion",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          42,
+          280,
+          359,
+          491
+        ],
+        "actualizaciones_por_version": [
+          0,
+          3,
+          3,
+          0,
+          1
+        ],
+        "actualizaciones": 7
+      }
+    },
+    {
+      "corrida": "c70",
+      "nivel": 5,
+      "semilla": 409206,
+      "escenario": "escenarios/c70.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "combinacion",
+          "migracion",
+          "solo_frontend",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          63,
+          105,
+          122,
+          409
+        ],
+        "actualizaciones_por_version": [
+          3,
+          1,
+          2,
+          1,
+          0
+        ],
+        "actualizaciones": 7
+      }
+    },
+    {
+      "corrida": "c71",
+      "nivel": 3,
+      "semilla": 151148,
+      "escenario": "escenarios/c71.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend",
+          "migracion",
+          "combinacion"
+        ],
+        "aperturas": [
+          0,
+          295,
+          547
+        ],
+        "actualizaciones_por_version": [
+          0,
+          2,
+          1
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c72",
+      "nivel": 3,
+      "semilla": 224920,
+      "escenario": "escenarios/c72.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_frontend",
+          "solo_backend"
+        ],
+        "aperturas": [
+          0,
+          245,
+          270
+        ],
+        "actualizaciones_por_version": [
+          3,
+          3,
+          1
+        ],
+        "actualizaciones": 7
+      }
+    },
+    {
+      "corrida": "c73",
+      "nivel": 1,
+      "semilla": 611502,
+      "escenario": "escenarios/c73.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "aperturas": [
+          0
+        ],
+        "actualizaciones_por_version": [
+          1
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c74",
+      "nivel": 5,
+      "semilla": 243130,
+      "escenario": "escenarios/c74.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "migracion",
+          "combinacion",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          77,
+          267,
+          303,
+          587
+        ],
+        "actualizaciones_por_version": [
+          1,
+          0,
+          1,
+          3,
+          0
+        ],
+        "actualizaciones": 5
+      }
+    },
+    {
+      "corrida": "c75",
+      "nivel": 1,
+      "semilla": 112283,
+      "escenario": "escenarios/c75.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "aperturas": [
+          0
+        ],
+        "actualizaciones_por_version": [
+          3
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c76",
+      "nivel": 1,
+      "semilla": 518127,
+      "escenario": "escenarios/c76.json",
+      "resumen": {
+        "tipos": [
+          "combinacion"
+        ],
+        "aperturas": [
+          0
+        ],
+        "actualizaciones_por_version": [
+          0
+        ],
+        "actualizaciones": 0
+      }
+    },
+    {
+      "corrida": "c77",
+      "nivel": 1,
+      "semilla": 447907,
+      "escenario": "escenarios/c77.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "aperturas": [
+          0
+        ],
+        "actualizaciones_por_version": [
+          1
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c78",
+      "nivel": 1,
+      "semilla": 226664,
+      "escenario": "escenarios/c78.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "aperturas": [
+          0
+        ],
+        "actualizaciones_por_version": [
+          1
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c79",
+      "nivel": 3,
+      "semilla": 53752,
+      "escenario": "escenarios/c79.json",
+      "resumen": {
+        "tipos": [
+          "combinacion",
+          "solo_backend",
+          "combinacion"
+        ],
+        "aperturas": [
+          0,
+          200,
+          266
+        ],
+        "actualizaciones_por_version": [
+          1,
+          1,
+          3
+        ],
+        "actualizaciones": 5
+      }
+    },
+    {
+      "corrida": "c80",
+      "nivel": 1,
+      "semilla": 899314,
+      "escenario": "escenarios/c80.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend"
+        ],
+        "aperturas": [
+          0
+        ],
+        "actualizaciones_por_version": [
+          1
+        ],
+        "actualizaciones": 1
+      }
+    },
+    {
+      "corrida": "c81",
+      "nivel": 5,
+      "semilla": 942705,
+      "escenario": "escenarios/c81.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend",
+          "migracion",
+          "solo_backend",
+          "solo_frontend",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          13,
+          60,
+          173,
+          441
+        ],
+        "actualizaciones_por_version": [
+          2,
+          1,
+          0,
+          3,
+          2
+        ],
+        "actualizaciones": 8
+      }
+    }
+  ],
+  "reservas": [
+    {
+      "corrida": "c82",
+      "nivel": 1,
+      "semilla": 487456,
+      "escenario": "escenarios/c82.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "aperturas": [
+          0
+        ],
+        "actualizaciones_por_version": [
+          0
+        ],
+        "actualizaciones": 0
+      }
+    },
+    {
+      "corrida": "c83",
+      "nivel": 1,
+      "semilla": 189293,
+      "escenario": "escenarios/c83.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend"
+        ],
+        "aperturas": [
+          0
+        ],
+        "actualizaciones_por_version": [
+          0
+        ],
+        "actualizaciones": 0
+      }
+    },
+    {
+      "corrida": "c84",
+      "nivel": 3,
+      "semilla": 859854,
+      "escenario": "escenarios/c84.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_backend",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          318,
+          324
+        ],
+        "actualizaciones_por_version": [
+          0,
+          1,
+          1
+        ],
+        "actualizaciones": 2
+      }
+    },
+    {
+      "corrida": "c85",
+      "nivel": 3,
+      "semilla": 587336,
+      "escenario": "escenarios/c85.json",
+      "resumen": {
+        "tipos": [
+          "combinacion",
+          "solo_backend",
+          "solo_frontend"
+        ],
+        "aperturas": [
+          0,
+          35,
+          350
+        ],
+        "actualizaciones_por_version": [
+          1,
+          1,
+          3
+        ],
+        "actualizaciones": 5
+      }
+    },
+    {
+      "corrida": "c86",
+      "nivel": 5,
+      "semilla": 267854,
+      "escenario": "escenarios/c86.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "solo_backend",
+          "solo_backend",
+          "solo_frontend",
+          "combinacion"
+        ],
+        "aperturas": [
+          0,
+          194,
+          477,
+          480,
+          586
+        ],
+        "actualizaciones_por_version": [
+          1,
+          0,
+          1,
+          1,
+          0
+        ],
+        "actualizaciones": 3
+      }
+    },
+    {
+      "corrida": "c87",
+      "nivel": 5,
+      "semilla": 971687,
+      "escenario": "escenarios/c87.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend",
+          "migracion",
+          "migracion",
+          "migracion",
+          "solo_frontend"
+        ],
+        "aperturas": [
+          0,
+          66,
+          127,
+          186,
+          417
+        ],
+        "actualizaciones_por_version": [
+          1,
+          0,
+          1,
+          1,
+          0
+        ],
+        "actualizaciones": 3
+      }
+    }
+  ],
+  "piloto": [
+    {
+      "corrida": "c60",
+      "nivel": 5,
+      "semilla": 651761,
+      "escenario": "escenarios/c60.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "solo_backend",
+          "solo_backend",
+          "migracion",
+          "migracion"
+        ],
+        "aperturas": [
+          0,
+          47,
+          101,
+          183,
+          291
+        ],
+        "actualizaciones_por_version": [
+          0,
+          1,
+          0,
+          1,
+          0
+        ],
+        "actualizaciones": 2
+      }
+    }
+  ],
+  "proporcion_actualizaciones_informativa": {
+    "nota": "informativa; no se re-sortea",
+    "esperada": {
+      "0": 0.285,
+      "1": 0.465581,
+      "2": 0.133023,
+      "3": 0.116395
+    },
+    "corridas_c61_c81": {
+      "versiones": 63,
+      "conteo": {
+        "0": 15,
+        "1": 29,
+        "2": 5,
+        "3": 14
+      },
+      "proporcion": {
+        "0": 0.2381,
+        "1": 0.4603,
+        "2": 0.0794,
+        "3": 0.2222
+      }
+    },
+    "corridas_y_piloto": {
+      "versiones": 68,
+      "conteo": {
+        "0": 18,
+        "1": 31,
+        "2": 5,
+        "3": 14
+      },
+      "proporcion": {
+        "0": 0.2647,
+        "1": 0.4559,
+        "2": 0.0735,
+        "3": 0.2059
+      }
+    },
+    "todo_el_plan": {
+      "versiones": 86,
+      "conteo": {
+        "0": 25,
+        "1": 41,
+        "2": 5,
+        "3": 15
+      },
+      "proporcion": {
+        "0": 0.2907,
+        "1": 0.4767,
+        "2": 0.0581,
+        "3": 0.1744
+      }
+    }
+  }
+}
