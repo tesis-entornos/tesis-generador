@@ -1,0 +1,3 @@
+{"t_real": "2026-11-17T03:41:06.887+00:00", "accion": "apertura", "n": 1, "repo": "backend", "rama": "release/c53-1", "k": 0, "commit": "31e69290b288052c2deb64c2a9daf8d419459379", "pr": 109, "pr_created_at": "2026-11-17T03:41:05Z", "dry_run": false}
+{"t_real": "2026-11-17T03:43:07.434+00:00", "accion": "apertura", "n": 2, "repo": "backend", "rama": "release/c53-2", "k": 0, "commit": "49ef9f7b2778278ee14cf10a7ccfaf8d0f3eceac", "pr": 110, "pr_created_at": "2026-11-17T03:43:05Z", "dry_run": false}
+{"t_real": "2026-11-17T03:47:05.659+00:00", "accion": "apertura", "n": 3, "repo": "backend", "rama": "release/c53-3", "k": 0, "commit": "6ccdbeb2ceb459974b3021f2c883d105ba9305ad", "pr": 111, "pr_created_at": "2026-11-17T03:47:04Z", "dry_run": false}
