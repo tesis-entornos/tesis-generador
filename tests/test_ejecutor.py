@@ -188,7 +188,8 @@ class CorridaSimulada(unittest.TestCase):
         with redirect_stdout(io.StringIO()):
             self.assertEqual(ej.correr(), 2)
         self.assertEqual(ej.s["resultado"], "invalida")
-        self.assertIn("90 min", ej.s["motivo"])
+        self.assertIn(f"{ejecutor.MAX_ESPERA_SEG // 60} min", ej.s["motivo"])
+        self.assertEqual(ejecutor.MAX_ESPERA_SEG, 14400)
 
 
 def v_exp(n, cierres=("pendiente", "pendiente"), expirada=None):

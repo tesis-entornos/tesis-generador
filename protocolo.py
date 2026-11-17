@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Protocolo congelado del experimento: manifiesto versionado y verificación en vivo.
 
-    python protocolo.py --generar protocolo/protocolo-v2.json   # relevamiento (solo lectura) y manifiesto
-    python protocolo.py --verificar [protocolo/protocolo-v2.json]
+    python protocolo.py --generar protocolo/protocolo-v3.json   # relevamiento (solo lectura) y manifiesto
+    python protocolo.py --verificar [protocolo/protocolo-v3.json]
 
 El manifiesto registra los ETags de main/ del bucket de buildspecs, los commits de main de los repos, el
 tag.json de main de los -cd, la imagen de la suite y PLAYWRIGHT_RETRIES, el commit de terraform fijado en los
@@ -12,7 +12,8 @@ campo huella).
 
 La verificación (al inicio de cada corrida, antes del reset) compara en vivo: ETags de main/ (mismo conjunto
 de objetos), tag.json de main de los -cd, imagen de la suite y PLAYWRIGHT_RETRIES en lo publicado, ninguna
-variable de proyecto que pise SUITE_IMAGEN / PLAYWRIGHT_RETRIES / SIMULAR_TRABAJO_SEG, SIMULAR_TRABAJO_SEG en 0,
+variable de proyecto que pise SUITE_IMAGEN / PLAYWRIGHT_RETRIES / SIMULAR_TRABAJO_SEG, SIMULAR_TRABAJO_SEG igual en
+los dos desplegar-*.yml e igual al del manifiesto, con exactamente un sleep de SIMULAR_TRABAJO_SEG en cada uno,
 commit de terraform de los proyectos efímeros, HEAD de tesis-generador (el del manifiesto o un descendiente
 con cambios solo en registros/, datos/, escenarios/ o el propio manifiesto, también sin commitear) y parámetros
 del escenario.
@@ -32,7 +33,7 @@ import escenario as escenario_mod
 import reset as reset_mod
 
 RAIZ = Path(__file__).resolve().parent
-MANIFIESTO = RAIZ / "protocolo" / "protocolo-v2.json"
+MANIFIESTO = RAIZ / "protocolo" / "protocolo-v3.json"
 REGION = "us-east-2"
 ORG = "tesis-entornos"
 BUCKET = "tesis-entornos-buildspecs-582621604637"
@@ -46,6 +47,8 @@ VARIABLES_VIGILADAS = ("SUITE_IMAGEN", "PLAYWRIGHT_RETRIES", "SIMULAR_TRABAJO_SE
 PREFIJOS_PERMITIDOS = ("registros/", "datos/", "escenarios/")
 MANIFIESTO_RE = re.compile(r"^protocolo/protocolo-v[0-9]+\.json$")
 TERRAFORM_SUBDIR = "entorno"
+DESPLEGAR = ("desplegar-efimero.yml", "desplegar-fijo.yml")
+SLEEP_SIMULAR_RE = re.compile(r'\bsleep\s+"?\$\{?SIMULAR_TRABAJO_SEG\}?"?')
 
 
 # --------------------------------------------------------------------------------------------------
@@ -65,16 +68,35 @@ def huella(d: dict) -> str:
 
 
 def suite_de(publicados: dict) -> dict:
-    """publicados = {clave relativa a main/: texto}. Imagen de la suite (en los dos desplegar-*.yml),
-    PLAYWRIGHT_RETRIES (ejecutar-suite.sh) y SIMULAR_TRABAJO_SEG (desplegar-efimero.yml)."""
-    imagenes = {}
-    for f in ("desplegar-efimero.yml", "desplegar-fijo.yml"):
-        m = re.search(r"^\s*SUITE_IMAGEN:\s*(\S+)\s*$", publicados.get(f, ""), re.M)
+    """publicados = {clave relativa a main/: texto}. Imagen de la suite, SIMULAR_TRABAJO_SEG y cantidad de
+    sleep de SIMULAR_TRABAJO_SEG (en los dos desplegar-*.yml) y PLAYWRIGHT_RETRIES (ejecutar-suite.sh)."""
+    imagenes, simular, sleeps = {}, {}, {}
+    for f in DESPLEGAR:
+        texto = publicados.get(f, "")
+        m = re.search(r"^\s*SUITE_IMAGEN:\s*(\S+)\s*$", texto, re.M)
         imagenes[f] = m.group(1) if m else None
+        s = re.search(r"^\s*SIMULAR_TRABAJO_SEG:\s*\"?([^\"\s]*)\"?\s*$", texto, re.M)
+        simular[f] = s.group(1) if s else None
+        sleeps[f] = len(SLEEP_SIMULAR_RE.findall(texto))
     m = re.search(r"PLAYWRIGHT_RETRIES=(\d+)", publicados.get("scripts/ejecutar-suite.sh", ""))
-    s = re.search(r"^\s*SIMULAR_TRABAJO_SEG:\s*\"?([^\"\s]*)\"?\s*$", publicados.get("desplegar-efimero.yml", ""), re.M)
     return {"imagenes": imagenes, "playwright_retries": int(m.group(1)) if m else None,
-            "simular_trabajo_seg": s.group(1) if s else None}
+            "simular_trabajo_seg": simular, "sleeps_simular": sleeps}
+
+
+def problemas_simular(suite: dict, esperado) -> list:
+    """SIMULAR_TRABAJO_SEG: el mismo valor en los dos desplegar-*.yml, igual al esperado (el del manifiesto), y
+    exactamente un sleep de SIMULAR_TRABAJO_SEG en cada uno (0, o 2 o más, es una diferencia de protocolo)."""
+    d = []
+    valores = suite["simular_trabajo_seg"]
+    if len(set(valores.values())) != 1:
+        d.append(f"SIMULAR_TRABAJO_SEG distinto entre buildspecs: {valores} (manifiesto {esperado!r})")
+    elif next(iter(valores.values())) != esperado:
+        d.append(f"SIMULAR_TRABAJO_SEG publicado = {next(iter(valores.values()))!r} en {', '.join(sorted(valores))}, "
+                 f"manifiesto {esperado!r}")
+    for f, n in sorted(suite["sleeps_simular"].items()):
+        if n != 1:
+            d.append(f"{f} tiene {n} sleep de SIMULAR_TRABAJO_SEG (tiene que tener exactamente uno)")
+    return d
 
 
 # --------------------------------------------------------------------------------------------------
@@ -153,6 +175,10 @@ def relevar(terraform_dir=None, ruta=MANIFIESTO):
         tf["fijado_es_ancestro_de_main"] = subprocess.run(
             ["git", "merge-base", "--is-ancestor", fijados[0], repos["tesis-terraform"]], cwd=terraform_dir).returncode == 0
     imagenes = set(suite["imagenes"].values())
+    valores = set(suite["simular_trabajo_seg"].values())
+    if len(valores) != 1 or problemas_simular(suite, next(iter(valores))):
+        raise RuntimeError(f"no se congela un protocolo con SIMULAR_TRABAJO_SEG inconsistente: "
+                           f"{suite['simular_trabajo_seg']}, sleeps {suite['sleeps_simular']}")
     return {
         "nombre": ruta.stem,
         "fecha": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
@@ -162,7 +188,8 @@ def relevar(terraform_dir=None, ruta=MANIFIESTO):
         "suite": {"imagen": imagenes.pop() if len(imagenes) == 1 else sorted(imagenes),
                   "fuentes": sorted(suite["imagenes"]), "playwright_retries": suite["playwright_retries"],
                   "playwright_retries_fuente": "scripts/ejecutar-suite.sh"},
-        "simular_trabajo_seg": {"valor_publicado": suite["simular_trabajo_seg"], "fuente": "desplegar-efimero.yml (env.variables)",
+        "simular_trabajo_seg": {"valor_publicado": valores.pop(),
+                                "fuente": "desplegar-efimero.yml y desplegar-fijo.yml (env.variables); un solo sleep en cada uno",
                                 "variables_de_proyecto": pisadas},
         "terraform": tf,
         "generador": {"commit": repos["tesis-generador"], "cambios_permitidos": list(PREFIJOS_PERMITIDOS) + [ruta_rel]},
@@ -176,7 +203,7 @@ def relevar(terraform_dir=None, ruta=MANIFIESTO):
 
 def comparar(manifiesto: dict, vivo: dict) -> list:
     """Diferencias entre el manifiesto y lo relevado en vivo. vivo = {etags, suite: {imagenes,
-    playwright_retries, simular_trabajo_seg}, pisadas, terraform: {proyecto: commit}, tag_json_main, escenario,
+    playwright_retries, simular_trabajo_seg, sleeps_simular}, pisadas, terraform: {proyecto: commit}, tag_json_main, escenario,
     escenario_archivo (parametros del escenario a correr, opcional), generador: [problemas]}."""
     d = []
     esperados, vistos = manifiesto["buildspecs"]["etags"], vivo["etags"]
@@ -191,8 +218,7 @@ def comparar(manifiesto: dict, vivo: dict) -> list:
             d.append(f"imagen de la suite en {fuente}: {imagen}, manifiesto {manifiesto['suite']['imagen']}")
     if vivo["suite"]["playwright_retries"] != manifiesto["suite"]["playwright_retries"]:
         d.append(f"PLAYWRIGHT_RETRIES {vivo['suite']['playwright_retries']}, manifiesto {manifiesto['suite']['playwright_retries']}")
-    if vivo["suite"]["simular_trabajo_seg"] not in ("0", ""):
-        d.append(f"SIMULAR_TRABAJO_SEG publicado = {vivo['suite']['simular_trabajo_seg']!r} (tiene que ser 0)")
+    d += problemas_simular(vivo["suite"], manifiesto["simular_trabajo_seg"]["valor_publicado"])
     for p in vivo["pisadas"]:
         d.append(f"el proyecto {p['proyecto']} define {p['variable']} ({p['valor']}), que pisa el buildspec")
     for proyecto, commit in vivo["terraform"].items():

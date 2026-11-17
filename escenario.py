@@ -36,7 +36,18 @@ REPOS_POR_TIPO = {
     "combinacion": ["backend", "frontend"],
 }
 TIPOS_CON_MIGRACION = ("migracion", "combinacion")
-ACTUALIZACIONES = {0: 0.57, 1: 0.28, 2: 0.08, 3: 0.07}
+# Calibración medida; el experimento definitivo baja P(0) a la mitad y reparte el resto en la proporción medida.
+ACTUALIZACIONES_CALIBRACION = {0: 0.57, 1: 0.28, 2: 0.08, 3: 0.07}
+ACTUALIZACIONES_REGLA = "P(0) a la mitad de la calibración; resto en la proporción medida"
+
+
+def _actualizaciones(calibracion):
+    p0 = calibracion[0] / 2
+    resto = sum(p for k, p in calibracion.items() if k != 0)
+    return {k: (p0 if k == 0 else (1 - p0) * p / resto) for k, p in calibracion.items()}
+
+
+ACTUALIZACIONES = _actualizaciones(ACTUALIZACIONES_CALIBRACION)
 RESULTADOS = {"integrada": 0.75, "declinada": 0.25}
 PRIMER_REPO_COMBINACION = 0.5  # probabilidad de que el backend abra primero
 
@@ -50,6 +61,8 @@ PARAMETROS = {
     "combinacion_primer_repo_backend": PRIMER_REPO_COMBINACION,
     "brecha_segundo_repo_seg": list(BRECHA),
     "actualizaciones": {str(k): v for k, v in ACTUALIZACIONES.items()},
+    "actualizaciones_calibracion": {str(k): v for k, v in ACTUALIZACIONES_CALIBRACION.items()},
+    "actualizaciones_regla": ACTUALIZACIONES_REGLA,
     "brecha_actualizacion_seg": list(BRECHA),
     "resultados": RESULTADOS,
 }

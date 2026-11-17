@@ -20,6 +20,7 @@ def manifiesto():
         "buildspecs": {"bucket": "b", "prefijo": "main/", "etags": {"desplegar-efimero.yml": "a" * 32, "scripts/esperar-entorno.sh": "b" * 32}},
         "tag_json_main": {"tesis-backend-cd": {"digest": "sha256:" + "e" * 64}, "tesis-frontend-cd": {"digest": "sha256:" + "f" * 64}},
         "suite": {"imagen": SUITE, "playwright_retries": 2},
+        "simular_trabajo_seg": {"valor_publicado": "600"},
         "terraform": {"fijado": TF},
         "generador": {"commit": "c" * 40},
         "escenario": protocolo.parametros_escenario(),
@@ -31,7 +32,8 @@ def manifiesto():
 def vivo(m):
     return {"etags": dict(m["buildspecs"]["etags"]),
             "suite": {"imagenes": {"desplegar-efimero.yml": SUITE, "desplegar-fijo.yml": SUITE}, "playwright_retries": 2,
-                      "simular_trabajo_seg": "0"},
+                      "simular_trabajo_seg": {"desplegar-efimero.yml": "600", "desplegar-fijo.yml": "600"},
+                      "sleeps_simular": {"desplegar-efimero.yml": 1, "desplegar-fijo.yml": 1}},
             "pisadas": [], "terraform": {p: TF for p in protocolo.PROYECTOS_EFIMERO},
             "tag_json_main": copy.deepcopy(m["tag_json_main"]), "escenario": protocolo.parametros_escenario(),
             "escenario_archivo": protocolo.parametros_escenario()["parametros"], "generador": []}
@@ -69,9 +71,30 @@ class Comparar(unittest.TestCase):
         m = manifiesto()
         v = vivo(m)
         v["suite"]["playwright_retries"] = 0
-        v["suite"]["simular_trabajo_seg"] = "120"
+        v["suite"]["simular_trabajo_seg"] = {"desplegar-efimero.yml": "120", "desplegar-fijo.yml": "120"}
         v["pisadas"] = [{"proyecto": "tesis-efimero-desplegar-backend", "variable": "SIMULAR_TRABAJO_SEG", "valor": "60"}]
         self.assertEqual(len(protocolo.comparar(m, v)), 3)
+
+    def test_simular_distinto_entre_buildspecs(self):
+        m = manifiesto()
+        v = vivo(m)
+        v["suite"]["simular_trabajo_seg"]["desplegar-fijo.yml"] = "0"
+        d = protocolo.comparar(m, v)
+        self.assertEqual(len(d), 1)
+        self.assertIn("distinto entre buildspecs", d[0])
+        v["suite"]["simular_trabajo_seg"]["desplegar-efimero.yml"] = "0"  # iguales entre sí, pero no los del manifiesto
+        d = protocolo.comparar(m, v)
+        self.assertEqual(len(d), 1)
+        self.assertIn("manifiesto '600'", d[0])
+
+    def test_sleeps_de_simular(self):
+        m = manifiesto()
+        v = vivo(m)
+        v["suite"]["sleeps_simular"] = {"desplegar-efimero.yml": 2, "desplegar-fijo.yml": 0}
+        d = protocolo.comparar(m, v)
+        self.assertEqual(len(d), 2)
+        self.assertIn("desplegar-efimero.yml tiene 2 sleep", d[0])
+        self.assertIn("desplegar-fijo.yml tiene 0 sleep", d[1])
 
     def test_tag_json_terraform_y_escenario(self):
         m = manifiesto()
@@ -95,12 +118,28 @@ class Huella(unittest.TestCase):
         self.assertNotEqual(protocolo.huella(m), m["huella"])
 
     def test_suite_de_lo_publicado(self):
-        pub = {"desplegar-efimero.yml": f"env:\n  variables:\n    SIMULAR_TRABAJO_SEG: \"0\"\n    SUITE_IMAGEN: {SUITE}\n",
-               "desplegar-fijo.yml": f"    SUITE_IMAGEN: {SUITE}\n",
+        sleep = '      - if [ "$SIMULAR_TRABAJO_SEG" -gt 0 ]; then echo "duerme"; sleep "$SIMULAR_TRABAJO_SEG"; fi\n'
+        pub = {"desplegar-efimero.yml": f"env:\n  variables:\n    SIMULAR_TRABAJO_SEG: \"600\"\n    SUITE_IMAGEN: {SUITE}\n" + sleep,
+               "desplegar-fijo.yml": f"    SIMULAR_TRABAJO_SEG: \"600\"\n    SUITE_IMAGEN: {SUITE}\n" + sleep,
                "scripts/ejecutar-suite.sh": "docker run -e PLAYWRIGHT_RETRIES=2 \\\n"}
         s = protocolo.suite_de(pub)
         self.assertEqual(s, {"imagenes": {"desplegar-efimero.yml": SUITE, "desplegar-fijo.yml": SUITE},
-                             "playwright_retries": 2, "simular_trabajo_seg": "0"})
+                             "playwright_retries": 2,
+                             "simular_trabajo_seg": {"desplegar-efimero.yml": "600", "desplegar-fijo.yml": "600"},
+                             "sleeps_simular": {"desplegar-efimero.yml": 1, "desplegar-fijo.yml": 1}})
+        self.assertEqual(protocolo.problemas_simular(s, "600"), [])
+
+    def test_suite_de_rechaza_valores_distintos_y_sleeps_de_mas_o_de_menos(self):
+        sleep = '      - sleep "$SIMULAR_TRABAJO_SEG"\n'
+        pub = {"desplegar-efimero.yml": "    SIMULAR_TRABAJO_SEG: \"600\"\n" + sleep + sleep,  # dos sleep
+               "desplegar-fijo.yml": "    SIMULAR_TRABAJO_SEG: \"300\"\n      - sleep 600\n"}  # ninguno de SIMULAR
+        s = protocolo.suite_de(pub)
+        self.assertEqual(s["sleeps_simular"], {"desplegar-efimero.yml": 2, "desplegar-fijo.yml": 0})
+        d = protocolo.problemas_simular(s, "600")
+        self.assertEqual(len(d), 3)
+        self.assertIn("distinto entre buildspecs", d[0])
+        self.assertIn("desplegar-efimero.yml tiene 2 sleep", d[1])
+        self.assertIn("desplegar-fijo.yml tiene 0 sleep", d[2])
 
 
 def git(cwd, *a):

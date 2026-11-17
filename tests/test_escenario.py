@@ -1,5 +1,6 @@
 import collections
 import json
+import random
 import re
 import subprocess
 import sys
@@ -182,6 +183,45 @@ class Errores(unittest.TestCase):
         )
         self.assertNotEqual(r.returncode, 0)
         self.assertFalse(Path("/tmp/no-se-escribe.json").exists())
+
+
+class ActualizacionesDefinitivo(unittest.TestCase):
+    """Experimento definitivo: P(0) a la mitad de la calibración; resto en la proporción medida (28 : 8 : 7)."""
+
+    def test_pesos_suman_1_y_dan_los_valores(self):
+        a = escenario.ACTUALIZACIONES
+        self.assertEqual(list(a), [0, 1, 2, 3])
+        self.assertAlmostEqual(sum(a.values()), 1.0, places=12)
+        esperados = {0: 0.285, 1: 0.715 * 28 / 43, 2: 0.715 * 8 / 43, 3: 0.715 * 7 / 43}
+        for k, p in esperados.items():
+            with self.subTest(k=k):
+                self.assertAlmostEqual(a[k], p, places=12)
+        self.assertAlmostEqual(a[1], 0.465581, places=6)
+        self.assertAlmostEqual(a[2], 0.133023, places=6)
+        self.assertAlmostEqual(a[3], 0.116395, places=6)
+        self.assertAlmostEqual(a[0], escenario.ACTUALIZACIONES_CALIBRACION[0] / 2, places=12)
+        self.assertAlmostEqual(a[1] / a[2], 28 / 8, places=9)
+        self.assertAlmostEqual(a[2] / a[3], 8 / 7, places=9)
+
+    def test_regla_registrada_en_parametros(self):
+        p = escenario.PARAMETROS
+        self.assertEqual(p["actualizaciones_regla"], "P(0) a la mitad de la calibración; resto en la proporción medida")
+        self.assertEqual(p["actualizaciones_calibracion"], {"0": 0.57, "1": 0.28, "2": 0.08, "3": 0.07})
+        self.assertEqual(p["actualizaciones"], {str(k): v for k, v in escenario.ACTUALIZACIONES.items()})
+
+    def test_100000_sorteos_a_1_punto(self):
+        rng = random.Random(20261117)
+        conteo = collections.Counter(escenario._sortear(rng, escenario.ACTUALIZACIONES) for _ in range(100000))
+        self.assertEqual(set(conteo), {0, 1, 2, 3})
+        for k, p in escenario.ACTUALIZACIONES.items():
+            with self.subTest(k=k, esperada=p, observada=conteo[k] / 100000):
+                self.assertLessEqual(abs(conteo[k] / 100000 - p), 0.01)
+
+    def test_siguen_existiendo_versiones_sin_actualizaciones(self):
+        versiones = [v for e in muestra(versiones_objetivo=2000) for v in e["versiones"]]
+        sin = [v for v in versiones if not any(e["accion"] == "actualizacion" for e in v["eventos"])]
+        self.assertGreater(len(sin), 0)
+        self.assertLessEqual(abs(len(sin) / len(versiones) - 0.285), 0.03)
 
 
 if __name__ == "__main__":
