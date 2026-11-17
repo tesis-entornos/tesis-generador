@@ -148,5 +148,149 @@ class Filas(unittest.TestCase):
                              [("c9", "fijo", "true"), ("c10", "efimero", ""), ("c10", "fijo", "2")])
 
 
+def corrida_dos_ramas(c=96):
+    """Registro (esquema 2) de una corrida simulada completa, como lo escribe el ejecutor."""
+    import io
+    import json
+    from contextlib import redirect_stdout
+    import ejecutor
+    e = json.loads((RAIZ / "escenarios" / f"c{c}.json").read_text())
+    ej = ejecutor.Ejecutor(e, ejecutor.PlataformaSimulada(e, inicio=1_800_000_000.0), escribir=False)
+    with redirect_stdout(io.StringIO()):
+        assert ej.correr() == 0
+    r = json.loads(json.dumps(ej.resumen()))
+    r["protocolo"] = "f" * 64
+    return r, e
+
+
+class DosRamas(unittest.TestCase):
+    def setUp(self):
+        self.r, self.e = corrida_dos_ramas()
+
+    def motivos(self):
+        return cc.controles_dos_ramas(self.r)["motivos"]
+
+    def evento(self, n, repo, accion="actualizacion"):
+        return next(ev for ev in self.r["eventos"] if ev["n"] == n and ev["repo"] == repo and ev["accion"] == accion)
+
+    def version(self, n):
+        return next(v for v in self.r["versiones"] if v["n"] == n)
+
+    def test_limpia_y_valida(self):
+        self.assertEqual(cc.controles_dos_ramas(self.r), {"motivos": [], "avisos": []})
+        self.assertEqual(cc.evaluar_validez(self.r, self.e, {}, {}, DEP_OK), [])
+
+    def test_entrega_al_modelo_equivocado(self):
+        v = self.version(3)
+        v["modelos"]["fijo"]["validaciones"][0]["digest"] = v["digest_m"]["efimero"]["backend"]
+        m = self.motivos()
+        self.assertTrue(any("modelo equivocado" in x and "del fijo desplegó una imagen del efimero" in x for x in m))
+        self.assertTrue(any("modelo equivocado" in x for x in cc.evaluar_validez(self.r, self.e, {}, {}, DEP_OK)))
+
+    def test_historial_del_cd_con_commit_de_otro_modelo(self):
+        v = self.version(1)
+        hist = v["historial_cd"]["tesis-backend-cd"]
+        hist["release/c96-1"][0]["modelo"] = "fijo"
+        self.assertTrue(any("modelo equivocado" in x and "release/c96-1" in x for x in self.motivos()))
+
+    def test_tag_json_de_otro_modelo(self):
+        self.evento(1, "backend", "apertura")["m"]["fijo"]["tag"]["modelo"] = "efimero"
+        self.assertTrue(any("modelo equivocado" in x and "tag.json" in x for x in self.motivos()))
+
+    def test_builds_duplicados_es_aviso(self):
+        x = self.evento(1, "backend", "apertura")["m"]["fijo"]
+        x["duplicados"] = [{"build_id": "tesis-build-backend:dup", "status": "SUCCEEDED"}]
+        x["builds"].append({"id": "tesis-build-backend:dup", "status": "SUCCEEDED"})
+        r = cc.controles_dos_ramas(self.r)
+        self.assertEqual(r["motivos"], [])
+        self.assertTrue(any("duplicados" in a for a in r["avisos"]))
+
+    def test_escritor_que_no_esta_entre_sus_builds(self):
+        self.evento(1, "backend", "apertura")["m"]["fijo"]["unico"]["build_id"] = "otro"
+        self.assertTrue(any("builds duplicados" in x for x in self.motivos()))
+
+    def test_colision_de_tag(self):
+        a = self.evento(1, "backend", "apertura")["m"]["fijo"]
+        b = self.evento(2, "backend", "apertura")["m"]["efimero"]
+        a["tag"]["tag"] = b["tag"]["tag"]
+        self.assertTrue(any("colisión de tag" in x for x in self.motivos()))
+
+    def test_misma_imagen_en_los_dos_modelos(self):
+        ev = self.evento(1, "backend", "apertura")
+        ev["m"]["fijo"]["digest"] = ev["m"]["efimero"]["digest"]
+        self.assertTrue(any("misma imagen" in x for x in self.motivos()))
+
+    def test_imagen_subida_fuera_de_su_build(self):
+        x = self.evento(1, "backend", "apertura")["m"]["efimero"]
+        x["imagen"]["pushed_at"] = x["unico"]["start"] - 3600
+        self.assertTrue(any("fuera de su build" in x for x in self.motivos()))
+
+    def test_arboles_distintos(self):
+        self.evento(1, "backend", "apertura")["m"]["fijo"]["arbol"] = "0" * 40
+        self.assertTrue(any("mismo árbol" in x for x in self.motivos()))
+
+    def test_un_modelo_recibe_y_el_otro_no(self):
+        v = self.version(3)
+        d = self.evento(3, "backend")["m"]["fijo"]["digest"]
+        v["modelos"]["fijo"]["validaciones"] = [x for x in v["modelos"]["fijo"]["validaciones"] if x["digest"] != d]
+        self.assertTrue(any("un modelo recibe y el otro no" in x and "sin validación" in x for x in self.motivos()))
+        self.evento(2, "backend", "apertura")["m"]["efimero"]["estado"] = "despachado"
+        self.assertTrue(any("un modelo recibe y el otro no" in x and "c96-2" in x for x in self.motivos()))
+
+    def test_actualizacion_antes_de_su_T(self):
+        x = self.evento(3, "backend")["m"]["efimero"]
+        x["despachado"] = x["T"] - 30
+        self.assertTrue(any("fuera de orden" in m and "antes de T" in m for m in self.motivos()))
+
+    def test_actualizacion_con_validacion_en_curso(self):
+        x = self.evento(3, "backend")["m"]["fijo"]
+        previa = next(v for v in self.version(3)["modelos"]["fijo"]["validaciones"] if v["repo"] == "backend")
+        x["T"] = x["despachado"] = cc.epoch(previa["start"]) + 60
+        x["F"] = x["T"] - self.evento(3, "backend")["brecha"]
+        self.assertTrue(any("fuera de orden" in m and "en curso" in m for m in self.motivos()))
+
+    def test_integracion_del_fijo_fuera_de_orden(self):
+        integ = [i for i in self.r["integraciones_fijo"] if i["rama"] == "release/c96-3" and i["repo"] == "backend"]
+        integ[0]["k"], integ[1]["k"] = integ[1]["k"], integ[0]["k"]
+        self.assertTrue(any("fuera de orden" in m and "integró" in m for m in self.motivos()))
+
+    def test_filas_desde_la_entrega_y_la_rama_del_modelo(self):
+        filas = {(f["n"], f["modelo"]): f for f in cc.filas_versiones(self.r, self.e, {})}
+        v = self.version(3)
+        self.assertEqual(filas[(3, "fijo")]["t_apertura"], v["apertura_m"]["fijo"])
+        esperada = round(sum(cc.epoch(i["hora"]) - cc.epoch(i["listo"]) for i in v["modelos"]["fijo"]["integraciones"]), 1)
+        self.assertEqual(filas[(3, "fijo")]["espera_fijo_s"], esperada)
+        self.assertEqual(filas[(3, "efimero")]["validaciones"], 3)
+        self.assertEqual(filas[(3, "fijo")]["validaciones"], 3)
+
+    def test_inicio_solicitud_con_listo(self):
+        self.assertEqual(cc.inicio_solicitud({"listo": "2026-01-01T00:00:10Z", "pr_created_at": "2026-01-01T00:00:00Z"}, {}),
+                         cc.epoch("2026-01-01T00:00:10Z"))
+
+
+C60_CRUDOS = Path.home() / "tesis/aplicacion/piloto-definitivo-c60/analisis/crudos"
+
+
+@unittest.skipUnless(C60_CRUDOS.exists(), "sin los crudos de c60")
+class EsquemaUnoSinCambios(unittest.TestCase):
+    def test_c60_da_las_mismas_filas_que_datos_versiones_csv(self):
+        import json
+        corrida = json.loads((RAIZ / "registros" / "corrida-c60.json").read_text())
+        escenario = json.loads((RAIZ / "escenarios" / "c60.json").read_text())
+        docs = {}
+        for m in cc.MODELOS:
+            for f in (C60_CRUDOS / "s3" / "c60" / m).glob("*/validacion.json"):
+                docs[f"tesis-{m}-desplegar-{json.loads(f.read_text())['servicio']}:{f.parent.name}"] = json.loads(f.read_text())
+        fechas = {}
+        for f in (C60_CRUDOS / "github").glob("*/*.json"):
+            fechas[f.stem] = cc.epoch(json.loads(f.read_text())["commit"]["committer"]["date"])
+        filas = cc.filas_versiones(corrida, escenario, docs, fechas)
+        with tempfile.TemporaryDirectory() as d:
+            cc.actualizar_csv(Path(d) / "v.csv", cc.COLUMNAS_VERSIONES, filas, "c60")
+            nuevas = (Path(d) / "v.csv").read_text().splitlines()[1:]
+        viejas = [x for x in (RAIZ / "datos" / "versiones.csv").read_text().splitlines() if x.startswith("c60,")]
+        self.assertEqual(nuevas, viejas)
+
+
 if __name__ == "__main__":
     unittest.main()

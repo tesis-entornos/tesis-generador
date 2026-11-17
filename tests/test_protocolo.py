@@ -105,6 +105,66 @@ class Comparar(unittest.TestCase):
         self.assertEqual(len(protocolo.comparar(m, v)), 3)
 
 
+WEBHOOK_BUILD = {"buildType": "BUILD", "status": "ACTIVE", "pullRequestBuildPolicy": {"requiresCommentApproval": "DISABLED"},
+                 "filterGroups": [[{"type": "EVENT", "pattern": "PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED",
+                                    "excludeMatchedPattern": False},
+                                   {"type": "BASE_REF", "pattern": "^refs/heads/main$", "excludeMatchedPattern": False},
+                                   {"type": "HEAD_REF", "pattern": "^refs/heads/release/(efimero|fijo)/c[0-9]+-[0-9]+$",
+                                    "excludeMatchedPattern": False}]]}
+
+
+class DosRamas(unittest.TestCase):
+    def manifiesto_v4(self):
+        m = manifiesto()
+        m["webhooks"] = {"tesis-build-backend": copy.deepcopy(WEBHOOK_BUILD), "tesis-fijo-desplegar-backend": None}
+        m["ejecutor"] = protocolo.parametros_ejecutor()
+        m["huella"] = protocolo.huella(m)
+        return m
+
+    def vivo_v4(self, m):
+        v = vivo(m)
+        v["webhooks"] = copy.deepcopy(m["webhooks"])
+        v["ejecutor"] = protocolo.parametros_ejecutor()
+        return v
+
+    def test_coincide(self):
+        m = self.manifiesto_v4()
+        self.assertEqual(protocolo.comparar(m, self.vivo_v4(m)), [])
+
+    def test_filtro_de_webhook_distinto_o_faltante(self):
+        m = self.manifiesto_v4()
+        v = self.vivo_v4(m)
+        v["webhooks"]["tesis-build-backend"]["filterGroups"][0][2]["pattern"] = "^refs/heads/(release|hotfix)/.+$"
+        v["webhooks"]["tesis-efimero-desplegar-backend"] = {"buildType": "BUILD"}
+        d = protocolo.comparar(m, v)
+        self.assertEqual(len(d), 2)
+        self.assertTrue(any("tesis-build-backend" in x for x in d))
+        self.assertTrue(any("tesis-efimero-desplegar-backend" in x for x in d))
+
+    def test_parametros_del_ejecutor(self):
+        m = self.manifiesto_v4()
+        v = self.vivo_v4(m)
+        v["ejecutor"] = dict(v["ejecutor"], max_espera_seg=14400)
+        self.assertEqual(len(protocolo.comparar(m, v)), 1)
+        self.assertEqual(protocolo.parametros_ejecutor()["max_espera_seg"], 21600)
+        self.assertEqual(protocolo.parametros_ejecutor()["esquema"], 2)
+
+    def test_manifiesto_sin_las_secciones_nuevas_no_las_compara(self):
+        m = manifiesto()
+        v = vivo(m)
+        v["webhooks"] = {"x": {"buildType": "BUILD"}}
+        self.assertEqual(protocolo.comparar(m, v), [])
+
+    def test_webhook_sin_url_ni_secreto(self):
+        p = {"name": "x", "webhook": dict(WEBHOOK_BUILD, url="https://u", payloadUrl="https://p", secret="s",
+                                          lastModifiedSecret="2026", manualCreation=False)}
+        self.assertEqual(protocolo.webhook_de(p), WEBHOOK_BUILD)
+        self.assertIsNone(protocolo.webhook_de({"name": "y"}))
+
+    def test_manifiesto_por_defecto(self):
+        self.assertEqual(protocolo.MANIFIESTO.name, "protocolo-v4.json")
+
+
 class Huella(unittest.TestCase):
     def test_estable_e_independiente_del_orden(self):
         m = manifiesto()

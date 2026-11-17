@@ -1,27 +1,35 @@
 #!/usr/bin/env python3
-"""Ejecutor de una corrida completa en los dos modelos (fijo y efímero).
+"""Ejecutor de una corrida completa en los dos modelos (fijo y efímero), con DOS RAMAS por versión y repo.
 
     python ejecutor.py --escenario escenarios/c<N>.json [--sin-reset] [--dry-run]
 
+Diseño "dos ramas" (protocolo v4, esquema 2 del registro). Cada versión y repo tiene una rama de la app por modelo,
+release/efimero/c<N>-<n> y release/fijo/c<N>-<n>, cada una con su PR a main y su build en la compartida. El mismo
+contenido en las dos; el modelo va en el mensaje del commit, así el SHA y la imagen son distintos. El build de la
+rama del efímero escribe tag.json (modelo = efimero) en release/c<N>-<n> del -cd, cuyo push dispara el efímero. El
+de la rama del fijo lo escribe (modelo = fijo) en release/fijo/c<N>-<n>, que no dispara nada: el ejecutor integra
+en dev el commit de ESA actualización (no la punta), de a una, por orden de entrega (fin del build).
+
+Regla de actualización: la actualización k de una versión se hace en la rama de un modelo recién cuando terminaron
+todas las validaciones en curso de esa versión en ese modelo (backend y frontend; sin builds ni entregas
+pendientes) y el evento anterior de la cadena ya se validó ahí, más la brecha b_k del escenario (t_k - t del
+evento anterior de la cadena, la misma para los dos modelos, sin re-sortear): T_m(k) = F_m + b_k.
+
 Un bucle de un solo hilo que cada 15 s:
   1. (al inicio) corre reset.py salvo --sin-reset; su fin es t = 0;
-  2. despacha los eventos de eventos_ordenados cuyo t ya llegó (acciones.abrir / acciones.actualizar). Un
-     evento espera a que termine el build único del evento anterior de la misma versión y repo, para que dos
-     builds únicos no escriban a la vez el tag.json de la misma rama del -cd;
-  3. consulta builds (build único, fijo, efímero, cierre), PRs del -cd -> dev y registros (validacion.json,
-     destruccion.json);
-  4. cola del fijo: con el fijo libre, integra en dev el PR -cd -> dev abierto más antiguo (merge --no-ff,
-     conflicto de tag.json resuelto con --theirs) y espera su build del fijo;
-  5. validación final de cada versión en cada modelo: para cada repo, una validación terminada con el digest
-     más reciente; la final es la última en terminar;
-  6. cierre en cada modelo apenas hay validación final (efímero: PR -> main-efimero mergeado localmente o
-     cerrado, build de cierre del webhook o manual; fijo: PR -> main-fijo mergeado localmente o cerrado);
-  7. limpieza de la versión cuando cerró en los dos modelos y no hay cierres en curso;
-  8. registro final en registros/corrida-c<N>.json.
+  2. despacha por modelo: aperturas en t del escenario (los dos modelos, en orden alternado por n),
+     actualizaciones en T_m(k); un evento de un modelo espera al build del evento anterior de la misma versión,
+     repo y modelo;
+  3. consulta builds (compartida, fijo, efímero, cierre), registros (validacion.json, destruccion.json) y, por
+     cada build terminado de la compartida, el tag.json del commit que escribió en el -cd;
+  4. cola del fijo: con el fijo libre, integra en dev el commit del -cd de la solicitud entregada primero y
+     espera su build del fijo;
+  5. validación final por modelo: para cada repo, la validación del digest del último evento de ese modelo;
+  6. cierre en cada modelo (efímero: PR release/c<N>-<n> -> main-efimero; fijo: PR release/fijo/c<N>-<n> ->
+     main-fijo), limpieza y registro final en registros/corrida-c<N>.json (esquema 2).
 
-Estado en registros/estado-c<N>.json (cada vuelta) y log legible en registros/c<N>.log. Si algo espera más
-de 90 min, la corrida se aborta como inválida (sin limpiar). --dry-run recorre el escenario contra una
-plataforma simulada con reloj virtual, sin tocar nada.
+Si algo espera más de MAX_ESPERA_SEG (6 h), la corrida se aborta como inválida. --dry-run recorre el escenario contra
+una plataforma simulada con reloj virtual, sin tocar nada.
 """
 
 import argparse
@@ -48,15 +56,24 @@ ORG = "tesis-entornos"
 REGION = "us-east-2"
 
 VUELTA_SEG = 15
-MAX_ESPERA_SEG = 240 * 60
+MAX_ESPERA_SEG = 360 * 60
 WEBHOOK_SEG = 120
 MERGED_SEG = 180
 EXPIRACION_SEG = 4 * 24 * 3600
+ENTREGA_EFIMERO_SEG = 600
+ESQUEMA = 2
+REGLA_ACTUALIZACION = ("dos ramas por modelo; la actualización k se hace en la rama de cada modelo en F_m + b_k, con "
+                       "F_m = fin de la última validación de la versión en ese modelo cuando no queda ninguna "
+                       "validación, build ni entrega en curso de la versión en ese modelo (backend y frontend) y el "
+                       "evento anterior de la cadena ya se validó ahí, y b_k = t_k - t del evento anterior de la "
+                       "cadena del escenario (la misma para los dos modelos); el fijo integra el commit k, de a uno, "
+                       "por orden de entrega")
 MODELOS = ("efimero", "fijo")
 
 PERFILES = {"tesis-build-": "tf-compartida", "tesis-efimero-": "tf-efimero", "tesis-fijo-": "tf-fijo"}
 BUCKET_REGISTROS = {"efimero": ("tf-efimero", "tesis-efimero-registros-398846004421"),
                     "fijo": ("tf-fijo", "tesis-fijo-registros-491265021424")}
+ECR_REGISTRO = "582621604637"
 
 
 class ErrorEjecutor(Exception):
@@ -94,16 +111,65 @@ def proyecto(tipo, repo):
             "fijo": f"tesis-fijo-desplegar-{repo}", "cierre": f"tesis-efimero-cerrar-{repo}"}[tipo]
 
 
+def rama_cd(rama, modelo):
+    """Rama del -cd donde escribe el build de ese modelo: release/c<N>-<n> (efímero; la escucha su webhook) o
+    release/fijo/c<N>-<n> (fijo; no dispara nada)."""
+    return rama if modelo == "efimero" else acciones.rama_app(rama, "fijo")
+
+
 # --------------------------------------------------------------------------------------------------
 # Decisiones (puras)
 
 
-def elegir_pr_cola(prs: list, integrados: dict):
-    """PR -> dev abierto más antiguo (createdAt) cuya punta todavía no se integró."""
-    candidatos = [p for p in prs if p["sha"] not in integrados.get(f"{p['cd']}#{p['number']}", [])]
-    if not candidatos:
+def elegir_solicitud(solicitudes: list):
+    """Solicitud del fijo entregada primero (listo; ante empate, el evento anterior) que todavía no se integró."""
+    candidatas = [s for s in solicitudes if s.get("estado") == "pendiente"]
+    if not candidatas:
         return None
-    return min(candidatos, key=lambda p: (p["created"], p["cd"], p["number"]))
+    return min(candidatas, key=lambda s: (epoch(s["listo"]), s["ev"]))
+
+
+def brechas(eventos: list) -> dict:
+    """{i: (i del evento anterior de la cadena, brecha)} de las actualizaciones. La cadena de una versión es su
+    apertura (la primera, del primer repo) y sus actualizaciones en orden; la segunda apertura de una combinación no
+    la corta. eventos = eventos_ordenados con su índice i."""
+    out = {}
+    por_v = {}
+    for ev in eventos:
+        por_v.setdefault(ev["n"], []).append(ev)
+    for evs in por_v.values():
+        ant = min((e for e in evs if e["accion"] == "apertura"), key=lambda e: (e["t"], e["i"]))
+        for e in sorted((e for e in evs if e["accion"] == "actualizacion"), key=lambda e: e["i"]):
+            if e["t"] < ant["t"]:
+                raise ValueError(f"c?-{e['n']}: la actualización {e['i']} es anterior a su evento previo de la cadena")
+            out[e["i"]] = (ant["i"], e["t"] - ant["t"])
+            ant = e
+    return out
+
+
+def estado_agregado(estados: list) -> str:
+    """Estado de un evento a partir del de cada modelo."""
+    s = set(estados)
+    if s == {"unico_ok"}:
+        return "unico_ok"
+    if "despachado" in s:
+        return "despachado"
+    if s == {"cancelado"}:
+        return "cancelado"
+    if "pendiente" in s:
+        return "pendiente"
+    return "parcial"  # unico_ok en un modelo y cancelado en el otro (expiración)
+
+
+def elegir_build_unico(builds: list):
+    """builds del proyecto de la compartida con resolved == commit. ('esperar' | 'falla' | 'ok', escritor,
+    duplicados): el escritor es el primer SUCCEEDED (por start); el resto son duplicados del webhook."""
+    if not builds:
+        return "esperar", None, []
+    ok = sorted((b for b in builds if b["complete"] and b["status"] == "SUCCEEDED"), key=lambda b: (b["start"], b["id"]))
+    if not ok:
+        return ("falla" if all(b["complete"] for b in builds) else "esperar"), None, []
+    return "ok", ok[0], [b for b in builds if b["id"] != ok[0]["id"]]
 
 
 def validacion_final(repos: list, digests: dict, validaciones: list):
@@ -194,6 +260,9 @@ def resultado_fijo(v: dict) -> str:
 
 
 # --------------------------------------------------------------------------------------------------
+
+
+# --------------------------------------------------------------------------------------------------
 # Plataforma real
 
 
@@ -226,13 +295,14 @@ class PlataformaReal:
         reg = json.loads((REGISTROS / f"reset-c{self.corrida}.json").read_text(encoding="utf-8"))
         return epoch(reg["fin"])
 
-    def abrir(self, n, repo):
-        r, _ = acciones.abrir(self.escenario, n, repo, False)
-        return {"commit": r["commit"], "pr": r["pr"], "pr_created_at": r["pr_created_at"]}
+    def abrir(self, n, repo, modelo):
+        r, _ = acciones.abrir(self.escenario, n, repo, False, modelo=modelo, tag_libre=lambda sha: self.tag_libre(repo, sha))
+        return {"commit": r["commit"], "arbol": r["arbol"], "pr": r["pr"], "pr_created_at": r["pr_created_at"]}
 
-    def actualizar(self, n, repo, k):
-        r, _ = acciones.actualizar(self.escenario, n, repo, k, False)
-        return {"commit": r["commit"]}
+    def actualizar(self, n, repo, k, modelo):
+        r, _ = acciones.actualizar(self.escenario, n, repo, k, False, modelo=modelo,
+                                   tag_libre=lambda sha: self.tag_libre(repo, sha))
+        return {"commit": r["commit"], "arbol": r["arbol"]}
 
     def _aws(self, perfil, *args):
         out = _correr(["aws", *args, "--profile", perfil, "--region", REGION, "--output", "json"]).stdout
@@ -240,10 +310,11 @@ class PlataformaReal:
 
     def builds(self, proy, desde):
         perfil = next(p for pre, p in PERFILES.items() if proy.startswith(pre))
-        ids = self._aws(perfil, "codebuild", "list-builds-for-project", "--project-name", proy, "--query", "ids[0:30]") or []
+        # Con dos builds por evento, tesis-build-<repo> puede pasar de 30 builds por corrida: se miran los 100 últimos.
+        ids = self._aws(perfil, "codebuild", "list-builds-for-project", "--project-name", proy, "--query", "ids[0:100]") or []
         pedir = [i for i in ids if not (i in self._cache and self._cache[i]["complete"])]
-        if pedir:
-            for b in self._aws(perfil, "codebuild", "batch-get-builds", "--ids", *pedir, "--query", "builds") or []:
+        for j in range(0, len(pedir), 100):
+            for b in self._aws(perfil, "codebuild", "batch-get-builds", "--ids", *pedir[j:j + 100], "--query", "builds") or []:
                 self._cache[b["id"]] = {"id": b["id"], "status": b["buildStatus"], "complete": b["buildComplete"],
                                         "start": epoch(b["startTime"]), "end": epoch(b.get("endTime")),
                                         "resolved": b.get("resolvedSourceVersion"), "source": b.get("sourceVersion")}
@@ -299,17 +370,19 @@ class PlataformaReal:
                      "created_at": p["createdAt"], "created": epoch(p["createdAt"])} for p in lista]
         return prs
 
-    def tag_json(self, cd, rama):
-        r = _correr(["gh", "api", f"repos/{ORG}/{cd}/contents/tag.json?ref={rama}"], check=False)
+    def tag_json(self, cd, ref):
+        """tag.json del -cd en una rama o en un commit."""
+        r = _correr(["gh", "api", f"repos/{ORG}/{cd}/contents/tag.json?ref={ref}"], check=False)
         if r.returncode != 0:
             return None
         return json.loads(base64.b64decode(json.loads(r.stdout)["content"]))
 
-    def integrar(self, cd, rama, base, mensaje):
+    def integrar(self, cd, ref, base, mensaje):
+        """merge --no-ff de ref (origin/<rama> o un SHA del -cd) sobre base y push."""
         clon = acciones.preparar_clon(cd, TRABAJO, f"https://github.com/{ORG}/{cd}.git")
         _correr(["git", "merge", "--abort"], cwd=clon, check=False)
         _correr(["git", "checkout", "--quiet", "-f", "-B", base, f"origin/{base}"], cwd=clon)
-        conflicto = merge_con_tag(clon, f"origin/{rama}", mensaje)
+        conflicto = merge_con_tag(clon, ref, mensaje)
         commit = _correr(["git", "rev-parse", "HEAD"], cwd=clon).stdout.strip()
         _correr(["git", "push", "--quiet", "origin", f"HEAD:refs/heads/{base}"], cwd=clon)
         return {"commit": commit, "conflicto": conflicto}
@@ -347,6 +420,36 @@ class PlataformaReal:
             raise ErrorEjecutor(f"no se pudo borrar {repo_gh} {rama}: {(r.stderr or r.stdout).strip()[:300]}")
         return r.returncode == 0
 
+    # --- controles de dos ramas (solo lectura) ---
+
+    def tag_libre(self, repo, sha):
+        """True si el tag sha[:7] todavía no existe en el ECR de la compartida."""
+        r = _correr(["aws", "ecr", "describe-images", "--registry-id", ECR_REGISTRO, "--repository-name", app_de(repo),
+                     "--image-ids", f"imageTag={sha[:7]}", "--profile", "tf-compartida", "--region", REGION, "--output", "json"],
+                    check=False)
+        if r.returncode == 0:
+            return False
+        if "ImageNotFoundException" in (r.stderr + r.stdout):
+            return True
+        raise ErrorEjecutor(f"no se pudo consultar el tag {sha[:7]} en ECR: {reset_mod.redactar((r.stderr or r.stdout).strip())[:300]}")
+
+    def imagen(self, repo, digest):
+        """Tags y hora de push de la imagen de un digest en el ECR de la compartida."""
+        d = self._aws("tf-compartida", "ecr", "describe-images", "--registry-id", ECR_REGISTRO, "--repository-name", app_de(repo),
+                      "--image-ids", f"imageDigest={digest}", "--query", "imageDetails[0]")
+        return {"tags": sorted((d or {}).get("imageTags") or []), "pushed_at": epoch((d or {}).get("imagePushedAt"))}
+
+    def historial_cd(self, cd, rama):
+        """Commits de la rama del -cd que no están en main, con lo que dice su tag.json."""
+        r = _correr(["gh", "api", f"repos/{ORG}/{cd}/compare/main...{rama}", "-q", "[.commits[].sha]"], check=False)
+        if r.returncode != 0 or not r.stdout.strip():
+            return []
+        out = []
+        for sha in json.loads(r.stdout):
+            t = self.tag_json(cd, sha) or {}
+            out.append({"sha": sha, "modelo": t.get("modelo"), "commit": t.get("commit"), "digest": t.get("digest"), "rama": t.get("rama")})
+        return out
+
 
 # --------------------------------------------------------------------------------------------------
 # Plataforma simulada (dry-run y pruebas): reloj virtual, duraciones típicas medidas en las pruebas reales
@@ -357,6 +460,10 @@ DUR = {"unico": 90, "efimero_nuevo": 640, "efimero": 330, "fijo_backend": 330, "
 
 
 class PlataformaSimulada:
+    """Dos ramas: el build de release/efimero/* escribe en release/c<N>-<n> del -cd y dispara el efímero (serializado
+    por rama, como esperar-turno.sh); el de release/fijo/* escribe en release/fijo/c<N>-<n> y abre el PR -> dev, sin
+    disparar nada. Los builds se ven desde que se piden (como en CodeBuild, donde la espera del turno es parte del
+    build); start es cuando arrancan de verdad."""
     simulada = True
 
     def __init__(self, escenario, inicio=None):
@@ -367,12 +474,14 @@ class PlataformaSimulada:
         self.b = {}           # proyecto -> [build]
         self.val, self.des = {}, {}
         self.prs = {}         # repo_gh -> [pr]
-        self.tags = {}        # (cd, rama) -> tag
+        self.tags = {}        # (cd, rama o sha) -> tag
         self.ramas = set()    # (repo_gh, rama)
         self.entornos = set()
         self.fin_rama = {}    # rama -> fin del último despliegue efímero (serialización)
         self.n = 0
         self.refs = {}        # (cd, rama) -> sha de la punta
+        self.hist = {}        # (cd, rama) -> [sha]
+        self.imagenes = {}    # digest -> {tags, pushed_at}
 
     def _h(self, *partes):
         self.n += 1
@@ -400,7 +509,7 @@ class PlataformaSimulada:
 
     def _build(self, proy, inicio, dur, resolved, source, al_terminar=None):
         b = {"id": f"{proy}:{self._h(proy)[:8]}-sim", "status": "IN_PROGRESS", "complete": False, "start": inicio, "end": None,
-             "resolved": resolved, "source": source}
+             "resolved": resolved, "source": source, "pedido": self.t}
         self.b.setdefault(proy, []).insert(0, b)
 
         def fin():
@@ -416,45 +525,57 @@ class PlataformaSimulada:
         lista.append(p)
         return p
 
-    def _evento_app(self, n, repo, pr):
+    @staticmethod
+    def _arbol(n, repo, k):
+        return hashlib.sha1(f"arbol|{n}|{repo}|{k}".encode()).hexdigest()  # el mismo en los dos modelos
+
+    def _evento_app(self, n, repo, modelo, k, pr):
         v = acciones.version(self.escenario, n)
         rama, cd = v["rama"], cd_de(repo)
-        commit = self._h("app", n, repo)
+        destino = rama_cd(rama, modelo)
+        commit = self._h("app", n, repo, modelo, k)
 
         def tras_unico(b):
             digest = "sha256:" + hashlib.sha256(commit.encode()).hexdigest()
-            self.tags[(cd, rama)] = {"commit": commit, "digest": digest, "rama": rama}
-            self.ramas.add((cd, rama))
-            cd_commit = self._h("cd", rama)
-            self.refs[(cd, rama)] = cd_commit
-            abierto = [p for p in self.prs.get(cd, []) if p["head"] == rama and p["base"] == "dev" and p["state"] == "OPEN"]
-            if abierto:
-                abierto[0]["sha"] = cd_commit
+            tag = {"repo": f"{ECR_REGISTRO}.dkr.ecr.{REGION}.amazonaws.com/{app_de(repo)}", "commit": commit,
+                   "tag": commit[:7], "digest": digest, "rama": rama, "modelo": modelo}
+            self.imagenes[digest] = {"tags": [commit[:7]], "pushed_at": b["end"] - 10}
+            cd_sha = self._h("cd", destino)
+            self.tags[(cd, destino)] = tag
+            self.tags[(cd, cd_sha)] = tag
+            self.ramas.add((cd, destino))
+            self.refs[(cd, destino)] = cd_sha
+            self.hist.setdefault((cd, destino), []).append(cd_sha)
+            if modelo == "efimero":
+                inicio = max(self.t + 1, self.fin_rama.get(rama, 0))
+                dur = DUR["efimero"] if rama in self.entornos else DUR["efimero_nuevo"]
+                self.entornos.add(rama)
+                self.fin_rama[rama] = inicio + dur
+                e = self._build(proyecto("efimero", repo), inicio, dur, cd_sha, cd_sha)
+                self.val[e["id"]] = {"rama": rama, "digest": digest, "resultado": "ok", "detalle": "ok"}
             else:
-                self._pr(cd, "dev", rama, cd_commit)
-            inicio = max(self.t + 1, self.fin_rama.get(rama, 0))
-            dur = DUR["efimero"] if rama in self.entornos else DUR["efimero_nuevo"]
-            self.entornos.add(rama)
-            self.fin_rama[rama] = inicio + dur
-            e = self._build(proyecto("efimero", repo), inicio, dur, cd_commit, cd_commit)
-            self.val[e["id"]] = {"rama": rama, "digest": digest, "resultado": "ok", "detalle": "ok"}
+                abierto = [p for p in self.prs.get(cd, []) if p["head"] == destino and p["base"] == "dev" and p["state"] == "OPEN"]
+                if abierto:
+                    abierto[0]["sha"] = cd_sha
+                else:
+                    self._pr(cd, "dev", destino, cd_sha)
         self._build(proyecto("unico", repo), self.t + 2, DUR["unico"], commit, f"pr/{pr}", tras_unico)
         return commit
 
-    def abrir(self, n, repo):
-        rama = acciones.version(self.escenario, n)["rama"]
+    def abrir(self, n, repo, modelo):
+        rama = acciones.rama_app(acciones.version(self.escenario, n)["rama"], modelo)
         p = self._pr(app_de(repo), "main", rama)
         self.ramas.add((app_de(repo), rama))
-        commit = self._evento_app(n, repo, p["number"])
-        return {"commit": commit, "pr": p["number"], "pr_created_at": iso(self.t)}
+        commit = self._evento_app(n, repo, modelo, 0, p["number"])
+        return {"commit": commit, "arbol": self._arbol(n, repo, 0), "pr": p["number"], "pr_created_at": iso(self.t)}
 
-    def actualizar(self, n, repo, k):
-        rama = acciones.version(self.escenario, n)["rama"]
+    def actualizar(self, n, repo, k, modelo):
+        rama = acciones.rama_app(acciones.version(self.escenario, n)["rama"], modelo)
         p = next(x for x in self.prs[app_de(repo)] if x["head"] == rama)
-        return {"commit": self._evento_app(n, repo, p["number"])}
+        return {"commit": self._evento_app(n, repo, modelo, k, p["number"]), "arbol": self._arbol(n, repo, k)}
 
     def builds(self, proy, desde):
-        return [dict(b) for b in self.b.get(proy, []) if b["start"] >= desde - 1 and b["start"] <= self.t]
+        return [dict(b) for b in self.b.get(proy, []) if b["pedido"] >= desde - 1 and b["pedido"] <= self.t]
 
     def validacion(self, modelo, repo, build_id):
         return self.val.get(build_id)
@@ -471,8 +592,8 @@ class PlataformaSimulada:
                     for p in self.prs.get(cd, []) if p["base"] == "dev" and p["state"] == "OPEN"]
         return out
 
-    def tag_json(self, cd, rama):
-        return self.tags.get((cd, rama))
+    def tag_json(self, cd, ref):
+        return self.tags.get((cd, ref))
 
     def _cierre_webhook(self, cd, rama, pr, evento):
         repo = cd.split("-")[1]
@@ -483,18 +604,20 @@ class PlataformaSimulada:
         self.des[b["id"]] = {"accion": accion, "resultado": "esperando el cierre del otro -cd" if otra else "ok",
                              "otra_rama_existe": otra, "evento": evento, "rama": rama}
 
-    def integrar(self, cd, rama, base, mensaje):
+    def integrar(self, cd, ref, base, mensaje):
         commit = self._h("merge", cd, base)
+        if base == "dev":
+            repo = cd.split("-")[1]
+            tag = self.tags[(cd, ref)]
+            f = self._build(proyecto("fijo", repo), self.t + 3, DUR[f"fijo_{repo}"], commit, commit)
+            self.val[f["id"]] = {"rama": tag["rama"], "digest": tag["digest"], "resultado": "ok", "detalle": "ok"}
+            return {"commit": commit, "conflicto": "tag.json"}
+        rama = ref[len("origin/"):] if ref.startswith("origin/") else ref
         for p in self.prs.get(cd, []):
             if p["head"] == rama and p["base"] == base and p["state"] == "OPEN":
                 p["state"] = "MERGED"
                 if base == "main-efimero":
                     self._cierre_webhook(cd, rama, p["number"], "PULL_REQUEST_MERGED")
-        if base == "dev":
-            repo = cd.split("-")[1]
-            tag = self.tags[(cd, rama)]
-            f = self._build(proyecto("fijo", repo), self.t + 3, DUR[f"fijo_{repo}"], commit, commit)
-            self.val[f["id"]] = {"rama": rama, "digest": tag["digest"], "resultado": "ok", "detalle": "ok"}
         return {"commit": commit, "conflicto": "tag.json"}
 
     def pr_crear(self, cd, base, rama, titulo):
@@ -522,9 +645,28 @@ class PlataformaSimulada:
         self.ramas.discard((repo_gh, rama))
         return True
 
+    def tag_libre(self, repo, sha):
+        return True
+
+    def imagen(self, repo, digest):
+        return dict(self.imagenes.get(digest) or {"tags": [], "pushed_at": None})
+
+    def historial_cd(self, cd, rama):
+        out = []
+        for sha in self.hist.get((cd, rama), []):
+            t = self.tags.get((cd, sha)) or {}
+            out.append({"sha": sha, "modelo": t.get("modelo"), "commit": t.get("commit"), "digest": t.get("digest"), "rama": t.get("rama")})
+        return out
+
 
 # --------------------------------------------------------------------------------------------------
 # Ejecutor
+
+
+def nuevo_modelo():
+    return {"estado": "pendiente", "T": None, "F": None, "commit": None, "arbol": None, "pr": None, "despachado": None,
+            "retraso": None, "unico": None, "builds": [], "duplicados": [], "digest": None, "tag": None, "cd_sha": None,
+            "imagen": None, "entregado": None, "efimero_build": None}
 
 
 class Ejecutor:
@@ -539,15 +681,20 @@ class Ejecutor:
         self.archivo_estado = REGISTROS / f"estado-c{self.c}.json"
         self.archivo_log = REGISTROS / f"c{self.c}.log"
         self.archivo_corrida = REGISTROS / f"corrida-c{self.c}.json"
+        eventos = [dict(ev, i=i, estado="pendiente", despachado=None, m={m: nuevo_modelo() for m in MODELOS})
+                   for i, ev in enumerate(escenario["eventos_ordenados"])]
+        for i, (previo, b) in brechas(eventos).items():
+            eventos[i].update(previo=previo, brecha=b)
         self.s = {
-            "corrida": f"c{self.c}", "semilla": escenario["semilla"], "nivel": escenario["nivel"],
+            "corrida": f"c{self.c}", "semilla": escenario["semilla"], "nivel": escenario["nivel"], "esquema": ESQUEMA,
             "simulada": plataforma.simulada, "inicio": None, "t0": None, "fin": None, "resultado": None, "motivo": None,
-            "eventos": [dict(ev, i=i, estado="pendiente") for i, ev in enumerate(escenario["eventos_ordenados"])],
+            "eventos": eventos,
             "versiones": {},
             "cola_fijo": {"en_curso": None, "integraciones": []},
-            "integrados": {},
+            "solicitudes_fijo": [],
             "merged_pendientes": [],
             "esperas": {},
+            "avisos": [],
             "vueltas": 0,
             "expiracion_seg": expiracion_seg,
             "depurador": None,
@@ -557,11 +704,12 @@ class Ejecutor:
         for v in escenario["versiones"]:
             self.s["versiones"][str(v["n"])] = {
                 "n": v["n"], "rama": v["rama"], "tipo": v["tipo"], "repos": v["repos"], "resultado": v["resultado"],
-                "app_pr": {}, "apertura": None, "digest": {}, "validaciones": {"efimero": [], "fijo": []},
+                "app_pr": {m: {} for m in MODELOS}, "apertura": None, "apertura_m": {m: None for m in MODELOS},
+                "digest_m": {m: {} for m in MODELOS}, "validaciones": {"efimero": [], "fijo": []},
                 "final": {"efimero": None, "fijo": None},
                 "cierre": {"efimero": {"estado": "pendiente", "repos": {}, "manual_extra": None, "destruccion": None},
                            "fijo": {"estado": "pendiente", "repos": {}}},
-                "limpieza": None,
+                "limpieza": None, "historial_cd": {},
                 "expirada": None, "resultado_cierre": None, "cd_commits": [],
             }
         self.builds = {}
@@ -582,6 +730,11 @@ class Ejecutor:
             REGISTROS.mkdir(parents=True, exist_ok=True)
             with self.archivo_log.open("a", encoding="utf-8") as f:
                 f.write(linea + "\n")
+
+    def aviso(self, texto):
+        if texto not in self.s["avisos"]:
+            self.s["avisos"].append(texto)
+            self.log(f"AVISO {texto}")
 
     def aviso_consulta(self, error):
         self.s["errores_consulta"] = self.s.get("errores_consulta", 0) + 1
@@ -609,22 +762,41 @@ class Ejecutor:
     def eventos_de(self, n, repo=None):
         return [ev for ev in self.s["eventos"] if ev["n"] == n and (repo is None or ev["repo"] == repo)]
 
+    def agregar(self, ev):
+        ev["estado"] = estado_agregado([ev["m"][m]["estado"] for m in MODELOS])
+        ds = [ev["m"][m]["despachado"] for m in MODELOS if ev["m"][m]["despachado"] is not None]
+        ev["despachado"] = max(ds) if ds else None
+
+    def digests_modelo(self, v, m):
+        return {ev["m"][m]["digest"] for ev in self.eventos_de(v["n"]) if ev["m"][m]["digest"]}
+
+    def validado(self, ev, m):
+        """Fin de la (primera) validación terminada del digest del evento en el modelo, o None."""
+        d = ev["m"][m]["digest"]
+        if d is None:
+            return None
+        ends = [x["end"] for x in self.V(ev["n"])["validaciones"][m] if x["digest"] == d and x["end"] is not None]
+        return min(ends) if ends else None
+
     # --- consultas ------------------------------------------------------------------------------
 
     def refrescar(self):
         desde = self.s["t0"]
         hay_cierres = any(v["cierre"]["efimero"]["estado"] not in ("pendiente",) for v in self.s["versiones"].values())
         for repo in ("backend", "frontend"):
-            tipos = ["efimero", "fijo"]
-            if any(ev["estado"] == "despachado" for ev in self.s["eventos"]):
-                tipos.append("unico")
-            if hay_cierres:
-                tipos.append("cierre")
-            for tipo in ("unico", "efimero", "fijo", "cierre"):
-                if tipo in tipos:
-                    self.builds[proyecto(tipo, repo)] = self.p.builds(proyecto(tipo, repo), desde)
+            for tipo in ("unico", "efimero", "fijo") + (("cierre",) if hay_cierres else ()):
+                self.builds[proyecto(tipo, repo)] = self.p.builds(proyecto(tipo, repo), desde)
+        # builds de la compartida de cada commit (para detectar duplicados del webhook)
+        for ev in self.s["eventos"]:
+            for m in MODELOS:
+                x = ev["m"][m]
+                if x["commit"]:
+                    x["builds"] = [{"id": b["id"], "status": b["status"], "complete": b["complete"], "start": b["start"],
+                                    "end": b["end"]} for b in self.builds.get(proyecto("unico", ev["repo"]), [])
+                                   if b["resolved"] == x["commit"]] or x["builds"]
         # validaciones terminadas de los dos modelos
         for modelo in MODELOS:
+            otro = "fijo" if modelo == "efimero" else "efimero"
             for repo in ("backend", "frontend"):
                 for b in self.builds.get(proyecto(modelo, repo), []):
                     if not b["complete"]:
@@ -643,6 +815,9 @@ class Ejecutor:
                         self.log(f"AVISO {b['id']}: validación de una rama ajena ({d['rama']}); se ignora")
                         self.s["sin_registro"][b["id"]] = 8
                         continue
+                    if d["digest"] in self.digests_modelo(v, otro):
+                        raise Abortar(f"entrega al modelo equivocado: la validación {b['id']} del {modelo} desplegó la imagen "
+                                      f"{str(d['digest'])[:19]} de la rama del {otro} ({v['rama']} {repo})")
                     reg = {"repo": repo, "build_id": b["id"], "digest": d["digest"], "start": b["start"], "end": b["end"],
                            "status": b["status"], "resultado": d["resultado"] if b["status"] == "SUCCEEDED" else "falla",
                            "detalle": d.get("detalle")}
@@ -652,65 +827,141 @@ class Ejecutor:
 
     # --- 2. eventos -----------------------------------------------------------------------------
 
-    def build_unico(self, ev):
-        for b in self.builds.get(proyecto("unico", ev["repo"]), []):
-            if b["resolved"] == ev.get("commit"):
-                return b
-        return None
+    def calcular_T(self):
+        """T_m(k) = F_m + b_k de las actualizaciones cuyo F_m ya se puede fijar en cada modelo."""
+        for ev in self.s["eventos"]:
+            if ev["accion"] != "actualizacion":
+                continue
+            for m in MODELOS:
+                x = ev["m"][m]
+                if x["T"] is not None or x["estado"] != "pendiente":
+                    continue
+                prev = self.s["eventos"][ev["previo"]]
+                if prev["m"][m]["entregado"] is None or self.validado(prev, m) is None:
+                    continue
+                otros = [e for e in self.eventos_de(ev["n"]) if e["i"] != ev["i"]]
+                if any(e["m"][m]["estado"] == "despachado" or (e["m"][m]["estado"] == "unico_ok" and e["m"][m]["entregado"] is None)
+                       for e in otros):
+                    continue  # build o entrega pendiente de la versión en m
+                if any(e["m"][m]["entregado"] is not None and self.validado(e, m) is None for e in otros):
+                    continue  # validación en curso de la versión en m
+                x["F"] = max(self.validado(e, m) for e in otros if e["m"][m]["entregado"] is not None)
+                x["T"] = x["F"] + ev["brecha"]
+                self.log(f"{self.V(ev['n'])['rama']} {ev['repo']} k={ev['actualizacion']} en {m}: validaciones previas terminadas "
+                         f"en {iso(x['F'])}, brecha {ev['brecha']} s -> T = {iso(x['T'])}")
 
     def despachar(self):
+        self.calcular_T()
         ahora = self.p.ahora()
         for ev in self.s["eventos"]:
-            if ev["estado"] != "pendiente" or ahora - self.s["t0"] < ev["t"]:
-                continue
-            previos = [x for x in self.eventos_de(ev["n"], ev["repo"]) if x["i"] < ev["i"]]
-            if any(x["estado"] != "unico_ok" for x in previos):
-                self.esperar(f"evento-{ev['i']}", f"build único previo de c{self.c}-{ev['n']} {ev['repo']}")
-                continue
-            self.listo(f"evento-{ev['i']}")
             v = self.V(ev["n"])
-            if ev["accion"] == "apertura":
-                r = self.p.abrir(ev["n"], ev["repo"])
-                v["app_pr"][ev["repo"]] = {"pr": r["pr"], "created_at": r["pr_created_at"]}
-                if v["apertura"] is None or epoch(r["pr_created_at"]) < epoch(v["apertura"]):
-                    v["apertura"] = r["pr_created_at"]
-                self.log(f"abrir {v['rama']} {ev['repo']}: PR #{r['pr']} ({r['pr_created_at']}), commit {r['commit'][:7]}")
-            else:
-                r = self.p.actualizar(ev["n"], ev["repo"], ev["actualizacion"])
-                self.log(f"actualizar {v['rama']} {ev['repo']} k={ev['actualizacion']}: commit {r['commit'][:7]}")
-            ev.update(estado="despachado", commit=r["commit"], despachado=self.p.ahora(), retraso=int(self.p.ahora() - self.s["t0"] - ev["t"]))
-            self.esperar(f"unico-{ev['i']}", f"build único de {v['rama']} {ev['repo']} ({r['commit'][:7]})")
+            orden = MODELOS if ev["n"] % 2 == 1 else tuple(reversed(MODELOS))
+            for m in orden:
+                x = ev["m"][m]
+                if x["estado"] != "pendiente":
+                    continue
+                if ev["accion"] == "apertura":
+                    if ahora - self.s["t0"] < ev["t"]:
+                        continue
+                    objetivo = self.s["t0"] + ev["t"]
+                elif x["T"] is None or ahora < x["T"]:
+                    continue
+                else:
+                    objetivo = x["T"]
+                previos = [e for e in self.eventos_de(ev["n"], ev["repo"]) if e["i"] < ev["i"]]
+                if any(e["m"][m]["estado"] != "unico_ok" for e in previos):
+                    self.esperar(f"evento-{ev['i']}-{m}", f"build previo de c{self.c}-{ev['n']} {ev['repo']} en {m}")
+                    continue
+                self.listo(f"evento-{ev['i']}-{m}")
+                if ev["accion"] == "apertura":
+                    r = self.p.abrir(ev["n"], ev["repo"], m)
+                    v["app_pr"][m][ev["repo"]] = {"pr": r["pr"], "created_at": r["pr_created_at"]}
+                    if v["apertura_m"][m] is None or epoch(r["pr_created_at"]) < epoch(v["apertura_m"][m]):
+                        v["apertura_m"][m] = r["pr_created_at"]
+                    if v["apertura"] is None or epoch(r["pr_created_at"]) < epoch(v["apertura"]):
+                        v["apertura"] = r["pr_created_at"]
+                    x["pr"] = r["pr"]
+                    self.log(f"abrir {acciones.rama_app(v['rama'], m)} {ev['repo']}: PR #{r['pr']} ({r['pr_created_at']}), "
+                             f"commit {r['commit'][:7]}")
+                else:
+                    r = self.p.actualizar(ev["n"], ev["repo"], ev["actualizacion"], m)
+                    self.log(f"actualizar {acciones.rama_app(v['rama'], m)} {ev['repo']} k={ev['actualizacion']}: commit {r['commit'][:7]}")
+                x.update(estado="despachado", commit=r["commit"], arbol=r.get("arbol"), despachado=self.p.ahora(),
+                         retraso=round(self.p.ahora() - objetivo, 1))
+                self.esperar(f"unico-{ev['i']}-{m}", f"build de {acciones.rama_app(v['rama'], m)} {ev['repo']} ({r['commit'][:7]})")
+            self.agregar(ev)
 
     def seguir_unicos(self):
         for ev in self.s["eventos"]:
-            if ev["estado"] != "despachado":
+            for m in MODELOS:
+                x = ev["m"][m]
+                if x["estado"] != "despachado":
+                    continue
+                v = self.V(ev["n"])
+                bs = [b for b in self.builds.get(proyecto("unico", ev["repo"]), []) if b["resolved"] == x["commit"]]
+                decision, escritor, duplicados = elegir_build_unico(bs)
+                if decision == "esperar":
+                    continue
+                if decision == "falla":
+                    x["estado"] = "unico_falla"
+                    x["unico"] = {"build_id": bs[0]["id"], "status": bs[0]["status"], "start": bs[0]["start"], "end": bs[0]["end"]}
+                    self.agregar(ev)
+                    raise Abortar(f"el build {bs[0]['id']} de {acciones.rama_app(v['rama'], m)} {ev['repo']} terminó {bs[0]['status']}")
+                cd, destino = cd_de(ev["repo"]), rama_cd(v["rama"], m)
+                sha = self.p.ref_sha(cd, destino)
+                tag = self.p.tag_json(cd, sha) if sha else None
+                if not tag or tag.get("commit") != x["commit"]:
+                    continue  # el -cd todavía no refleja este commit; se reintenta en la próxima vuelta
+                if tag.get("modelo") != m:
+                    raise Abortar(f"entrega al modelo equivocado: {cd} {destino} tiene tag.json con modelo {tag.get('modelo')!r} "
+                                  f"para {acciones.rama_app(v['rama'], m)}")
+                x.update(estado="unico_ok", digest=tag["digest"], tag=tag, cd_sha=sha, entregado=escritor["end"],
+                         unico={"build_id": escritor["id"], "status": escritor["status"], "start": escritor["start"],
+                                "end": escritor["end"]},
+                         duplicados=[{"build_id": b["id"], "status": b["status"]} for b in duplicados])
+                if duplicados:
+                    self.aviso(f"builds duplicados del webhook para {acciones.rama_app(v['rama'], m)} {ev['repo']} "
+                               f"{x['commit'][:7]}: {', '.join(b['id'] for b in duplicados)}")
+                try:
+                    x["imagen"] = self.p.imagen(ev["repo"], tag["digest"])
+                except ErrorEjecutor as error:
+                    self.aviso_consulta(error)
+                self.listo(f"unico-{ev['i']}-{m}")
+                if self.eventos_de(ev["n"], ev["repo"])[-1]["i"] == ev["i"]:
+                    v["digest_m"][m][ev["repo"]] = tag["digest"]
+                if m == "efimero":
+                    if sha not in v["cd_commits"]:
+                        v["cd_commits"].append(sha)
+                    self.esperar(f"entrega-{ev['i']}-efimero", f"despliegue efímero de {v['rama']} {ev['repo']} ({sha[:7]})")
+                else:
+                    pr = next((p for p in self.p.prs_dev() if p["cd"] == cd and p["head"] == destino), None)
+                    self.s["solicitudes_fijo"].append({
+                        "ev": ev["i"], "n": ev["n"], "repo": ev["repo"], "k": ev["actualizacion"], "cd": cd, "rama": v["rama"],
+                        "rama_cd": destino, "cd_sha": sha, "digest": tag["digest"], "listo": iso(escritor["end"]),
+                        "pr_dev": pr["number"] if pr else None, "estado": "pendiente"})
+                self.log(f"build {escritor['id'].split(':')[1][:8]} {acciones.rama_app(v['rama'], m)} {ev['repo']} SUCCEEDED, "
+                         f"tag {tag.get('tag', '')} digest {tag['digest'][7:19]} -> {cd} {destino} {sha[:7]}"
+                         + (" (entrega al efímero)" if m == "efimero" else " (solicitud en la cola del fijo)"))
+            self.agregar(ev)
+
+    def seguir_entregas_efimero(self):
+        """El push del build a release/c<N>-<n> del -cd tiene que disparar el despliegue del efímero."""
+        for ev in self.s["eventos"]:
+            x = ev["m"]["efimero"]
+            if x["estado"] != "unico_ok" or x["efimero_build"] is not None:
                 continue
-            b = self.build_unico(ev)
-            if b is None or not b["complete"]:
-                continue
-            v = self.V(ev["n"])
-            ev["unico"] = {"build_id": b["id"], "status": b["status"], "start": b["start"], "end": b["end"]}
-            if b["status"] != "SUCCEEDED":
-                ev["estado"] = "unico_falla"
-                raise Abortar(f"el build único {b['id']} de {v['rama']} {ev['repo']} terminó {b['status']}")
-            tag = self.p.tag_json(cd_de(ev["repo"]), v["rama"])
-            if not tag or tag.get("commit") != ev["commit"]:
-                continue  # el tag.json todavía no refleja este commit; se reintenta en la próxima vuelta
-            ev["estado"] = "unico_ok"
-            ev["digest"] = tag["digest"]
-            sha = self.p.ref_sha(cd_de(ev["repo"]), v["rama"])
-            if sha and sha not in v["cd_commits"]:
-                v["cd_commits"].append(sha)
-            self.listo(f"unico-{ev['i']}")
-            ultimo = self.eventos_de(ev["n"], ev["repo"])[-1]
-            if ultimo["i"] == ev["i"]:
-                v["digest"][ev["repo"]] = tag["digest"]
-            self.log(f"build único {b['id'].split(':')[1][:8]} {v['rama']} {ev['repo']} SUCCEEDED, tag {tag.get('tag', '')} "
-                     f"digest {tag['digest'][7:19]}")
+            b = next((b for b in self.builds.get(proyecto("efimero", ev["repo"]), []) if b["resolved"] == x["cd_sha"]), None)
+            if b is not None:
+                x["efimero_build"] = b["id"]
+                self.listo(f"entrega-{ev['i']}-efimero")
+            elif self.p.ahora() - x["entregado"] > ENTREGA_EFIMERO_SEG:
+                raise Abortar(f"el push de {x['cd_sha'][:7]} a {cd_de(ev['repo'])} {self.V(ev['n'])['rama']} no disparó el "
+                              f"despliegue del efímero en {ENTREGA_EFIMERO_SEG} s")
 
     # --- 4. cola del fijo -----------------------------------------------------------------------
 
     def cola_fijo(self):
+        self.seguir_entregas_efimero()
         cola = self.s["cola_fijo"]
         en_curso = cola["en_curso"]
         if en_curso is not None:
@@ -719,7 +970,7 @@ class Ejecutor:
                 return
             if en_curso.get("build_id") is None:
                 en_curso["build_id"] = b["id"]
-                self.log(f"fijo: build {b['id']} de la integración de {en_curso['rama']} {en_curso['repo']}")
+                self.log(f"fijo: build {b['id']} de la integración de {en_curso['rama']} {en_curso['repo']} k={en_curso['k']}")
             if not b["complete"]:
                 return
             en_curso.update(build_status=b["status"], build_end=b["end"])
@@ -728,30 +979,19 @@ class Ejecutor:
             cola["en_curso"] = None
         if any(not b["complete"] for repo in ("backend", "frontend") for b in self.builds.get(proyecto("fijo", repo), [])):
             return
-        try:
-            prs = self.p.prs_dev()
-        except ErrorEjecutor as error:
-            self.aviso_consulta(error)
+        s = elegir_solicitud(self.s["solicitudes_fijo"])
+        if s is None:
             return
-        prs = [p for p in prs if any(v["rama"] == p["head"] and not v["expirada"] for v in self.s["versiones"].values())]
-        pr = elegir_pr_cola(prs, self.s["integrados"])
-        if pr is None:
-            return
-        v = next(x for x in self.s["versiones"].values() if x["rama"] == pr["head"])
-        r = self.p.integrar(pr["cd"], pr["head"], "dev", f"integracion {pr['head']} (PR #{pr['number']})")
-        self.s["integrados"].setdefault(f"{pr['cd']}#{pr['number']}", []).append(pr["sha"])
-        integ = {"version": f"c{self.c}-{v['n']}", "rama": pr["head"], "repo": pr["repo"], "cd": pr["cd"], "pr": pr["number"],
-                 "pr_created_at": pr["created_at"], "head": pr["sha"], "commit_dev": r["commit"], "conflicto": r["conflicto"],
-                 "hora": iso(self.p.ahora()), "build_id": None}
+        r = self.p.integrar(s["cd"], s["cd_sha"], "dev", f"integracion {s['rama']} {s['repo']} k={s['k']} ({s['cd_sha'][:7]})")
+        s.update(estado="integrada", hora=iso(self.p.ahora()))
+        integ = {"version": f"c{self.c}-{s['n']}", "rama": s["rama"], "repo": s["repo"], "cd": s["cd"], "ev": s["ev"], "k": s["k"],
+                 "rama_cd": s["rama_cd"], "pr": s["pr_dev"], "listo": s["listo"], "head": s["cd_sha"], "digest": s["digest"],
+                 "commit_dev": r["commit"], "conflicto": r["conflicto"], "hora": iso(self.p.ahora()), "build_id": None}
         cola["integraciones"].append(integ)
         cola["en_curso"] = integ
-        self.s["merged_pendientes"].append({"repo_gh": pr["cd"], "pr": pr["number"], "base": "dev", "rama": pr["head"],
-                                            "desde": self.p.ahora(), "integracion": len(cola["integraciones"]) - 1})
-        self.esperar("fijo-build", f"build del fijo de {pr['head']} {pr['repo']}")
-        self.log(f"fijo: integra {pr['head']} {pr['repo']} (PR #{pr['number']}, {pr['created_at']}) en dev -> "
+        self.esperar("fijo-build", f"build del fijo de {s['rama']} {s['repo']} k={s['k']}")
+        self.log(f"fijo: integra {s['rama_cd']} {s['repo']} k={s['k']} ({s['cd_sha'][:7]}, entregado {s['listo']}) en dev -> "
                  f"{r['commit'][:7]} (conflicto: {r['conflicto']})")
-
-    # --- 5. validación final --------------------------------------------------------------------
 
     # --- expiración por inactividad ------------------------------------------------------------
 
@@ -759,8 +999,9 @@ class Ejecutor:
         return bool(v["expirada"]) and modelo in v["expirada"]["modelos"]
 
     def en_curso_de(self, v):
-        """Builds de la versión que siguen en curso (build único, despliegue efímero, integración en el fijo)."""
-        en_curso = [f"build único de {v['rama']} {ev['repo']}" for ev in self.eventos_de(v["n"]) if ev["estado"] == "despachado"]
+        """Builds de la versión que siguen en curso (compartida, despliegue efímero, integración en el fijo)."""
+        en_curso = [f"build de {acciones.rama_app(v['rama'], m)} {ev['repo']}" for ev in self.eventos_de(v["n"]) for m in MODELOS
+                    if ev["m"][m]["estado"] == "despachado"]
         for repo in v["repos"]:
             for b in self.builds.get(proyecto("efimero", repo), []):
                 if not b["complete"] and b["resolved"] in v["cd_commits"]:
@@ -770,12 +1011,12 @@ class Ejecutor:
             en_curso.append(integ.get("build_id") or f"integración de {v['rama']} {integ['repo']} en el fijo")
         return en_curso
 
-    def digests_actuales(self, v):
-        """Digest del último evento con build único terminado, por repo (los cancelados no cuentan)."""
+    def digests_actuales(self, v, m):
+        """Digest del último evento con build terminado en el modelo, por repo (los cancelados no cuentan)."""
         d = {}
         for ev in self.eventos_de(v["n"]):
-            if ev["estado"] == "unico_ok":
-                d[ev["repo"]] = ev["digest"]
+            if ev["m"][m]["estado"] == "unico_ok":
+                d[ev["repo"]] = ev["m"][m]["digest"]
         return d
 
     def expiraciones(self):
@@ -792,24 +1033,30 @@ class Ejecutor:
             modelos = [m for m in MODELOS if v["cierre"][m]["estado"] == "pendiente"]
             cancelados = []
             for ev in self.eventos_de(n):
-                if ev["estado"] == "pendiente":
-                    ev["estado"] = "cancelado"
-                    cancelados.append(ev["i"])
+                for m in MODELOS:
+                    if ev["m"][m]["estado"] == "pendiente":
+                        ev["m"][m]["estado"] = "cancelado"
+                        cancelados.append(f"{ev['i']}-{m}")
+                self.agregar(ev)
+            solicitudes = [s for s in self.s["solicitudes_fijo"] if s["n"] == n and s["estado"] == "pendiente"]
+            for s in solicitudes:
+                s["estado"] = "cancelada"
             v["expirada"] = {"hora": iso(ahora), "ultimo_evento": iso(ultimo_evento(self.s["eventos"], n)), "modelos": modelos,
-                             "eventos_cancelados": cancelados, "prs_dev_cerrados": [], "finales_registradas": []}
+                             "eventos_cancelados": cancelados, "solicitudes_canceladas": [s["ev"] for s in solicitudes],
+                             "prs_dev_cerrados": [], "finales_registradas": []}
             v["resultado_cierre"] = "declinada"
-            digests = self.digests_actuales(v)
             for m in modelos:
                 self.listo(f"final-{n}-{m}")
+                digests = self.digests_actuales(v, m)
                 f = validacion_final([r for r in v["repos"] if r in digests], digests, v["validaciones"][m]) if digests else None
                 if f is not None:
-                    f["tiempo_validacion_seg"] = round(f["end"] - epoch(v["apertura"]), 1)
+                    f["tiempo_validacion_seg"] = round(f["end"] - epoch(v["apertura_m"][m]), 1)
                     f["expirada"] = True
                     v["final"][m] = f
                     v["expirada"]["finales_registradas"].append(m)
             if "fijo" in modelos:
                 for pr in self.p.prs_dev():
-                    if pr["head"] == v["rama"] and pr["sha"] not in self.s["integrados"].get(f"{pr['cd']}#{pr['number']}", []):
+                    if pr["head"] == rama_cd(v["rama"], "fijo"):
                         self.p.pr_cerrar(pr["cd"], pr["number"])
                         v["expirada"]["prs_dev_cerrados"].append({"cd": pr["cd"], "pr": pr["number"]})
             self.log(f"EXPIRADA {v['rama']}: último evento {v['expirada']['ultimo_evento']}; se cierra como declinada en "
@@ -821,21 +1068,22 @@ class Ejecutor:
         ultimo = ultimo_evento(self.s["eventos"], v["n"])
         return ultimo is not None and self.p.ahora() - ultimo > self.expiracion_seg
 
+    # --- 5. validación final --------------------------------------------------------------------
+
     def finales(self):
         for v in self.s["versiones"].values():
             if v["expirada"] or (self.vencida(v) and any(v["cierre"][m]["estado"] == "pendiente" for m in MODELOS)):
                 continue
-            evs = self.eventos_de(v["n"])
-            if any(ev["estado"] != "unico_ok" for ev in evs):
-                continue
             for modelo in MODELOS:
                 if v["final"][modelo] is not None:
                     continue
+                if any(ev["m"][modelo]["estado"] != "unico_ok" for ev in self.eventos_de(v["n"])):
+                    continue
                 self.esperar(f"final-{v['n']}-{modelo}", f"validación final de {v['rama']} en {modelo}")
-                f = validacion_final(v["repos"], v["digest"], v["validaciones"][modelo])
+                f = validacion_final(v["repos"], self.digests_actuales(v, modelo), v["validaciones"][modelo])
                 if f is None:
                     continue
-                f["tiempo_validacion_seg"] = round(f["end"] - epoch(v["apertura"]), 1)
+                f["tiempo_validacion_seg"] = round(f["end"] - epoch(v["apertura_m"][modelo]), 1)
                 v["final"][modelo] = f
                 self.listo(f"final-{v['n']}-{modelo}")
                 self.log(f"VALIDACIÓN FINAL {v['rama']} {modelo}: {f['build_id']} {f['resultado']} fin {iso(f['end'])} "
@@ -869,7 +1117,7 @@ class Ejecutor:
                 pr = self.p.pr_crear(cd, "main-efimero", v["rama"], f"{v['rama']} cierre efimero ({v['resultado']})")
                 r.update(pr=pr, t_accion=self.p.ahora())
                 if integrada:
-                    m = self.p.integrar(cd, v["rama"], "main-efimero", f"cierre {v['rama']} integrada (PR #{pr})")
+                    m = self.p.integrar(cd, f"origin/{v['rama']}", "main-efimero", f"cierre {v['rama']} integrada (PR #{pr})")
                     r.update(accion_pr="merge", commit=m["commit"], conflicto=m["conflicto"])
                     self.s["merged_pendientes"].append({"repo_gh": cd, "pr": pr, "base": "main-efimero", "rama": v["rama"],
                                                         "desde": self.p.ahora()})
@@ -951,23 +1199,25 @@ class Ejecutor:
         if c["estado"] == "hecho" or (v["final"]["fijo"] is None and not self.expira_en(v, "fijo")):
             return
         integrada = (v["resultado_cierre"] or v["resultado"]) == "integrada"
+        rama_fijo = rama_cd(v["rama"], "fijo")
         for repo in v["repos"]:
             cd = cd_de(repo)
-            if self.p.ref_sha(cd, v["rama"]) is None:
+            if self.p.ref_sha(cd, rama_fijo) is None:
                 c["repos"][repo] = {"accion_pr": "sin_rama", "hora": iso(self.p.ahora())}
-                self.log(f"cierre fijo {v['rama']} {repo}: la rama no existe en {cd}; nada que cerrar")
+                self.log(f"cierre fijo {v['rama']} {repo}: la rama {rama_fijo} no existe en {cd}; nada que cerrar")
                 continue
-            pr = self.p.pr_crear(cd, "main-fijo", v["rama"], f"{v['rama']} cierre fijo ({v['resultado']})")
+            pr = self.p.pr_crear(cd, "main-fijo", rama_fijo, f"{v['rama']} cierre fijo ({v['resultado']})")
             r = {"pr": pr, "hora": iso(self.p.ahora())}
             if integrada:
-                m = self.p.integrar(cd, v["rama"], "main-fijo", f"cierre {v['rama']} integrada (PR #{pr})")
+                m = self.p.integrar(cd, f"origin/{rama_fijo}", "main-fijo", f"cierre {v['rama']} integrada (PR #{pr})")
                 r.update(accion_pr="merge", commit=m["commit"], conflicto=m["conflicto"])
                 self.s["merged_pendientes"].append({"repo_gh": cd, "pr": pr, "base": "main-fijo", "rama": v["rama"], "desde": self.p.ahora()})
             else:
                 self.p.pr_cerrar(cd, pr)
                 r["accion_pr"] = "close"
             c["repos"][repo] = r
-            self.log(f"cierre fijo {v['rama']} {repo}: PR #{pr} -> main-fijo, {'merge local y push' if integrada else 'cerrado sin merge'}")
+            self.log(f"cierre fijo {v['rama']} {repo}: PR #{pr} {rama_fijo} -> main-fijo, "
+                     f"{'merge local y push' if integrada else 'cerrado sin merge'}")
         c["estado"] = "hecho"
         self.log(f"CERRADA {v['rama']} en fijo")
 
@@ -1010,17 +1260,26 @@ class Ejecutor:
                 self.esperar(f"limpieza-{v['n']}", f"limpieza de {v['rama']} (cierres en curso)")
                 return
             self.listo(f"limpieza-{v['n']}")
-            hecho = {"hora": iso(self.p.ahora()), "ramas_cd": [], "app": []}
+            hecho = {"hora": iso(self.p.ahora()), "ramas_cd": [], "prs_dev": [], "app": []}
             for repo in v["repos"]:
-                self.p.borrar_rama(cd_de(repo), v["rama"])
-                hecho["ramas_cd"].append(cd_de(repo))
-            for repo in v["app_pr"]:
-                pr = v["app_pr"][repo]["pr"]
-                self.p.pr_cerrar(app_de(repo), pr)
-                self.p.borrar_rama(app_de(repo), v["rama"])
-                hecho["app"].append({"repo": app_de(repo), "pr": pr})
+                cd = cd_de(repo)
+                # historial de las dos ramas del -cd antes de borrarlas (control de cierre_corrida)
+                v["historial_cd"][cd] = {rama_cd(v["rama"], m): self.p.historial_cd(cd, rama_cd(v["rama"], m)) for m in MODELOS}
+                for pr in self.p.prs_dev():
+                    if pr["cd"] == cd and pr["head"] == rama_cd(v["rama"], "fijo"):
+                        self.p.pr_cerrar(cd, pr["number"])
+                        hecho["prs_dev"].append({"cd": cd, "pr": pr["number"]})
+                for m in MODELOS:
+                    self.p.borrar_rama(cd, rama_cd(v["rama"], m))
+                    hecho["ramas_cd"].append(f"{cd} {rama_cd(v['rama'], m)}")
+            for m in MODELOS:
+                for repo, d in v["app_pr"][m].items():
+                    self.p.pr_cerrar(app_de(repo), d["pr"])
+                    self.p.borrar_rama(app_de(repo), acciones.rama_app(v["rama"], m))
+                    hecho["app"].append({"repo": app_de(repo), "modelo": m, "pr": d["pr"]})
             v["limpieza"] = hecho
-            self.log(f"limpieza {v['rama']}: ramas borradas en {', '.join(hecho['ramas_cd'])}; PR de la app cerrado y rama borrada")
+            self.log(f"limpieza {v['rama']}: ramas del -cd borradas ({', '.join(hecho['ramas_cd'])}); PR y ramas de la app "
+                     f"de los dos modelos cerrados y borrados")
 
     # --- esperas, fin ---------------------------------------------------------------------------
 
@@ -1036,7 +1295,8 @@ class Ejecutor:
         versiones = []
         for v in self.s["versiones"].values():
             fila = {"n": v["n"], "rama": v["rama"], "tipo": v["tipo"], "repos": v["repos"], "resultado_escenario": v["resultado"],
-                    "apertura": v["apertura"], "app_pr": v["app_pr"], "digest": v["digest"], "modelos": {}}
+                    "apertura": v["apertura"], "apertura_m": v["apertura_m"], "app_pr": v["app_pr"], "digest_m": v["digest_m"],
+                    "modelos": {}}
             for modelo in MODELOS:
                 f = v["final"][modelo]
                 m = {"validacion_final": None if f is None else {
@@ -1053,14 +1313,17 @@ class Ejecutor:
                     m["cierre"] = v["cierre"]["efimero"]
                 fila["modelos"][modelo] = m
             fila["limpieza"] = v["limpieza"]
+            fila["historial_cd"] = v["historial_cd"]
             fila["expirada"] = v["expirada"]
             fila["resultado_cierre"] = v["resultado_cierre"] or v["resultado"]
             versiones.append(fila)
-        return {"corrida": self.s["corrida"], "semilla": self.s["semilla"], "nivel": self.s["nivel"], "simulada": self.s["simulada"],
+        return {"corrida": self.s["corrida"], "semilla": self.s["semilla"], "nivel": self.s["nivel"], "esquema": ESQUEMA,
+                "regla_actualizacion": REGLA_ACTUALIZACION, "max_espera_seg": MAX_ESPERA_SEG, "simulada": self.s["simulada"],
                 "inicio": iso(self.s["inicio"]), "t0": iso(self.s["t0"]), "fin": iso(self.s["fin"]), "resultado": self.s["resultado"],
                 "motivo": self.s["motivo"],
                 "eventos": [{k: (iso(x) if k in ("despachado",) else x) for k, x in ev.items()} for ev in self.s["eventos"]],
                 "versiones": versiones, "merged": self.s.get("merged", []), "integraciones_fijo": self.s["cola_fijo"]["integraciones"],
+                "solicitudes_fijo": self.s["solicitudes_fijo"], "avisos": self.s["avisos"],
                 "expiracion_seg": self.expiracion_seg, "depurador": self.s["depurador"], "cierre": self.s["cierre"],
                 "protocolo": self.s["protocolo"], "protocolo_verificacion": self.s.get("protocolo_verificacion")}
 

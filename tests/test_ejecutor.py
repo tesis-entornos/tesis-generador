@@ -20,26 +20,75 @@ def escenario_c96():
     return json.loads((RAIZ / "escenarios" / "c96.json").read_text(encoding="utf-8"))
 
 
-def pr(cd, number, created, sha="s"):
-    return {"cd": cd, "number": number, "created": created, "sha": sha, "head": f"release/c1-{number}"}
+def sol(ev, listo, estado="pendiente"):
+    return {"ev": ev, "listo": ejecutor.iso(listo), "estado": estado}
 
 
 class Cola(unittest.TestCase):
-    def test_el_mas_antiguo(self):
-        prs = [pr("tesis-backend-cd", 2, 200), pr("tesis-frontend-cd", 1, 150), pr("tesis-backend-cd", 3, 300)]
-        self.assertEqual(ejecutor.elegir_pr_cola(prs, {})["number"], 1)
+    def test_por_orden_de_entrega(self):
+        s = [sol(4, 300), sol(2, 150), sol(7, 200)]
+        self.assertEqual(ejecutor.elegir_solicitud(s)["ev"], 2)
 
-    def test_salta_las_puntas_ya_integradas(self):
-        prs = [pr("tesis-backend-cd", 2, 100, "a"), pr("tesis-backend-cd", 3, 200, "b")]
-        self.assertEqual(ejecutor.elegir_pr_cola(prs, {"tesis-backend-cd#2": ["a"]})["number"], 3)
+    def test_empate_el_evento_anterior(self):
+        self.assertEqual(ejecutor.elegir_solicitud([sol(5, 100), sol(3, 100)])["ev"], 3)
 
-    def test_punta_nueva_del_mismo_pr_vuelve_a_la_cola(self):
-        prs = [pr("tesis-backend-cd", 2, 100, "b")]
-        self.assertEqual(ejecutor.elegir_pr_cola(prs, {"tesis-backend-cd#2": ["a"]})["number"], 2)
+    def test_salta_integradas_y_canceladas(self):
+        s = [sol(1, 100, "integrada"), sol(2, 110, "cancelada"), sol(3, 120)]
+        self.assertEqual(ejecutor.elegir_solicitud(s)["ev"], 3)
 
     def test_vacia(self):
-        self.assertIsNone(ejecutor.elegir_pr_cola([], {}))
-        self.assertIsNone(ejecutor.elegir_pr_cola([pr("tesis-backend-cd", 2, 1, "a")], {"tesis-backend-cd#2": ["a"]}))
+        self.assertIsNone(ejecutor.elegir_solicitud([]))
+        self.assertIsNone(ejecutor.elegir_solicitud([sol(1, 100, "integrada")]))
+
+
+def ev(i, n, t, repo, accion):
+    return {"i": i, "n": n, "t": t, "repo": repo, "accion": accion}
+
+
+class Brechas(unittest.TestCase):
+    def test_cadena_desde_la_apertura_y_entre_actualizaciones(self):
+        evs = [ev(0, 1, 0, "backend", "apertura"), ev(1, 1, 300, "backend", "actualizacion"),
+               ev(2, 1, 300, "backend", "actualizacion"), ev(3, 1, 750, "backend", "actualizacion")]
+        self.assertEqual(ejecutor.brechas(evs), {1: (0, 300), 2: (1, 0), 3: (2, 450)})
+
+    def test_combinacion_la_segunda_apertura_no_corta_la_cadena(self):
+        evs = [ev(0, 2, 100, "frontend", "apertura"), ev(1, 2, 400, "backend", "apertura"),
+               ev(2, 2, 450, "backend", "actualizacion"), ev(3, 2, 900, "frontend", "actualizacion")]
+        self.assertEqual(ejecutor.brechas(evs), {2: (0, 350), 3: (2, 450)})
+
+    def test_versiones_independientes(self):
+        evs = [ev(0, 1, 0, "backend", "apertura"), ev(1, 2, 10, "frontend", "apertura"),
+               ev(2, 2, 20, "frontend", "actualizacion"), ev(3, 1, 30, "backend", "actualizacion")]
+        self.assertEqual(ejecutor.brechas(evs), {2: (1, 10), 3: (0, 30)})
+
+    def test_las_del_plan_salen_de_los_escenarios_sin_re_sortear(self):
+        for c in (60, 61, 70, 81):
+            e = json.loads((RAIZ / "escenarios" / f"c{c}.json").read_text())
+            evs = [dict(x, i=i) for i, x in enumerate(e["eventos_ordenados"])]
+            b = ejecutor.brechas(evs)
+            self.assertEqual(len(b), sum(1 for x in evs if x["accion"] == "actualizacion"))
+            self.assertTrue(all(0 <= g <= 600 for _, g in b.values()))
+
+
+class EstadoYBuilds(unittest.TestCase):
+    def test_estado_agregado(self):
+        self.assertEqual(ejecutor.estado_agregado(["unico_ok", "unico_ok"]), "unico_ok")
+        self.assertEqual(ejecutor.estado_agregado(["unico_ok", "despachado"]), "despachado")
+        self.assertEqual(ejecutor.estado_agregado(["pendiente", "unico_ok"]), "pendiente")
+        self.assertEqual(ejecutor.estado_agregado(["cancelado", "cancelado"]), "cancelado")
+        self.assertEqual(ejecutor.estado_agregado(["cancelado", "unico_ok"]), "parcial")
+
+    def test_build_unico_escritor_y_duplicados(self):
+        b = lambda i, st, start, complete=True: {"id": i, "status": st, "start": start, "complete": complete}
+        self.assertEqual(ejecutor.elegir_build_unico([])[0], "esperar")
+        self.assertEqual(ejecutor.elegir_build_unico([b("x", "IN_PROGRESS", 1, False)])[0], "esperar")
+        self.assertEqual(ejecutor.elegir_build_unico([b("x", "FAILED", 1)])[0], "falla")
+        d, w, dup = ejecutor.elegir_build_unico([b("y", "SUCCEEDED", 20), b("x", "SUCCEEDED", 10), b("z", "FAILED", 11)])
+        self.assertEqual((d, w["id"], sorted(x["id"] for x in dup)), ("ok", "x", ["y", "z"]))
+
+    def test_rama_cd(self):
+        self.assertEqual(ejecutor.rama_cd("release/c1-2", "efimero"), "release/c1-2")
+        self.assertEqual(ejecutor.rama_cd("release/c1-2", "fijo"), "release/fijo/c1-2")
 
 
 def val(repo, digest, end, build, resultado="ok"):
@@ -172,13 +221,20 @@ class CorridaSimulada(unittest.TestCase):
         self.assertEqual(por["release/c96-1"]["modelos"]["efimero"]["cierre"]["destruccion"]["via"], "webhook")
         self.assertEqual(por["release/c96-3"]["modelos"]["efimero"]["cierre"]["destruccion"]["via"], "manual")
         # c96-3 backend se integró dos veces en el fijo (apertura y actualización) y frontend una.
-        integ = [(i["rama"], i["repo"]) for i in r["integraciones_fijo"]]
-        self.assertEqual(integ.count(("release/c96-3", "backend")), 2)
-        self.assertEqual(integ.count(("release/c96-3", "frontend")), 1)
-        # La final de c96-3 en el fijo valida el digest de la actualización.
+        integ = [(i["rama"], i["repo"], i["k"]) for i in r["integraciones_fijo"]]
+        self.assertEqual([x for x in integ if x[:2] == ("release/c96-3", "backend")],
+                         [("release/c96-3", "backend", 0), ("release/c96-3", "backend", 1)])
+        self.assertEqual(integ.count(("release/c96-3", "frontend", 0)), 1)
+        # Una validación del fijo por evento y cada integración es el commit del -cd de su evento (no la punta).
+        self.assertEqual(len(r["integraciones_fijo"]), len(r["eventos"]))
+        for i in r["integraciones_fijo"]:
+            self.assertEqual(i["head"], r["eventos"][i["ev"]]["m"]["fijo"]["cd_sha"])
+        # La final de c96-3 en el fijo valida el digest de la actualización de la rama del fijo.
         f = por["release/c96-3"]["modelos"]["fijo"]["validacion_final"]["por_repo"]["backend"]["build_id"]
         vals = {x["build_id"]: x for x in por["release/c96-3"]["modelos"]["fijo"]["validaciones"]}
-        self.assertEqual(vals[f]["digest"], por["release/c96-3"]["digest"]["backend"])
+        self.assertEqual(vals[f]["digest"], por["release/c96-3"]["digest_m"]["fijo"]["backend"])
+        self.assertNotEqual(por["release/c96-3"]["digest_m"]["fijo"]["backend"], por["release/c96-3"]["digest_m"]["efimero"]["backend"])
+        self.assertEqual(r["esquema"], 2)
 
     def test_aborta_si_espera_demasiado(self):
         e = escenario_c96()
@@ -189,7 +245,7 @@ class CorridaSimulada(unittest.TestCase):
             self.assertEqual(ej.correr(), 2)
         self.assertEqual(ej.s["resultado"], "invalida")
         self.assertIn(f"{ejecutor.MAX_ESPERA_SEG // 60} min", ej.s["motivo"])
-        self.assertEqual(ejecutor.MAX_ESPERA_SEG, 14400)
+        self.assertEqual(ejecutor.MAX_ESPERA_SEG, 21600)
 
 
 def v_exp(n, cierres=("pendiente", "pendiente"), expirada=None):
@@ -256,16 +312,140 @@ class CorridaSimuladaConExpiracion(unittest.TestCase):
         self.assertIsNotNone(v["expirada"])
         fe = [ev for ev in ej.eventos_de(3) if ev["repo"] == "frontend"][0]
         self.assertEqual(fe["estado"], "cancelado")
-        self.assertIn(fe["i"], v["expirada"]["eventos_cancelados"])
+        self.assertIn(f"{fe['i']}-efimero", v["expirada"]["eventos_cancelados"])
+        self.assertIn(f"{fe['i']}-fijo", v["expirada"]["eventos_cancelados"])
         self.assertEqual(v["cierre"]["efimero"]["repos"]["frontend"]["accion"], "sin_rama")
         self.assertEqual(v["cierre"]["efimero"]["destruccion"]["via"], "webhook")  # solo backend: destruye sin esperar al otro
         self.assertEqual(v["cierre"]["fijo"]["repos"]["frontend"]["accion_pr"], "sin_rama")
-        self.assertNotIn("frontend", v["app_pr"])
+        self.assertNotIn("frontend", v["app_pr"]["efimero"])
+        self.assertNotIn("frontend", v["app_pr"]["fijo"])
         self.assertIsNotNone(v["limpieza"])
 
     def test_sin_expiracion_por_defecto(self):
         ej = self.correr(96, 3, 9603, ejecutor.EXPIRACION_SEG)
         self.assertTrue(all(v["expirada"] is None for v in ej.s["versiones"].values()))
+
+
+def correr_sim(e, plataforma=None, **kw):
+    p = plataforma or ejecutor.PlataformaSimulada(e, inicio=1_800_000_000.0)
+    ej = ejecutor.Ejecutor(e, p, escribir=False, **kw)
+    with redirect_stdout(io.StringIO()):
+        rc = ej.correr()
+    return ej, rc
+
+
+class ReglaDeActualizacion(unittest.TestCase):
+    """La actualización k en cada modelo: después de que terminaron todas las validaciones de la versión en ese
+    modelo, más la brecha del escenario."""
+
+    def comprobar(self, e):
+        ej, rc = correr_sim(e)
+        self.assertEqual(rc, 0, ej.s["motivo"])
+        for ev in ej.s["eventos"]:
+            if ev["accion"] != "actualizacion":
+                continue
+            v = ej.V(ev["n"])
+            for m in ejecutor.MODELOS:
+                x = ev["m"][m]
+                self.assertEqual(x["T"], x["F"] + ev["brecha"])
+                self.assertGreaterEqual(x["despachado"], x["T"])
+                self.assertLess(x["despachado"] - x["T"], ejecutor.VUELTA_SEG + 1)
+                vals = v["validaciones"][m]
+                # F es el fin de la última validación terminada antes de T, y no hay ninguna en curso al despachar
+                self.assertEqual(x["F"], max(val["end"] for val in vals if val["end"] <= x["T"]))
+                self.assertFalse([val for val in vals if val["start"] < x["despachado"] < val["end"]])
+                prev = ej.s["eventos"][ev["previo"]]
+                self.assertLessEqual(ej.validado(prev, m), x["F"])
+        return ej
+
+    def test_c96_y_c60(self):
+        for c in (96, 60):
+            self.comprobar(json.loads((RAIZ / "escenarios" / f"c{c}.json").read_text()))
+
+    def test_combinaciones_esperan_a_backend_y_frontend(self):
+        ej = self.comprobar(json.loads((RAIZ / "escenarios" / "c61.json").read_text()))
+        combos = [v for v in ej.s["versiones"].values() if v["tipo"] == "combinacion"]
+        self.assertTrue(any(len({x["repo"] for x in v["validaciones"]["efimero"]}) == 2 for v in combos))
+
+    def test_cada_modelo_en_su_momento(self):
+        ej = self.comprobar(json.loads((RAIZ / "escenarios" / "c60.json").read_text()))
+        dist = [ev for ev in ej.s["eventos"] if ev["accion"] == "actualizacion" and ev["m"]["efimero"]["T"] != ev["m"]["fijo"]["T"]]
+        self.assertTrue(dist)  # el fijo y el efímero reciben la misma actualización en momentos distintos
+
+    def test_dos_builds_por_evento_con_imagen_propia(self):
+        ej, _ = correr_sim(escenario_c96())
+        bs = [b for proy, lista in ej.p.b.items() if proy.startswith("tesis-build-") for b in lista]
+        self.assertEqual(len(bs), 2 * len(ej.s["eventos"]))
+        for x in ej.s["eventos"]:
+            e, f = x["m"]["efimero"], x["m"]["fijo"]
+            self.assertNotEqual(e["commit"], f["commit"])
+            self.assertNotEqual(e["digest"], f["digest"])
+            self.assertEqual(e["arbol"], f["arbol"])
+            self.assertEqual((e["tag"]["modelo"], f["tag"]["modelo"]), ("efimero", "fijo"))
+
+    def test_cola_del_fijo_de_a_una_y_por_entrega(self):
+        ej, _ = correr_sim(json.loads((RAIZ / "escenarios" / "c61.json").read_text()))
+        fj = sorted((b["start"], b["end"]) for proy, lista in ej.p.b.items() if "fijo-desplegar" in proy for b in lista)
+        self.assertTrue(all(a[1] <= b[0] for a, b in zip(fj, fj[1:])))  # nunca dos builds del fijo a la vez
+        integ = ej.s["cola_fijo"]["integraciones"]
+        for i in integ:  # al integrar, no había ninguna solicitud entregada antes esperando
+            antes = [s for s in ej.s["solicitudes_fijo"] if ejecutor.epoch(s["listo"]) < ejecutor.epoch(i["listo"])
+                     and ejecutor.epoch(s["listo"]) <= ejecutor.epoch(i["hora"]) and ejecutor.epoch(s["hora"]) > ejecutor.epoch(i["hora"])]
+            self.assertEqual(antes, [])
+
+
+class Plataforma2(ejecutor.PlataformaSimulada):
+    """Variantes para probar los controles en vivo."""
+    falla = None
+
+    def _evento_app(self, n, repo, modelo, k, pr):
+        commit = super()._evento_app(n, repo, modelo, k, pr)
+        if self.falla == "duplicado" and (n, repo, modelo, k) == (1, "backend", "fijo", 0):
+            proy = ejecutor.proyecto("unico", repo)
+            orig = self.b[proy][0]
+            dup = self._build(proy, self.t + 30, ejecutor.DUR["unico"], commit, orig["source"])  # redelivery
+            dup["id"] = dup["id"].replace("-sim", "-dup")
+        return commit
+
+    def tag_json(self, cd, ref):
+        t = super().tag_json(cd, ref)
+        if self.falla == "modelo" and t and t.get("modelo") == "fijo":
+            return dict(t, modelo="efimero")
+        return t
+
+    def validacion(self, modelo, repo, build_id):
+        d = super().validacion(modelo, repo, build_id)
+        if self.falla == "ajeno" and d and modelo == "fijo":
+            otro = next(x for x in self.val.values() if x["rama"] == d["rama"] and x is not d and x["digest"] != d["digest"]
+                        and any(x is self.val.get(b["id"]) for proy, bs in self.b.items() if "efimero-desplegar" in proy for b in bs))
+            return dict(d, digest=otro["digest"])
+        return d
+
+
+class ControlesEnVivo(unittest.TestCase):
+    def correr(self, falla):
+        e = escenario_c96()
+        p = Plataforma2(e, inicio=1_800_000_000.0)
+        p.falla = falla
+        return correr_sim(e, p)
+
+    def test_duplicado_del_webhook_es_aviso(self):
+        ej, rc = self.correr("duplicado")
+        self.assertEqual(rc, 0, ej.s["motivo"])
+        self.assertTrue(any("duplicados" in a for a in ej.s["avisos"]))
+        x = ej.s["eventos"][0]["m"]["fijo"]
+        self.assertEqual(len(x["duplicados"]) + 1, len(x["builds"]))
+
+    def test_tag_json_de_otro_modelo_no_se_entrega(self):
+        ej, rc = self.correr("modelo")
+        self.assertEqual(rc, 2)
+        self.assertIn("modelo equivocado", ej.s["motivo"])
+        self.assertEqual(ej.s["solicitudes_fijo"], [])
+
+    def test_validacion_con_digest_de_otro_modelo_aborta(self):
+        ej, rc = self.correr("ajeno")
+        self.assertEqual(rc, 2)
+        self.assertIn("modelo equivocado", ej.s["motivo"])
 
 
 if __name__ == "__main__":

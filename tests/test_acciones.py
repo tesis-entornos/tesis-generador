@@ -1,9 +1,11 @@
 import json
+import os
 import py_compile
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -185,13 +187,16 @@ class EnSecoConGit(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_apertura_y_actualizaciones_backend(self):
-        registro, diff = acciones.abrir(self.e, 1, "backend", True, **self.kw)
+        registro, diff = acciones.abrir(self.e, 1, "backend", True, modelo="efimero", **self.kw)
         clon = self.kw["trabajo"] / "backend"
         self.assertEqual(registro["k"], 0)
         self.assertTrue(registro["dry_run"])
         self.assertIsNone(registro["pr"])
         self.assertEqual(_git(clon, "log", "-1", "--format=%s|%an|%ae"),
-                         "c7-1 backend apertura|martincho|mcometta211@alumnos.iua.edu.ar")
+                         "c7-1 backend apertura (efimero)|martincho|mcometta211@alumnos.iua.edu.ar")
+        self.assertEqual(_git(clon, "rev-parse", "--abbrev-ref", "HEAD"), "release/efimero/c7-1")
+        self.assertEqual((registro["modelo"], registro["rama"]), ("efimero", "release/efimero/c7-1"))
+        self.assertEqual(registro["arbol"], _git(clon, "rev-parse", "HEAD^{tree}"))
         self.assertEqual(
             _git(clon, "diff", "--name-only", f"{self.base}..HEAD").split("\n"),
             ["app/alembic/objetivo", "app/alembic/versions/c7_1.py", "app/alembic/versions/c7_3.py",
@@ -200,30 +205,80 @@ class EnSecoConGit(unittest.TestCase):
         apertura = _git(clon, "rev-parse", "HEAD")
 
         for k in (1, 2):
-            registro, _ = acciones.actualizar(self.e, 1, "backend", k, True, **self.kw)
-            self.assertEqual(_git(clon, "log", "-1", "--format=%s"), f"c7-1 backend actualizacion {k}")
+            registro, _ = acciones.actualizar(self.e, 1, "backend", k, True, modelo="efimero", **self.kw)
+            self.assertEqual(_git(clon, "log", "-1", "--format=%s"), f"c7-1 backend actualizacion {k} (efimero)")
             self.assertEqual(_git(clon, "diff", "--name-only", "HEAD~1..HEAD"), "app/sintetico.json")
         # Las actualizaciones no tocaron catálogo ni objetivo.
         self.assertEqual(_git(clon, "diff", "--name-only", f"{apertura}..HEAD"), "app/sintetico.json")
         self.assertEqual(json.loads((clon / "app/sintetico.json").read_text()), {"version": "c7-1", "actualizacion": 2})
 
         # Nada llegó al remoto y el registro fue al archivo de dry-run.
-        self.assertEqual(_git(clon, "ls-remote", "--heads", "origin", "release/c7-1"), "")
+        self.assertEqual(_git(clon, "ls-remote", "--heads", "origin", "release/efimero/c7-1"), "")
         lineas = (self.kw["registros"] / "dryrun-c7.jsonl").read_text().splitlines()
         self.assertEqual([json.loads(x)["k"] for x in lineas], [0, 1, 2])
         self.assertFalse((self.kw["registros"] / "c7.jsonl").exists())
 
     def test_actualizacion_fuera_de_orden(self):
-        acciones.abrir(self.e, 1, "backend", True, **self.kw)
+        acciones.abrir(self.e, 1, "backend", True, modelo="efimero", **self.kw)
         with self.assertRaises(acciones.ErrorAccion):
-            acciones.actualizar(self.e, 1, "backend", 2, True, **self.kw)
+            acciones.actualizar(self.e, 1, "backend", 2, True, modelo="efimero", **self.kw)
 
     def test_frontend_solo_marcador(self):
-        acciones.abrir(self.e, 3, "frontend", True, **self.kw)
+        acciones.abrir(self.e, 3, "frontend", True, modelo="fijo", **self.kw)
         clon = self.kw["trabajo"] / "frontend"
         self.assertEqual(_git(clon, "diff", "--name-only", f"{self.base}..HEAD"), "public/sintetico.json")
-        acciones.actualizar(self.e, 3, "frontend", 1, True, **self.kw)
+        acciones.actualizar(self.e, 3, "frontend", 1, True, modelo="fijo", **self.kw)
         self.assertEqual(_git(clon, "diff", "--name-only", f"{self.base}..HEAD"), "public/sintetico.json")
+
+    def test_dos_modelos_mismo_arbol_otro_sha_en_el_mismo_segundo(self):
+        fecha = {"GIT_AUTHOR_DATE": "2026-11-18T10:00:00Z", "GIT_COMMITTER_DATE": "2026-11-18T10:00:00Z"}
+        with mock.patch.dict(os.environ, fecha):
+            e, _ = acciones.abrir(self.e, 1, "backend", True, modelo="efimero", **self.kw)
+            f, _ = acciones.abrir(self.e, 1, "backend", True, modelo="fijo", **self.kw)
+        self.assertEqual((e["rama"], f["rama"]), ("release/efimero/c7-1", "release/fijo/c7-1"))
+        self.assertEqual(e["arbol"], f["arbol"])
+        self.assertNotEqual(e["commit"], f["commit"])
+        self.assertNotEqual(e["commit"][:7], f["commit"][:7])
+        clon = self.kw["trabajo"] / "backend"
+        self.assertEqual(_git(clon, "log", "-1", "--format=%s", f["commit"]), "c7-1 backend apertura (fijo)")
+        # el contador de actualizaciones es por rama: k = 1 en las dos
+        for m in ("efimero", "fijo"):
+            r, _ = acciones.actualizar(self.e, 1, "backend", 1, True, modelo=m, **self.kw)
+            self.assertEqual(r["rama"], f"release/{m}/c7-1")
+        self.assertEqual(_git(clon, "rev-parse", "release/efimero/c7-1^{tree}"), _git(clon, "rev-parse", "release/fijo/c7-1^{tree}"))
+
+    def test_tag_ocupado_rehace_el_commit(self):
+        clon = acciones.preparar_clon("backend", self.kw["trabajo"], self.kw["remoto"])
+        _git(clon, "checkout", "--quiet", "-B", "release/efimero/c7-1", self.base)
+        (clon / "x").write_text("1\n")
+        _git(clon, "add", "x")
+        vistos = []
+
+        def tag_libre(sha):
+            vistos.append(sha)
+            return len(vistos) > 1  # el primero está ocupado
+        commit = acciones._commit_con_tag_libre(clon, "c7-1 backend apertura (efimero)", tag_libre)
+        self.assertEqual(len(vistos), 2)
+        self.assertNotEqual(vistos[0], vistos[1])
+        self.assertEqual(commit, vistos[1])
+        self.assertEqual(_git(clon, "log", "-1", "--format=%s"), "c7-1 backend apertura (efimero)")
+        self.assertEqual(_git(clon, "rev-list", "--count", f"{self.base}..HEAD"), "1")
+        (clon / "x").write_text("2\n")
+        _git(clon, "add", "x")
+        with self.assertRaises(acciones.ErrorAccion):
+            acciones._commit_con_tag_libre(clon, "otro", lambda sha: False, dormir=lambda s: None)
+
+
+class Ramas(unittest.TestCase):
+    def test_rama_app(self):
+        self.assertEqual(acciones.rama_app("release/c7-1", "efimero"), "release/efimero/c7-1")
+        self.assertEqual(acciones.rama_app("release/c7-1", "fijo"), "release/fijo/c7-1")
+        with self.assertRaises(acciones.ErrorAccion):
+            acciones.rama_app("release/c7-1", "otro")
+
+    def test_modelo_obligatorio(self):
+        with self.assertRaises(SystemExit), mock.patch("sys.stderr"):
+            acciones.main(["abrir", "--escenario", "x.json", "--n", "1", "--repo", "backend"])
 
 
 if __name__ == "__main__":

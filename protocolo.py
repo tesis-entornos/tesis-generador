@@ -1,22 +1,24 @@
 #!/usr/bin/env python3
 """Protocolo congelado del experimento: manifiesto versionado y verificación en vivo.
 
-    python protocolo.py --generar protocolo/protocolo-v3.json   # relevamiento (solo lectura) y manifiesto
-    python protocolo.py --verificar [protocolo/protocolo-v3.json]
+    python protocolo.py --generar protocolo/protocolo-v4.json   # relevamiento (solo lectura) y manifiesto
+    python protocolo.py --verificar [protocolo/protocolo-v4.json]
 
 El manifiesto registra los ETags de main/ del bucket de buildspecs, los commits de main de los repos, el
 tag.json de main de los -cd, la imagen de la suite y PLAYWRIGHT_RETRIES, el commit de terraform fijado en los
 proyectos efímeros (y el árbol de entorno/ en ese commit y en main), SIMULAR_TRABAJO_SEG, el commit de
 tesis-generador y los parámetros del escenario, más la fecha y una huella (sha256 del JSON canónico sin el
-campo huella).
+campo huella). Desde v4 (dos ramas por modelo) registra también los webhooks de los ocho proyectos de CodeBuild
+(tipo, estado, filtros y política de PR; nunca la URL ni el secreto) y los parámetros del ejecutor (esquema del
+registro, regla de actualización y MAX_ESPERA_SEG).
 
 La verificación (al inicio de cada corrida, antes del reset) compara en vivo: ETags de main/ (mismo conjunto
 de objetos), tag.json de main de los -cd, imagen de la suite y PLAYWRIGHT_RETRIES en lo publicado, ninguna
 variable de proyecto que pise SUITE_IMAGEN / PLAYWRIGHT_RETRIES / SIMULAR_TRABAJO_SEG, SIMULAR_TRABAJO_SEG igual en
 los dos desplegar-*.yml e igual al del manifiesto, con exactamente un sleep de SIMULAR_TRABAJO_SEG en cada uno,
 commit de terraform de los proyectos efímeros, HEAD de tesis-generador (el del manifiesto o un descendiente
-con cambios solo en registros/, datos/, escenarios/ o el propio manifiesto, también sin commitear) y parámetros
-del escenario.
+con cambios solo en registros/, datos/, escenarios/ o el propio manifiesto, también sin commitear), parámetros
+del escenario y, si el manifiesto los tiene, los webhooks y los parámetros del ejecutor.
 """
 
 import argparse
@@ -33,7 +35,7 @@ import escenario as escenario_mod
 import reset as reset_mod
 
 RAIZ = Path(__file__).resolve().parent
-MANIFIESTO = RAIZ / "protocolo" / "protocolo-v3.json"
+MANIFIESTO = RAIZ / "protocolo" / "protocolo-v4.json"
 REGION = "us-east-2"
 ORG = "tesis-entornos"
 BUCKET = "tesis-entornos-buildspecs-582621604637"
@@ -49,6 +51,7 @@ MANIFIESTO_RE = re.compile(r"^protocolo/protocolo-v[0-9]+\.json$")
 TERRAFORM_SUBDIR = "entorno"
 DESPLEGAR = ("desplegar-efimero.yml", "desplegar-fijo.yml")
 SLEEP_SIMULAR_RE = re.compile(r'\bsleep\s+"?\$\{?SIMULAR_TRABAJO_SEG\}?"?')
+CAMPOS_WEBHOOK = ("buildType", "status", "filterGroups", "pullRequestBuildPolicy")
 
 
 # --------------------------------------------------------------------------------------------------
@@ -126,11 +129,21 @@ def relevar_buildspecs():
     return etags, suite_de(publicados)
 
 
+def webhook_de(proyecto: dict):
+    """Lo que define el webhook de un proyecto (sin URL ni secreto), o None si no tiene."""
+    w = proyecto.get("webhook")
+    if not w:
+        return None
+    return {k: w[k] for k in CAMPOS_WEBHOOK if k in w}
+
+
 def relevar_proyectos():
-    """Variables de proyecto vigiladas (no deberían existir) y terraform fijado en los proyectos efímeros."""
-    pisadas, terraform = [], {}
+    """Variables de proyecto vigiladas (no deberían existir), terraform fijado en los proyectos efímeros y webhooks
+    de los ocho proyectos."""
+    pisadas, terraform, webhooks = [], {}, {}
     for perfil, proyectos in reset_mod.PROYECTOS.items():
         for p in _aws(perfil, "codebuild", "batch-get-projects", "--names", *proyectos, "--query", "projects") or []:
+            webhooks[p["name"]] = webhook_de(p)
             for v in (p.get("environment") or {}).get("environmentVariables") or []:
                 if v["name"] in VARIABLES_VIGILADAS:
                     pisadas.append({"proyecto": p["name"], "variable": v["name"], "tipo": v["type"],
@@ -138,7 +151,7 @@ def relevar_proyectos():
             if p["name"] in PROYECTOS_EFIMERO:
                 versiones = {s["sourceIdentifier"]: s["sourceVersion"] for s in p.get("secondarySourceVersions") or []}
                 terraform[p["name"]] = versiones.get("terraform")
-    return pisadas, terraform
+    return pisadas, terraform, webhooks
 
 
 def ref_main(repo):
@@ -158,12 +171,19 @@ def parametros_escenario():
             "brecha": list(escenario_mod.BRECHA), "parametros": escenario_mod.PARAMETROS}
 
 
+def parametros_ejecutor():
+    """Parámetros del ejecutor que son protocolo (v4): esquema del registro, regla de actualización y espera máxima."""
+    import ejecutor as ejecutor_mod  # import diferido: ejecutor importa este módulo
+    return {"esquema": ejecutor_mod.ESQUEMA, "regla_actualizacion": ejecutor_mod.REGLA_ACTUALIZACION,
+            "max_espera_seg": ejecutor_mod.MAX_ESPERA_SEG}
+
+
 def relevar(terraform_dir=None, ruta=MANIFIESTO):
     """El nombre ("protocolo-vN") y la ruta del manifiesto salen del archivo de salida."""
     ruta = Path(ruta).resolve()
     ruta_rel = ruta.relative_to(RAIZ).as_posix()
     etags, suite = relevar_buildspecs()
-    pisadas, terraform = relevar_proyectos()
+    pisadas, terraform, webhooks = relevar_proyectos()
     repos = {r: ref_main(r) for r in REPOS}
     fijados = sorted(set(terraform.values()))
     tf = {"main": repos["tesis-terraform"], "fijado": fijados[0] if len(fijados) == 1 else fijados,
@@ -194,6 +214,8 @@ def relevar(terraform_dir=None, ruta=MANIFIESTO):
         "terraform": tf,
         "generador": {"commit": repos["tesis-generador"], "cambios_permitidos": list(PREFIJOS_PERMITIDOS) + [ruta_rel]},
         "escenario": parametros_escenario(),
+        "webhooks": webhooks,
+        "ejecutor": parametros_ejecutor(),
     }
 
 
@@ -228,6 +250,13 @@ def comparar(manifiesto: dict, vivo: dict) -> list:
         d.append("parámetros de escenario.py distintos de los del manifiesto")
     if vivo.get("escenario_archivo") is not None and vivo["escenario_archivo"] != manifiesto["escenario"]["parametros"]:
         d.append("los parámetros del escenario a correr no son los del manifiesto")
+    if "webhooks" in manifiesto:
+        esperados, vistos = manifiesto["webhooks"], vivo.get("webhooks") or {}
+        for p in sorted(set(esperados) | set(vistos)):
+            if esperados.get(p) != vistos.get(p):
+                d.append(f"webhook de {p} distinto del manifiesto: {json.dumps(vistos.get(p), sort_keys=True, ensure_ascii=False)}")
+    if "ejecutor" in manifiesto and vivo.get("ejecutor") != manifiesto["ejecutor"]:
+        d.append(f"parámetros del ejecutor distintos del manifiesto: {vivo.get('ejecutor')}")
     d += vivo.get("generador", [])
     return d
 
@@ -270,8 +299,9 @@ def verificar_vivo(ruta=MANIFIESTO, escenario=None):
     """(manifiesto, diferencias). Solo lectura."""
     m = cargar(ruta)
     etags, suite = relevar_buildspecs()
-    pisadas, terraform = relevar_proyectos()
-    vivo = {"etags": etags, "suite": suite, "pisadas": pisadas, "terraform": terraform,
+    pisadas, terraform, webhooks = relevar_proyectos()
+    vivo = {"etags": etags, "suite": suite, "pisadas": pisadas, "terraform": terraform, "webhooks": webhooks,
+            "ejecutor": parametros_ejecutor(),
             "tag_json_main": {cd: tag_json_main(cd) for cd in m["tag_json_main"]},
             "escenario": parametros_escenario(),
             "escenario_archivo": None if escenario is None else escenario.get("parametros"),

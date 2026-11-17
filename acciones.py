@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """Acciones sobre las versiones sintéticas de un escenario: abrir y actualizar.
 
-    python acciones.py abrir --escenario <f> --n <n> --repo backend|frontend [--dry-run]
-    python acciones.py actualizar --escenario <f> --n <n> --repo <r> --k <k> [--dry-run]
+    python acciones.py abrir --escenario <f> --n <n> --repo backend|frontend --modelo efimero|fijo [--dry-run]
+    python acciones.py actualizar --escenario <f> --n <n> --repo <r> --k <k> --modelo efimero|fijo [--dry-run]
 
-abrir: crea la rama release/c<N>-<n> desde el commit de línea base del repo, escribe el contenido
-sintético (marcador con actualizacion = 0 y, en backend, el catálogo de migraciones y el objetivo),
-hace commit, push y abre el PR contra main.
-actualizar: reescribe solo el marcador con actualizacion = k, hace commit y push (el PR se actualiza solo).
+Dos ramas por versión y repo, una por modelo: release/<modelo>/c<N>-<n> (release/efimero/... y release/fijo/...).
+Cada una con su PR a main y su build; el mismo contenido en las dos, con el modelo en el mensaje del commit para
+que el SHA (y el tag de la imagen) sea distinto aunque los dos commits se hagan en el mismo segundo.
+abrir: crea la rama del modelo desde el commit de línea base del repo, escribe el contenido sintético (marcador
+con actualizacion = 0 y, en backend, el catálogo de migraciones y el objetivo), hace commit, push y abre el PR
+contra main.
+actualizar: reescribe solo el marcador de la rama del modelo con actualizacion = k, hace commit y push (el PR se
+actualiza solo).
+tag_libre (opcional): función sha -> bool que se consulta antes del push; si el tag de la imagen (sha[:7]) ya
+existe, se rehace el commit un segundo más tarde (mismo contenido y mensaje, otra fecha) hasta 3 veces.
 
 Con --dry-run todo pasa en el clon de trabajo local (rama, archivos, commit): no hay push ni PR, se muestra
 el diff contra la línea base y el registro va a registros/dryrun-c<N>.jsonl (no versionado).
@@ -26,6 +32,8 @@ TRABAJO = RAIZ / ".trabajo"
 REGISTROS = RAIZ / "registros"
 
 REPOS = ("backend", "frontend")
+MODELOS = ("efimero", "fijo")
+REINTENTOS_TAG = 3
 LINEA_BASE = {
     "backend": "afc16b1d85fc0e87e0998d2e69a2109520ed9719",
     "frontend": "dd2a13341c32c57275692bc6e43ef446fe4306d2",
@@ -94,6 +102,19 @@ def contenido_migracion(revision: str, propia: bool) -> str:
         f"def downgrade():\n"
         f"{downgrade}"
     )
+
+
+def rama_app(rama: str, modelo: str) -> str:
+    """release/c<N>-<n> -> release/<modelo>/c<N>-<n> (la rama de la app de ese modelo)."""
+    if modelo not in MODELOS:
+        raise ErrorAccion(f"modelo {modelo!r}: tiene que ser uno de {', '.join(MODELOS)}")
+    if not rama.startswith("release/"):
+        raise ErrorAccion(f"la rama de la versión {rama} no empieza con release/")
+    return rama.replace("release/", f"release/{modelo}/", 1)
+
+
+def mensaje(corrida: int, n: int, repo: str, accion: str, modelo: str) -> str:
+    return f"c{corrida}-{n} {repo} {accion} ({modelo})"
 
 
 def version(escenario: dict, n: int) -> dict:
@@ -185,7 +206,25 @@ def _diff(clon: Path, base: str) -> str:
     return r.stdout.rstrip("\n")
 
 
-def _registrar(escenario, accion, n, repo, rama, k, commit, pr, pr_created_at, dry_run, registros: Path):
+def _commit_con_tag_libre(clon: Path, texto: str, tag_libre, dormir=None) -> str:
+    """Commit; si tag_libre(sha) es False (el tag sha[:7] ya existe en ECR), rehace el commit un segundo después."""
+    import time
+    dormir = dormir or time.sleep
+    _git(clon, "commit", "--quiet", "-m", texto)
+    commit = _git(clon, "rev-parse", "HEAD")
+    intentos = 0
+    while tag_libre is not None and not tag_libre(commit):
+        intentos += 1
+        if intentos > REINTENTOS_TAG:
+            raise ErrorAccion(f"el tag {commit[:7]} sigue ocupado en ECR después de {REINTENTOS_TAG} reintentos")
+        dormir(1.1)
+        _git(clon, "commit", "--quiet", "--amend", "--no-edit", "--date=now")
+        commit = _git(clon, "rev-parse", "HEAD")
+    return commit
+
+
+def _registrar(escenario, accion, n, repo, rama, k, commit, pr, pr_created_at, dry_run, registros: Path,
+               modelo=None, arbol=None):
     corrida = escenario["corrida"]
     registros.mkdir(parents=True, exist_ok=True)
     archivo = registros / (f"dryrun-c{corrida}.jsonl" if dry_run else f"c{corrida}.jsonl")
@@ -200,6 +239,8 @@ def _registrar(escenario, accion, n, repo, rama, k, commit, pr, pr_created_at, d
         "pr": pr,
         "pr_created_at": pr_created_at,
         "dry_run": dry_run,
+        "modelo": modelo,
+        "arbol": arbol,
     }
     with archivo.open("a", encoding="utf-8") as f:
         f.write(json.dumps(linea, ensure_ascii=False) + "\n")
@@ -216,10 +257,11 @@ def _cargar(escenario):
 # Acciones
 
 
-def abrir(escenario, n: int, repo: str, dry_run: bool, *, trabajo=TRABAJO, registros=REGISTROS, remoto=None, base=None):
+def abrir(escenario, n: int, repo: str, dry_run: bool, *, modelo: str, trabajo=TRABAJO, registros=REGISTROS, remoto=None,
+          base=None, tag_libre=None):
     escenario = _cargar(escenario)
     v = validar_apertura(escenario, n, repo)
-    corrida, rama = escenario["corrida"], v["rama"]
+    corrida, rama = escenario["corrida"], rama_app(v["rama"], modelo)
     base = base or LINEA_BASE[repo]
     clon = preparar_clon(repo, Path(trabajo), remoto or REMOTOS[repo])
 
@@ -227,8 +269,8 @@ def abrir(escenario, n: int, repo: str, dry_run: bool, *, trabajo=TRABAJO, regis
         raise ErrorAccion(f"{rama} ya existe en el remoto de {repo}")
     _git(clon, "checkout", "--quiet", "-B", rama, base)
     _escribir(clon, archivos_apertura(escenario, n, repo))
-    _git(clon, "commit", "--quiet", "-m", f"c{corrida}-{n} {repo} apertura")
-    commit = _git(clon, "rev-parse", "HEAD")
+    commit = _commit_con_tag_libre(clon, mensaje(corrida, n, repo, "apertura", modelo), None if dry_run else tag_libre)
+    arbol = _git(clon, "rev-parse", "HEAD^{tree}")
 
     pr = pr_created_at = None
     diff = None
@@ -237,18 +279,20 @@ def abrir(escenario, n: int, repo: str, dry_run: bool, *, trabajo=TRABAJO, regis
     else:
         _git(clon, "push", "--quiet", "-u", "origin", rama)
         _ejecutar(["gh", "pr", "create", "--base", "main", "--head", rama, "--title", rama,
-                   "--body", f"generador c{corrida}"], cwd=clon)
+                   "--body", f"generador c{corrida} ({modelo})"], cwd=clon)
         datos = json.loads(_ejecutar(["gh", "pr", "view", rama, "--json", "number,createdAt"], cwd=clon))
         pr, pr_created_at = datos["number"], datos["createdAt"]
 
-    registro = _registrar(escenario, "apertura", n, repo, rama, 0, commit, pr, pr_created_at, dry_run, Path(registros))
+    registro = _registrar(escenario, "apertura", n, repo, rama, 0, commit, pr, pr_created_at, dry_run, Path(registros),
+                          modelo=modelo, arbol=arbol)
     return registro, diff
 
 
-def actualizar(escenario, n: int, repo: str, k: int, dry_run: bool, *, trabajo=TRABAJO, registros=REGISTROS, remoto=None, base=None):
+def actualizar(escenario, n: int, repo: str, k: int, dry_run: bool, *, modelo: str, trabajo=TRABAJO, registros=REGISTROS,
+               remoto=None, base=None, tag_libre=None):
     escenario = _cargar(escenario)
     v = validar_apertura(escenario, n, repo)
-    corrida, rama = escenario["corrida"], v["rama"]
+    corrida, rama = escenario["corrida"], rama_app(v["rama"], modelo)
     base = base or LINEA_BASE[repo]
     clon = preparar_clon(repo, Path(trabajo), remoto or REMOTOS[repo])
 
@@ -272,8 +316,8 @@ def actualizar(escenario, n: int, repo: str, k: int, dry_run: bool, *, trabajo=T
     validar_actualizacion(escenario, n, repo, k, actual["actualizacion"])
 
     _escribir(clon, archivos_actualizacion(escenario, n, repo, k))
-    _git(clon, "commit", "--quiet", "-m", f"c{corrida}-{n} {repo} actualizacion {k}")
-    commit = _git(clon, "rev-parse", "HEAD")
+    commit = _commit_con_tag_libre(clon, mensaje(corrida, n, repo, f"actualizacion {k}", modelo), None if dry_run else tag_libre)
+    arbol = _git(clon, "rev-parse", "HEAD^{tree}")
 
     diff = None
     if dry_run:
@@ -281,7 +325,8 @@ def actualizar(escenario, n: int, repo: str, k: int, dry_run: bool, *, trabajo=T
     else:
         _git(clon, "push", "--quiet", "origin", rama)
 
-    registro = _registrar(escenario, "actualizacion", n, repo, rama, k, commit, None, None, dry_run, Path(registros))
+    registro = _registrar(escenario, "actualizacion", n, repo, rama, k, commit, None, None, dry_run, Path(registros),
+                          modelo=modelo, arbol=arbol)
     return registro, diff
 
 
@@ -295,14 +340,15 @@ def main(argv=None):
         p.add_argument("--repo", choices=REPOS, required=True)
         if nombre == "actualizar":
             p.add_argument("--k", type=int, required=True)
+        p.add_argument("--modelo", choices=MODELOS, required=True)
         p.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
 
     try:
         if args.accion == "abrir":
-            registro, diff = abrir(args.escenario, args.n, args.repo, args.dry_run)
+            registro, diff = abrir(args.escenario, args.n, args.repo, args.dry_run, modelo=args.modelo)
         else:
-            registro, diff = actualizar(args.escenario, args.n, args.repo, args.k, args.dry_run)
+            registro, diff = actualizar(args.escenario, args.n, args.repo, args.k, args.dry_run, modelo=args.modelo)
     except ErrorAccion as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
