@@ -1,0 +1,71 @@
+[2026-11-18T17:01:39Z] t  pre  protocolo protocolo-v5 verificado: huella e8ee7879f1e9cf9d6885e226d78cf0c3886b36d0e482562a5484ae2d86a422ad
+[2026-11-18T17:01:39Z] t  pre  reset.py
+[2026-11-18T17:01:39Z] 1. precondiciones
+[2026-11-18T17:02:01Z]   ok
+[2026-11-18T17:02:02Z]   línea base backend 582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-backend@sha256:eb07d223d0f4133d7bdd18f932b39d2c399b716cbaab19d3924c619b5a38a99a
+[2026-11-18T17:02:02Z] 2. primer reset de datos
+[2026-11-18T17:02:05Z]   copia registrada arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:290
+[2026-11-18T17:02:06Z]   tarea 23e2c4e897024066b2e356f2af362894 lanzada; esperando que pare
+[2026-11-18T17:03:00Z]   copia arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:290 desregistrada
+[2026-11-18T17:03:00Z] 3. despliegue de la línea base en dev de tesis-backend-cd
+[2026-11-18T17:03:05Z]   tesis-backend-cd: push de bd0a310 a dev; esperando el build de tesis-fijo-desplegar-backend
+[2026-11-18T17:03:39Z]   build tesis-fijo-desplegar-backend:7c0dd36a-a792-485f-8d3c-292dcb207a09
+[2026-11-18T17:18:52Z] 3. despliegue de la línea base en dev de tesis-frontend-cd
+[2026-11-18T17:18:56Z]   tesis-frontend-cd: push de c327d61 a dev; esperando el build de tesis-fijo-desplegar-frontend
+[2026-11-18T17:19:29Z]   build tesis-fijo-desplegar-frontend:3160e360-6e34-4c7f-99d4-02336af34615
+[2026-11-18T17:31:36Z] 4. segundo reset de datos
+[2026-11-18T17:31:40Z]   tarea 4a3c858245b74872bd108edb86d4ba60 lanzada; esperando que pare
+[2026-11-18T17:32:33Z] 5. ramas de cierre
+[2026-11-18T17:32:36Z]   tesis-backend-cd main-fijo: actualizar -> db1881d
+[2026-11-18T17:32:38Z]   tesis-backend-cd main-efimero: actualizar -> db1881d
+[2026-11-18T17:32:41Z]   tesis-frontend-cd main-fijo: actualizar -> 900cda0
+[2026-11-18T17:32:43Z]   tesis-frontend-cd main-efimero: actualizar -> 900cda0
+[2026-11-18T17:32:48Z] reset c115 terminado; t0 = 2026-11-18T17:32:48Z
+[2026-11-18T17:32:48Z] registro en /Users/martincometta/tesis/aplicacion/tesis-generador/registros/reset-c115.json
+[2026-11-18T17:32:48Z] t+00:00  t = 0 en 2026-11-18T17:32:48Z; 3 eventos, 1 versiones
+[2026-11-18T17:33:14Z] t+00:26  abrir release/efimero/c115-1 backend: PR #151 (2026-11-18T17:33:12Z), commit 0f46039
+[2026-11-18T17:33:21Z] t+00:33  abrir release/fijo/c115-1 backend: PR #152 (2026-11-18T17:33:19Z), commit 8e03730
+[2026-11-18T17:35:02Z] t+02:14  build 19d9e945 release/efimero/c115-1 backend SUCCEEDED, tag 0f46039 digest 054b7b43373f -> tesis-backend-cd release/c115-1 1cf660a (entrega al efímero)
+[2026-11-18T17:35:18Z] t+02:30  build f40fb3bb release/fijo/c115-1 backend SUCCEEDED, tag 8e03730 digest 5347ff5be091 -> tesis-backend-cd release/fijo/c115-1 e83c644 (solicitud en la cola del fijo)
+[2026-11-18T17:35:21Z] t+02:33  fijo: integra release/fijo/c115-1 backend k=0 (e83c644, entregado 2026-11-18T17:35:01Z) en dev -> 6caaab8 (conflicto: sin_conflicto)
+[2026-11-18T17:35:29Z] t+02:41  fijo: build tesis-fijo-desplegar-backend:a15f3e8e-e6e7-4c22-84ae-dcce13381138 de la integración de release/c115-1 backend k=0
+[2026-11-18T17:51:01Z] t+18:13  validación fijo release/c115-1 backend a15f3e8e SUCCEEDED ok digest 5347ff5be091 (922 s)
+[2026-11-18T17:51:01Z] t+18:13  release/c115-1 backend k=1 en fijo: validaciones previas terminadas en 2026-11-18T17:50:44Z, brecha 167 s -> T = 2026-11-18T17:53:31Z
+[2026-11-18T17:51:01Z] t+18:13  fijo: build a15f3e8e terminó SUCCEEDED (922 s)
+[2026-11-18T17:53:48Z] t+21:00  actualizar release/fijo/c115-1 backend k=1: commit 4d5c111
+[2026-11-18T17:55:49Z] t+23:01  build 86d9bde9 release/fijo/c115-1 backend SUCCEEDED, tag 4d5c111 digest bb1a1a5eef52 -> tesis-backend-cd release/fijo/c115-1 0b384d0 (solicitud en la cola del fijo)
+[2026-11-18T17:55:52Z] t+23:04  fijo: integra release/fijo/c115-1 backend k=1 (0b384d0, entregado 2026-11-18T17:55:24Z) en dev -> 0f9d37c (conflicto: sin_conflicto)
+[2026-11-18T17:56:01Z] t+23:13  fijo: build tesis-fijo-desplegar-backend:8d4a9460-d51a-4277-812a-c5f937313c44 de la integración de release/c115-1 backend k=1
+[2026-11-18T17:57:02Z] t+24:14  validación efimero release/c115-1 backend 35071a86 SUCCEEDED ok digest 054b7b43373f (1322 s)
+[2026-11-18T17:57:02Z] t+24:14  release/c115-1 backend k=1 en efimero: validaciones previas terminadas en 2026-11-18T17:56:51Z, brecha 167 s -> T = 2026-11-18T17:59:38Z
+[2026-11-18T17:59:49Z] t+27:01  actualizar release/efimero/c115-1 backend k=1: commit 9ec47cc
+[2026-11-18T18:01:49Z] t+29:01  build e85c52a9 release/efimero/c115-1 backend SUCCEEDED, tag 9ec47cc digest e7838af9a22d -> tesis-backend-cd release/c115-1 c70af78 (entrega al efímero)
+[2026-11-18T18:11:34Z] t+38:46  validación fijo release/c115-1 backend 8d4a9460 SUCCEEDED ok digest bb1a1a5eef52 (926 s)
+[2026-11-18T18:11:34Z] t+38:46  release/c115-1 backend k=2 en fijo: validaciones previas terminadas en 2026-11-18T18:11:19Z, brecha 124 s -> T = 2026-11-18T18:13:23Z
+[2026-11-18T18:11:34Z] t+38:46  fijo: build 8d4a9460 terminó SUCCEEDED (926 s)
+[2026-11-18T18:13:35Z] t+40:47  actualizar release/fijo/c115-1 backend k=2: commit 57fd662
+[2026-11-18T18:15:35Z] t+42:47  build 1f9a1551 release/fijo/c115-1 backend SUCCEEDED, tag 57fd662 digest ef352f45e922 -> tesis-backend-cd release/fijo/c115-1 2f5f87d (solicitud en la cola del fijo)
+[2026-11-18T18:15:38Z] t+42:50  fijo: integra release/fijo/c115-1 backend k=2 (2f5f87d, entregado 2026-11-18T18:15:17Z) en dev -> 22322a4 (conflicto: sin_conflicto)
+[2026-11-18T18:15:48Z] t+43:00  fijo: build tesis-fijo-desplegar-backend:6f0ee25c-aff4-4a0c-9953-de51966b8028 de la integración de release/c115-1 backend k=2
+[2026-11-18T18:17:34Z] t+44:46  validación efimero release/c115-1 backend 37d13831 SUCCEEDED ok digest e7838af9a22d (945 s)
+[2026-11-18T18:17:34Z] t+44:46  release/c115-1 backend k=2 en efimero: validaciones previas terminadas en 2026-11-18T18:17:18Z, brecha 124 s -> T = 2026-11-18T18:19:22Z
+[2026-11-18T18:19:36Z] t+46:48  actualizar release/efimero/c115-1 backend k=2: commit e6e8bc3
+[2026-11-18T18:21:35Z] t+48:47  build 3d5f7e0f release/efimero/c115-1 backend SUCCEEDED, tag e6e8bc3 digest a0781e667063 -> tesis-backend-cd release/c115-1 e1647dc (entrega al efímero)
+[2026-11-18T18:31:19Z] t+58:31  validación fijo release/c115-1 backend 6f0ee25c SUCCEEDED ok digest ef352f45e922 (921 s)
+[2026-11-18T18:31:19Z] t+58:31  fijo: build 6f0ee25c terminó SUCCEEDED (921 s)
+[2026-11-18T18:31:19Z] t+58:31  VALIDACIÓN FINAL release/c115-1 fijo: tesis-fijo-desplegar-backend:6f0ee25c-aff4-4a0c-9953-de51966b8028 ok fin 2026-11-18T18:31:01Z tiempo de validación 3462 s
+[2026-11-18T18:31:26Z] t+58:38  cierre fijo release/c115-1 backend: PR #464 release/fijo/c115-1 -> main-fijo, merge local y push
+[2026-11-18T18:31:26Z] t+58:38  CERRADA release/c115-1 en fijo
+[2026-11-18T18:31:36Z] t+58:48  PR tesis-backend-cd#464 (release/c115-1 -> main-fijo) marcado como merged
+[2026-11-18T18:37:24Z] t+64:36  validación efimero release/c115-1 backend 725ddde4 SUCCEEDED ok digest a0781e667063 (949 s)
+[2026-11-18T18:37:24Z] t+64:36  VALIDACIÓN FINAL release/c115-1 efimero: tesis-efimero-desplegar-backend:725ddde4-505e-4185-8888-7fe2682dfb36 ok fin 2026-11-18T18:37:02Z tiempo de validación 3830 s
+[2026-11-18T18:37:33Z] t+64:45  cierre efímero release/c115-1 backend: PR #465 -> main-efimero, merge local y push
+[2026-11-18T18:37:47Z] t+64:59  cierre efímero release/c115-1 backend: build del webhook tesis-efimero-cerrar-backend:56918272-52a0-47e2-8929-5498769972f6
+[2026-11-18T18:37:47Z] t+64:59  PR tesis-backend-cd#465 (release/c115-1 -> main-efimero) marcado como merged
+[2026-11-18T18:44:00Z] t+71:12  cierre efímero release/c115-1 backend: 56918272 SUCCEEDED, accion destruir, resultado ok (367 s)
+[2026-11-18T18:44:00Z] t+71:12  CERRADA release/c115-1 en efímero: entorno destruido por webhook (tesis-efimero-cerrar-backend:56918272-52a0-47e2-8929-5498769972f6)
+[2026-11-18T18:44:15Z] t+71:27  limpieza release/c115-1: ramas del -cd borradas (tesis-backend-cd release/c115-1, tesis-backend-cd release/fijo/c115-1); PR y ramas de la app de los dos modelos cerrados y borrados
+[2026-11-18T18:44:15Z] t+71:27  corrida c115 terminada en 4287 s desde t = 0
+[2026-11-18T18:44:15Z] t+71:27  depurador
+[2026-11-18T18:44:45Z] t+71:57    depurador: 0 restos encontrados
+[2026-11-18T18:44:52Z] t+72:04  cierre c115: VÁLIDA
