@@ -1,0 +1,1054 @@
+{
+  "plan": "protocolo v5 (diseño del tutor, 17/11)",
+  "semilla_maestra": 20261119,
+  "metodo": "rng = random.Random(semilla_maestra); combinaciones = [(nivel, k) for nivel in (1, 3, 5) for k in (0, 1, 2)]; rng.shuffle(combinaciones); c111..c119 = combinaciones en ese orden, cada una con rng.randint(1, 10**6); reservas c120..c128 = una por combinación en orden (nivel, k) creciente, cada una con rng.randint(1, 10**6) (se usa solo si la corrida de esa combinación sale inválida); piloto c110 (nivel 3, k = 2): rng.randint(1, 10**6) sucesivos, el primero cuyo escenario tiene al menos una versión solo_frontend y una combinacion (válido solo para el piloto, que queda excluido de los datos). Escenarios con escenario.py --actualizaciones-fijas k.",
+  "diseno": "9 corridas, una por combinación de nivel (1, 3, 5) y cantidad fija k de actualizaciones por versión (0, 1, 2); en una corrida con k actualizaciones, todas sus versiones tienen exactamente k; resultados descriptivos. Lo corrido con v4 (c61 en adelante) es preliminar. Numeración c110–c128 (decisión de Martin: c89–c107 chocaba con corridas de prueba de v1 en c90, c95, c96 y c99; no se pisan ni se borran escenarios ni registros existentes).",
+  "protocolo": {
+    "nombre": "protocolo-v5",
+    "huella": "e8ee7879f1e9cf9d6885e226d78cf0c3886b36d0e482562a5484ae2d86a422ad",
+    "generador": "575d30adcda682dce9ab1b3ab74be2a0d8589608"
+  },
+  "corridas": [
+    {
+      "corrida": "c111",
+      "nivel": 3,
+      "actualizaciones_fijas": 1,
+      "semilla": 288165,
+      "escenario": "escenarios/c111.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "migracion",
+          "combinacion"
+        ],
+        "aperturas": {
+          "c111-1": {
+            "backend": 0
+          },
+          "c111-2": {
+            "backend": 60
+          },
+          "c111-3": {
+            "backend": 467,
+            "frontend": 758
+          }
+        },
+        "actualizaciones": {
+          "c111-1": [
+            [
+              "backend",
+              90
+            ]
+          ],
+          "c111-2": [
+            [
+              "backend",
+              100
+            ]
+          ],
+          "c111-3": [
+            [
+              "backend",
+              989
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 7
+      }
+    },
+    {
+      "corrida": "c112",
+      "nivel": 3,
+      "actualizaciones_fijas": 2,
+      "semilla": 637789,
+      "escenario": "escenarios/c112.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend",
+          "combinacion",
+          "solo_frontend"
+        ],
+        "aperturas": {
+          "c112-1": {
+            "frontend": 0
+          },
+          "c112-2": {
+            "frontend": 105,
+            "backend": 323
+          },
+          "c112-3": {
+            "frontend": 181
+          }
+        },
+        "actualizaciones": {
+          "c112-1": [
+            [
+              "frontend",
+              98
+            ],
+            [
+              "frontend",
+              171
+            ]
+          ],
+          "c112-2": [
+            [
+              "backend",
+              383
+            ],
+            [
+              "backend",
+              443
+            ]
+          ],
+          "c112-3": [
+            [
+              "frontend",
+              551
+            ],
+            [
+              "frontend",
+              619
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 10
+      }
+    },
+    {
+      "corrida": "c113",
+      "nivel": 1,
+      "actualizaciones_fijas": 1,
+      "semilla": 52747,
+      "escenario": "escenarios/c113.json",
+      "resumen": {
+        "tipos": [
+          "combinacion"
+        ],
+        "aperturas": {
+          "c113-1": {
+            "frontend": 0,
+            "backend": 253
+          }
+        },
+        "actualizaciones": {
+          "c113-1": [
+            [
+              "frontend",
+              203
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c114",
+      "nivel": 5,
+      "actualizaciones_fijas": 2,
+      "semilla": 710972,
+      "escenario": "escenarios/c114.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend",
+          "migracion",
+          "solo_backend",
+          "migracion",
+          "solo_frontend"
+        ],
+        "aperturas": {
+          "c114-1": {
+            "frontend": 0
+          },
+          "c114-2": {
+            "backend": 72
+          },
+          "c114-3": {
+            "backend": 114
+          },
+          "c114-4": {
+            "backend": 172
+          },
+          "c114-5": {
+            "frontend": 329
+          }
+        },
+        "actualizaciones": {
+          "c114-1": [
+            [
+              "frontend",
+              48
+            ],
+            [
+              "frontend",
+              405
+            ]
+          ],
+          "c114-2": [
+            [
+              "backend",
+              639
+            ],
+            [
+              "backend",
+              809
+            ]
+          ],
+          "c114-3": [
+            [
+              "backend",
+              425
+            ],
+            [
+              "backend",
+              1003
+            ]
+          ],
+          "c114-4": [
+            [
+              "backend",
+              242
+            ],
+            [
+              "backend",
+              272
+            ]
+          ],
+          "c114-5": [
+            [
+              "frontend",
+              593
+            ],
+            [
+              "frontend",
+              731
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 15
+      }
+    },
+    {
+      "corrida": "c115",
+      "nivel": 1,
+      "actualizaciones_fijas": 2,
+      "semilla": 698314,
+      "escenario": "escenarios/c115.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "aperturas": {
+          "c115-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c115-1": [
+            [
+              "backend",
+              167
+            ],
+            [
+              "backend",
+              291
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c116",
+      "nivel": 1,
+      "actualizaciones_fijas": 0,
+      "semilla": 191123,
+      "escenario": "escenarios/c116.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend"
+        ],
+        "aperturas": {
+          "c116-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c116-1": []
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 1
+      }
+    },
+    {
+      "corrida": "c117",
+      "nivel": 5,
+      "actualizaciones_fijas": 0,
+      "semilla": 759675,
+      "escenario": "escenarios/c117.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "migracion",
+          "combinacion",
+          "migracion",
+          "combinacion"
+        ],
+        "aperturas": {
+          "c117-1": {
+            "backend": 0
+          },
+          "c117-2": {
+            "backend": 85
+          },
+          "c117-3": {
+            "frontend": 159,
+            "backend": 286
+          },
+          "c117-4": {
+            "backend": 302
+          },
+          "c117-5": {
+            "frontend": 489,
+            "backend": 797
+          }
+        },
+        "actualizaciones": {
+          "c117-1": [],
+          "c117-2": [],
+          "c117-3": [],
+          "c117-4": [],
+          "c117-5": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "declinada",
+          "declinada",
+          "integrada"
+        ],
+        "eventos": 7
+      }
+    },
+    {
+      "corrida": "c118",
+      "nivel": 3,
+      "actualizaciones_fijas": 0,
+      "semilla": 296745,
+      "escenario": "escenarios/c118.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend",
+          "solo_backend",
+          "combinacion"
+        ],
+        "aperturas": {
+          "c118-1": {
+            "frontend": 0
+          },
+          "c118-2": {
+            "backend": 35
+          },
+          "c118-3": {
+            "frontend": 339,
+            "backend": 815
+          }
+        },
+        "actualizaciones": {
+          "c118-1": [],
+          "c118-2": [],
+          "c118-3": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 4
+      }
+    },
+    {
+      "corrida": "c119",
+      "nivel": 5,
+      "actualizaciones_fijas": 1,
+      "semilla": 28786,
+      "escenario": "escenarios/c119.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_frontend",
+          "solo_frontend",
+          "migracion",
+          "solo_backend"
+        ],
+        "aperturas": {
+          "c119-1": {
+            "backend": 0
+          },
+          "c119-2": {
+            "frontend": 255
+          },
+          "c119-3": {
+            "frontend": 270
+          },
+          "c119-4": {
+            "backend": 318
+          },
+          "c119-5": {
+            "backend": 592
+          }
+        },
+        "actualizaciones": {
+          "c119-1": [
+            [
+              "backend",
+              411
+            ]
+          ],
+          "c119-2": [
+            [
+              "frontend",
+              490
+            ]
+          ],
+          "c119-3": [
+            [
+              "frontend",
+              579
+            ]
+          ],
+          "c119-4": [
+            [
+              "backend",
+              767
+            ]
+          ],
+          "c119-5": [
+            [
+              "backend",
+              1127
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "declinada",
+          "integrada"
+        ],
+        "eventos": 10
+      }
+    }
+  ],
+  "reservas": [
+    {
+      "corrida": "c120",
+      "nivel": 1,
+      "actualizaciones_fijas": 0,
+      "semilla": 635805,
+      "escenario": "escenarios/c120.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend"
+        ],
+        "aperturas": {
+          "c120-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c120-1": []
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 1
+      }
+    },
+    {
+      "corrida": "c121",
+      "nivel": 1,
+      "actualizaciones_fijas": 1,
+      "semilla": 510182,
+      "escenario": "escenarios/c121.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend"
+        ],
+        "aperturas": {
+          "c121-1": {
+            "frontend": 0
+          }
+        },
+        "actualizaciones": {
+          "c121-1": [
+            [
+              "frontend",
+              394
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 2
+      }
+    },
+    {
+      "corrida": "c122",
+      "nivel": 1,
+      "actualizaciones_fijas": 2,
+      "semilla": 531882,
+      "escenario": "escenarios/c122.json",
+      "resumen": {
+        "tipos": [
+          "migracion"
+        ],
+        "aperturas": {
+          "c122-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c122-1": [
+            [
+              "backend",
+              589
+            ],
+            [
+              "backend",
+              1068
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c123",
+      "nivel": 3,
+      "actualizaciones_fijas": 0,
+      "semilla": 346413,
+      "escenario": "escenarios/c123.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "migracion",
+          "combinacion"
+        ],
+        "aperturas": {
+          "c123-1": {
+            "backend": 0
+          },
+          "c123-2": {
+            "backend": 84
+          },
+          "c123-3": {
+            "frontend": 489,
+            "backend": 951
+          }
+        },
+        "actualizaciones": {
+          "c123-1": [],
+          "c123-2": [],
+          "c123-3": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 4
+      }
+    },
+    {
+      "corrida": "c124",
+      "nivel": 3,
+      "actualizaciones_fijas": 1,
+      "semilla": 314125,
+      "escenario": "escenarios/c124.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "solo_backend",
+          "combinacion"
+        ],
+        "aperturas": {
+          "c124-1": {
+            "backend": 0
+          },
+          "c124-2": {
+            "backend": 59
+          },
+          "c124-3": {
+            "frontend": 322,
+            "backend": 777
+          }
+        },
+        "actualizaciones": {
+          "c124-1": [
+            [
+              "backend",
+              291
+            ]
+          ],
+          "c124-2": [
+            [
+              "backend",
+              473
+            ]
+          ],
+          "c124-3": [
+            [
+              "backend",
+              914
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 7
+      }
+    },
+    {
+      "corrida": "c125",
+      "nivel": 3,
+      "actualizaciones_fijas": 2,
+      "semilla": 849853,
+      "escenario": "escenarios/c125.json",
+      "resumen": {
+        "tipos": [
+          "solo_backend",
+          "migracion",
+          "combinacion"
+        ],
+        "aperturas": {
+          "c125-1": {
+            "backend": 0
+          },
+          "c125-2": {
+            "backend": 424
+          },
+          "c125-3": {
+            "frontend": 436,
+            "backend": 842
+          }
+        },
+        "actualizaciones": {
+          "c125-1": [
+            [
+              "backend",
+              258
+            ],
+            [
+              "backend",
+              691
+            ]
+          ],
+          "c125-2": [
+            [
+              "backend",
+              1022
+            ],
+            [
+              "backend",
+              1282
+            ]
+          ],
+          "c125-3": [
+            [
+              "frontend",
+              694
+            ],
+            [
+              "frontend",
+              771
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 10
+      }
+    },
+    {
+      "corrida": "c126",
+      "nivel": 5,
+      "actualizaciones_fijas": 0,
+      "semilla": 588635,
+      "escenario": "escenarios/c126.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_backend",
+          "solo_frontend",
+          "solo_frontend",
+          "solo_backend"
+        ],
+        "aperturas": {
+          "c126-1": {
+            "backend": 0
+          },
+          "c126-2": {
+            "backend": 75
+          },
+          "c126-3": {
+            "frontend": 130
+          },
+          "c126-4": {
+            "frontend": 214
+          },
+          "c126-5": {
+            "backend": 495
+          }
+        },
+        "actualizaciones": {
+          "c126-1": [],
+          "c126-2": [],
+          "c126-3": [],
+          "c126-4": [],
+          "c126-5": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 5
+      }
+    },
+    {
+      "corrida": "c127",
+      "nivel": 5,
+      "actualizaciones_fijas": 1,
+      "semilla": 578559,
+      "escenario": "escenarios/c127.json",
+      "resumen": {
+        "tipos": [
+          "migracion",
+          "solo_frontend",
+          "combinacion",
+          "migracion",
+          "combinacion"
+        ],
+        "aperturas": {
+          "c127-1": {
+            "backend": 0
+          },
+          "c127-2": {
+            "frontend": 143
+          },
+          "c127-3": {
+            "frontend": 422,
+            "backend": 919
+          },
+          "c127-4": {
+            "backend": 444
+          },
+          "c127-5": {
+            "backend": 522,
+            "frontend": 760
+          }
+        },
+        "actualizaciones": {
+          "c127-1": [
+            [
+              "backend",
+              239
+            ]
+          ],
+          "c127-2": [
+            [
+              "frontend",
+              577
+            ]
+          ],
+          "c127-3": [
+            [
+              "backend",
+              926
+            ]
+          ],
+          "c127-4": [
+            [
+              "backend",
+              919
+            ]
+          ],
+          "c127-5": [
+            [
+              "backend",
+              1040
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "declinada",
+          "integrada"
+        ],
+        "eventos": 12
+      }
+    },
+    {
+      "corrida": "c128",
+      "nivel": 5,
+      "actualizaciones_fijas": 2,
+      "semilla": 227170,
+      "escenario": "escenarios/c128.json",
+      "resumen": {
+        "tipos": [
+          "solo_frontend",
+          "combinacion",
+          "combinacion",
+          "migracion",
+          "migracion"
+        ],
+        "aperturas": {
+          "c128-1": {
+            "frontend": 0
+          },
+          "c128-2": {
+            "backend": 42,
+            "frontend": 608
+          },
+          "c128-3": {
+            "backend": 63,
+            "frontend": 339
+          },
+          "c128-4": {
+            "backend": 156
+          },
+          "c128-5": {
+            "backend": 299
+          }
+        },
+        "actualizaciones": {
+          "c128-1": [
+            [
+              "frontend",
+              325
+            ],
+            [
+              "frontend",
+              460
+            ]
+          ],
+          "c128-2": [
+            [
+              "backend",
+              124
+            ],
+            [
+              "backend",
+              410
+            ]
+          ],
+          "c128-3": [
+            [
+              "backend",
+              573
+            ],
+            [
+              "backend",
+              1162
+            ]
+          ],
+          "c128-4": [
+            [
+              "backend",
+              736
+            ],
+            [
+              "backend",
+              1118
+            ]
+          ],
+          "c128-5": [
+            [
+              "backend",
+              686
+            ],
+            [
+              "backend",
+              846
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 17
+      }
+    }
+  ],
+  "piloto": [
+    {
+      "corrida": "c110",
+      "nivel": 3,
+      "actualizaciones_fijas": 2,
+      "semilla": 175093,
+      "escenario": "escenarios/c110.json",
+      "resumen": {
+        "tipos": [
+          "combinacion",
+          "combinacion",
+          "solo_frontend"
+        ],
+        "aperturas": {
+          "c110-1": {
+            "backend": 0,
+            "frontend": 328
+          },
+          "c110-2": {
+            "frontend": 65,
+            "backend": 645
+          },
+          "c110-3": {
+            "frontend": 406
+          }
+        },
+        "actualizaciones": {
+          "c110-1": [
+            [
+              "backend",
+              29
+            ],
+            [
+              "backend",
+              569
+            ]
+          ],
+          "c110-2": [
+            [
+              "frontend",
+              398
+            ],
+            [
+              "frontend",
+              555
+            ]
+          ],
+          "c110-3": [
+            [
+              "frontend",
+              899
+            ],
+            [
+              "frontend",
+              1057
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 11
+      },
+      "semillas_descartadas": [
+        {
+          "semilla": 61400,
+          "tipos": [
+            "solo_frontend",
+            "solo_backend",
+            "migracion"
+          ]
+        },
+        {
+          "semilla": 6427,
+          "tipos": [
+            "migracion",
+            "solo_frontend",
+            "migracion"
+          ]
+        },
+        {
+          "semilla": 242959,
+          "tipos": [
+            "solo_backend",
+            "migracion",
+            "migracion"
+          ]
+        },
+        {
+          "semilla": 236745,
+          "tipos": [
+            "migracion",
+            "solo_backend",
+            "solo_frontend"
+          ]
+        },
+        {
+          "semilla": 501379,
+          "tipos": [
+            "migracion",
+            "migracion",
+            "combinacion"
+          ]
+        },
+        {
+          "semilla": 64283,
+          "tipos": [
+            "solo_backend",
+            "migracion",
+            "solo_backend"
+          ]
+        },
+        {
+          "semilla": 974701,
+          "tipos": [
+            "solo_frontend",
+            "solo_frontend",
+            "migracion"
+          ]
+        }
+      ],
+      "descartadas": 7
+    }
+  ]
+}
