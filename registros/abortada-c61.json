@@ -1,0 +1,12 @@
+{
+ "corrida": "c61",
+ "nivel": 5,
+ "estado": "ABORTADA",
+ "valida": false,
+ "motivo": "corte del experimento por Martin (aborto manual)",
+ "inicio": "2026-11-18T00:46:33Z",
+ "t0": "2026-11-18T01:17:41Z",
+ "aborto": "2026-11-18T01:17:41Z",
+ "detalle": "El ejecutor se detuvo en t0, al terminar el reset y antes de despachar el primer evento: 0 eventos despachados, 0 builds de la compartida, sin corrida-c61.json ni cierre-c61.json (cierre_corrida no corrió). Después del aborto: 0 builds en curso en las tres cuentas, depurador con 0 restos, efimero-cluster sin servicios, 0 distribuciones de CloudFront, 0 ramas release/hotfix y 0 PR abiertos en los 4 repos. El fijo quedó con la línea base del reset de c61.",
+ "protocolo_verificacion_previa": "protocolo-v4 huella 7db62ac6249b5c27fd8fbd2e4e68114110bc79161970853c7865fbe7cee39bc0: ok"
+}

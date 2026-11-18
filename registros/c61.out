@@ -1,0 +1,25 @@
+[2026-11-18T00:46:33Z] t  pre  protocolo protocolo-v4 verificado: huella 7db62ac6249b5c27fd8fbd2e4e68114110bc79161970853c7865fbe7cee39bc0
+[2026-11-18T00:46:33Z] t  pre  reset.py
+[2026-11-18T00:46:33Z] 1. precondiciones
+[2026-11-18T00:46:54Z]   ok
+[2026-11-18T00:46:55Z]   línea base backend 582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-backend@sha256:eb07d223d0f4133d7bdd18f932b39d2c399b716cbaab19d3924c619b5a38a99a
+[2026-11-18T00:46:55Z] 2. primer reset de datos
+[2026-11-18T00:46:58Z]   copia registrada arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:256
+[2026-11-18T00:47:00Z]   tarea d7ea639fb9b14148b30a9197f88a893c lanzada; esperando que pare
+[2026-11-18T00:47:54Z]   copia arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:256 desregistrada
+[2026-11-18T00:47:54Z] 3. despliegue de la línea base en dev de tesis-backend-cd
+[2026-11-18T00:47:58Z]   tesis-backend-cd: push de d19fe47 a dev; esperando el build de tesis-fijo-desplegar-backend
+[2026-11-18T00:48:32Z]   build tesis-fijo-desplegar-backend:e23bd28e-3d1d-4dff-810e-2f62e06b27c2
+[2026-11-18T01:03:49Z] 3. despliegue de la línea base en dev de tesis-frontend-cd
+[2026-11-18T01:03:53Z]   tesis-frontend-cd: push de 8087a5a a dev; esperando el build de tesis-fijo-desplegar-frontend
+[2026-11-18T01:04:26Z]   build tesis-fijo-desplegar-frontend:f50d7d57-b6af-4eca-b524-b78cfb5e52ff
+[2026-11-18T01:16:34Z] 4. segundo reset de datos
+[2026-11-18T01:16:37Z]   tarea 528b2357577346d499394ae08d8aeea8 lanzada; esperando que pare
+[2026-11-18T01:17:30Z] 5. ramas de cierre
+[2026-11-18T01:17:32Z]   tesis-backend-cd main-fijo: actualizar -> db1881d
+[2026-11-18T01:17:34Z]   tesis-backend-cd main-efimero: actualizar -> db1881d
+[2026-11-18T01:17:36Z]   tesis-frontend-cd main-fijo: nada -> 900cda0
+[2026-11-18T01:17:37Z]   tesis-frontend-cd main-efimero: nada -> 900cda0
+[2026-11-18T01:17:41Z] reset c61 terminado; t0 = 2026-11-18T01:17:41Z
+[2026-11-18T01:17:41Z] registro en /Users/martincometta/tesis/aplicacion/tesis-generador/registros/reset-c61.json
+[2026-11-18T01:17:41Z] t+00:00  t = 0 en 2026-11-18T01:17:41Z; 15 eventos, 5 versiones
