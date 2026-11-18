@@ -162,7 +162,7 @@ class DosRamas(unittest.TestCase):
         self.assertIsNone(protocolo.webhook_de({"name": "y"}))
 
     def test_manifiesto_por_defecto(self):
-        self.assertEqual(protocolo.MANIFIESTO.name, "protocolo-v4.json")
+        self.assertEqual(protocolo.MANIFIESTO.name, "protocolo-v5.json")
 
 
 class Huella(unittest.TestCase):

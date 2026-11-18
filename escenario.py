@@ -3,9 +3,10 @@
 
 Un escenario es la lista de versiones sintéticas de una corrida (rama release/c<N>-<n>), con su tipo,
 sus repos, su migración propia, su resultado y la línea de tiempo de aperturas y actualizaciones.
-Solo usa la biblioteca estándar. Los mismos (corrida, nivel, semilla) dan siempre el mismo JSON.
+Solo usa la biblioteca estándar. Los mismos (corrida, nivel, semilla[, actualizaciones_fijas]) dan siempre el
+mismo JSON.
 
-    python escenario.py --corrida N --nivel C --semilla S --salida escenarios/c<N>.json
+    python escenario.py --corrida N --nivel C --semilla S [--actualizaciones-fijas K] --salida escenarios/c<N>.json
     python escenario.py --ver escenarios/c<N>.json
 """
 
@@ -48,6 +49,12 @@ def _actualizaciones(calibracion):
 
 
 ACTUALIZACIONES = _actualizaciones(ACTUALIZACIONES_CALIBRACION)
+# Diseño del tutor (17/11): una corrida puede fijar la cantidad de actualizaciones de TODAS sus versiones en k; ese k
+# reemplaza el sorteo de la cantidad (no se consume ese rng.random()). Sin el parámetro, se sortea con ACTUALIZACIONES.
+ACTUALIZACIONES_FIJAS = (0, 1, 2)
+ACTUALIZACIONES_FIJAS_REGLA = ("parámetro por corrida (escenario.actualizaciones_fijas); si está, toda versión tiene "
+                               "exactamente k actualizaciones y no se sortea la cantidad; aperturas, composición, repo y "
+                               "brecha de cada actualización y resultado se sortean igual")
 RESULTADOS = {"integrada": 0.75, "declinada": 0.25}
 PRIMER_REPO_COMBINACION = 0.5  # probabilidad de que el backend abra primero
 
@@ -65,6 +72,7 @@ PARAMETROS = {
     "actualizaciones_regla": ACTUALIZACIONES_REGLA,
     "brecha_actualizacion_seg": list(BRECHA),
     "resultados": RESULTADOS,
+    "actualizaciones_fijas": {"valores": list(ACTUALIZACIONES_FIJAS), "regla": ACTUALIZACIONES_FIJAS_REGLA},
 }
 
 
@@ -102,11 +110,17 @@ def commit_generador():
         return "sin-commit"
 
 
-def generar(corrida: int, nivel: int, semilla: int) -> dict:
+def generar(corrida: int, nivel: int, semilla: int, actualizaciones_fijas=None) -> dict:
+    """actualizaciones_fijas: None (se sortea la cantidad por versión, como hasta v4) o k en ACTUALIZACIONES_FIJAS
+    (toda versión tiene exactamente k actualizaciones; el JSON registra el k en "actualizaciones_fijas")."""
     if nivel not in NIVELES:
         raise ValueError(f"nivel tiene que ser uno de {NIVELES} (es {nivel!r})")
     if isinstance(corrida, bool) or not isinstance(corrida, int) or corrida < 0:
         raise ValueError(f"corrida tiene que ser un entero >= 0 (es {corrida!r})")
+    if actualizaciones_fijas is not None and (
+        type(actualizaciones_fijas) is not int or actualizaciones_fijas not in ACTUALIZACIONES_FIJAS
+    ):
+        raise ValueError(f"actualizaciones_fijas tiene que ser None o uno de {ACTUALIZACIONES_FIJAS} (es {actualizaciones_fijas!r})")
 
     rng = random.Random(semilla)
     versiones = []
@@ -116,7 +130,8 @@ def generar(corrida: int, nivel: int, semilla: int) -> dict:
 
     # Orden de los sorteos: 0. los nivel - 1 instantes de apertura; después, por versión n = 1..nivel:
     #   1. tipo  2. combinación: primer repo y brecha del segundo
-    #   3. cantidad de actualizaciones  4. por actualización: brecha y repo  5. resultado
+    #   3. cantidad de actualizaciones (no se sortea si la corrida la fija)  4. por actualización: brecha y repo
+    #   5. resultado
     for n in range(1, nivel + 1):
         apertura = instantes[n - 1]
         tipo = _sortear(rng, TIPOS)
@@ -140,7 +155,8 @@ def generar(corrida: int, nivel: int, semilla: int) -> dict:
         # Cada actualización va a una brecha del evento anterior de la cadena (la apertura de la
         # versión para la primera) y a un repo de la versión que ya abrió en ese instante.
         anterior = apertura
-        for _ in range(_sortear(rng, ACTUALIZACIONES)):
+        cantidad = _sortear(rng, ACTUALIZACIONES) if actualizaciones_fijas is None else actualizaciones_fijas
+        for _ in range(cantidad):
             t = anterior + _brecha(rng)
             abiertos = [repo for repo in repos if aperturas[repo] <= t]
             repo = rng.choice(abiertos)
@@ -168,16 +184,19 @@ def generar(corrida: int, nivel: int, semilla: int) -> dict:
         key=lambda e: (e["t"], e["n"]),
     )
 
-    return {
-        "corrida": corrida,
-        "nivel": nivel,
-        "semilla": semilla,
-        "generador": {"commit": commit_generador(), "version_formato": VERSION_FORMATO},
-        "parametros": PARAMETROS,
-        "catalogo_migraciones": [v["migracion"] for v in versiones if v["migracion"]],
-        "versiones": versiones,
-        "eventos_ordenados": eventos_ordenados,
-    }
+    salida = {"corrida": corrida, "nivel": nivel, "semilla": semilla}
+    if actualizaciones_fijas is not None:  # sin el parámetro, el JSON es el de siempre (sin esta clave)
+        salida["actualizaciones_fijas"] = actualizaciones_fijas
+    salida.update(
+        {
+            "generador": {"commit": commit_generador(), "version_formato": VERSION_FORMATO},
+            "parametros": PARAMETROS,
+            "catalogo_migraciones": [v["migracion"] for v in versiones if v["migracion"]],
+            "versiones": versiones,
+            "eventos_ordenados": eventos_ordenados,
+        }
+    )
+    return salida
 
 
 def a_json(escenario: dict) -> str:
@@ -192,7 +211,8 @@ def linea_de_tiempo(escenario: dict) -> str:
     c = escenario["corrida"]
     lineas = [
         f"corrida c{c}  nivel {escenario['nivel']}  semilla {escenario['semilla']}  "
-        f"generador {escenario['generador']['commit'][:7]} (formato {escenario['generador']['version_formato']})",
+        f"generador {escenario['generador']['commit'][:7]} (formato {escenario['generador']['version_formato']})"
+        + (f"  actualizaciones fijas {escenario['actualizaciones_fijas']}" if "actualizaciones_fijas" in escenario else ""),
         f"migraciones: {', '.join(escenario['catalogo_migraciones']) or '-'}",
         "",
         "versiones:",
@@ -218,13 +238,15 @@ def main(argv=None):
     parser.add_argument("--corrida", type=int)
     parser.add_argument("--nivel", type=int, choices=NIVELES)
     parser.add_argument("--semilla", type=int)
+    parser.add_argument("--actualizaciones-fijas", type=int, choices=ACTUALIZACIONES_FIJAS, default=None,
+                        help="cantidad fija de actualizaciones de cada versión (si no, se sortea)")
     parser.add_argument("--salida", help="archivo JSON a escribir (por ejemplo escenarios/c1.json)")
     parser.add_argument("--ver", metavar="ARCHIVO", help="imprime la línea de tiempo de un escenario")
     args = parser.parse_args(argv)
 
     if args.ver:
-        if any(x is not None for x in (args.corrida, args.nivel, args.semilla, args.salida)):
-            parser.error("--ver no se combina con --corrida, --nivel, --semilla ni --salida")
+        if any(x is not None for x in (args.corrida, args.nivel, args.semilla, args.salida, args.actualizaciones_fijas)):
+            parser.error("--ver no se combina con --corrida, --nivel, --semilla, --actualizaciones-fijas ni --salida")
         print(linea_de_tiempo(json.loads(Path(args.ver).read_text(encoding="utf-8"))))
         return 0
 
@@ -232,13 +254,14 @@ def main(argv=None):
     if faltan:
         parser.error("faltan " + ", ".join(faltan) + " (o usar --ver ARCHIVO)")
     try:
-        escenario = generar(args.corrida, args.nivel, args.semilla)
+        escenario = generar(args.corrida, args.nivel, args.semilla, args.actualizaciones_fijas)
     except ValueError as error:
         parser.error(str(error))
     salida = Path(args.salida)
     salida.parent.mkdir(parents=True, exist_ok=True)
     salida.write_text(a_json(escenario), encoding="utf-8")
-    print(f"escenario c{args.corrida} (nivel {args.nivel}, semilla {args.semilla}) en {salida}", file=sys.stderr)
+    fijas = "" if args.actualizaciones_fijas is None else f", actualizaciones fijas {args.actualizaciones_fijas}"
+    print(f"escenario c{args.corrida} (nivel {args.nivel}, semilla {args.semilla}{fijas}) en {salida}", file=sys.stderr)
     return 0
 
 

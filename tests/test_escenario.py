@@ -224,5 +224,137 @@ class ActualizacionesDefinitivo(unittest.TestCase):
         self.assertLessEqual(abs(len(sin) / len(versiones) - 0.285), 0.03)
 
 
+class ActualizacionesFijas(unittest.TestCase):
+    """Diseño del tutor (17/11): con actualizaciones_fijas = k, toda versión tiene exactamente k actualizaciones; el
+    resto del escenario se sortea con las mismas reglas. Sin el parámetro, nada cambia."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.por_k = {
+            k: [escenario.generar(c, nivel, s, actualizaciones_fijas=k)
+                for c in (1, 9, 89) for nivel in escenario.NIVELES for s in range(60)]
+            for k in escenario.ACTUALIZACIONES_FIJAS
+        }
+
+    @staticmethod
+    def actualizaciones(v):
+        return [e for e in v["eventos"] if e["accion"] == "actualizacion"]
+
+    def test_toda_version_tiene_exactamente_k(self):
+        for k, escenarios in self.por_k.items():
+            for esc in escenarios:
+                for v in esc["versiones"]:
+                    with self.subTest(k=k, corrida=esc["corrida"], nivel=esc["nivel"], semilla=esc["semilla"], n=v["n"]):
+                        self.assertEqual(len(self.actualizaciones(v)), k)
+                self.assertEqual(sum(e["accion"] == "actualizacion" for e in esc["eventos_ordenados"]), k * esc["nivel"])
+
+    def test_k_0_sin_eventos_de_actualizacion(self):
+        for esc in self.por_k[0]:
+            with self.subTest(corrida=esc["corrida"], nivel=esc["nivel"], semilla=esc["semilla"]):
+                self.assertEqual([e for e in esc["eventos_ordenados"] if e["accion"] != "apertura"], [])
+                for v in esc["versiones"]:
+                    self.assertEqual(len(v["eventos"]), len(v["repos"]))
+                    self.assertTrue(all(e["actualizacion"] == 0 for e in v["eventos"]))
+
+    def test_resto_respeta_las_mismas_reglas(self):
+        reglas = Reglas()
+        for k, escenarios in self.por_k.items():
+            for esc in escenarios:
+                with self.subTest(k=k, corrida=esc["corrida"], nivel=esc["nivel"], semilla=esc["semilla"]):
+                    reglas.revisar(esc)
+                    self.assertEqual(esc["actualizaciones_fijas"], k)
+                    self.assertEqual(esc["parametros"], escenario.PARAMETROS)
+
+    def test_aperturas_iguales_a_las_del_sorteo_libre(self):
+        # Los instantes de apertura se sortean antes que todo: el k fijo no los cambia.
+        for k in escenario.ACTUALIZACIONES_FIJAS:
+            for s in range(30):
+                libre, fijo = escenario.generar(5, 5, s), escenario.generar(5, 5, s, actualizaciones_fijas=k)
+                with self.subTest(k=k, semilla=s):
+                    self.assertEqual([v["eventos"][0]["t"] for v in libre["versiones"]],
+                                     [v["eventos"][0]["t"] for v in fijo["versiones"]])
+                    self.assertEqual(libre["versiones"][0]["tipo"], fijo["versiones"][0]["tipo"])
+
+    def test_composicion_y_resultados_en_proporcion(self):
+        for k in escenario.ACTUALIZACIONES_FIJAS:
+            versiones = [v for s in range(4000) for v in escenario.generar(1, 5, s, actualizaciones_fijas=k)["versiones"]]
+            prop = Proporciones()
+            with self.subTest(k=k):
+                prop.assertProporciones(collections.Counter(v["tipo"] for v in versiones), escenario.TIPOS)
+                prop.assertProporciones(collections.Counter(v["resultado"] for v in versiones), escenario.RESULTADOS)
+
+    def test_repo_de_cada_actualizacion_entre_los_abiertos(self):
+        # Combinaciones con k = 2: las dos actualizaciones caen en repos ya abiertos y, en la muestra, aparecen
+        # actualizaciones de los dos repos (el repo se sortea entre los abiertos).
+        repos = collections.Counter()
+        for s in range(3000):
+            for v in escenario.generar(1, 5, s, actualizaciones_fijas=2)["versiones"]:
+                if v["tipo"] != "combinacion":
+                    continue
+                abre = {e["repo"]: e["t"] for e in v["eventos"] if e["accion"] == "apertura"}
+                for e in self.actualizaciones(v):
+                    self.assertLessEqual(abre[e["repo"]], e["t"])
+                    repos[e["repo"]] += 1
+        self.assertGreater(repos["backend"], 0)
+        self.assertGreater(repos["frontend"], 0)
+
+    def test_registrado_en_parametros(self):
+        self.assertEqual(escenario.ACTUALIZACIONES_FIJAS, (0, 1, 2))
+        self.assertEqual(escenario.PARAMETROS["actualizaciones_fijas"],
+                         {"valores": [0, 1, 2], "regla": escenario.ACTUALIZACIONES_FIJAS_REGLA})
+
+    def test_valores_invalidos(self):
+        for k in (3, -1, True, False, "1", 1.0):
+            with self.subTest(k=k), self.assertRaises(ValueError):
+                escenario.generar(1, 3, 1, actualizaciones_fijas=k)
+        r = subprocess.run(
+            [sys.executable, str(RAIZ / "escenario.py"), "--corrida", "1", "--nivel", "3", "--semilla", "1",
+             "--actualizaciones-fijas", "3", "--salida", "/tmp/no-se-escribe-k.json"],
+            capture_output=True, text=True,
+        )
+        self.assertNotEqual(r.returncode, 0)
+        self.assertFalse(Path("/tmp/no-se-escribe-k.json").exists())
+
+    def test_cli_byte_a_byte_y_clave(self):
+        with tempfile.TemporaryDirectory() as d:
+            salidas = [Path(d) / "a" / "c89.json", Path(d) / "b" / "c89.json"]
+            for salida in salidas:
+                subprocess.run(
+                    [sys.executable, str(RAIZ / "escenario.py"), "--corrida", "89", "--nivel", "3", "--semilla", "7",
+                     "--actualizaciones-fijas", "2", "--salida", str(salida)],
+                    check=True, capture_output=True,
+                )
+            self.assertEqual(salidas[0].read_bytes(), salidas[1].read_bytes())
+            e = json.loads(salidas[0].read_text(encoding="utf-8"))
+            self.assertEqual(e, escenario.generar(89, 3, 7, actualizaciones_fijas=2))
+            self.assertEqual(list(e)[:5], ["corrida", "nivel", "semilla", "actualizaciones_fijas", "generador"])
+            ver = subprocess.run([sys.executable, str(RAIZ / "escenario.py"), "--ver", str(salidas[0])],
+                                 check=True, capture_output=True, text=True)
+            self.assertIn("actualizaciones fijas 2", ver.stdout)
+
+
+class SinParametroIgualQueAntes(unittest.TestCase):
+    """Sin actualizaciones_fijas el generador es el de v4: los escenarios c61–c88 commiteados se regeneran con los
+    mismos sorteos (todo igual salvo el commit del generador y la entrada nueva de PARAMETROS)."""
+
+    def test_c61_a_c88_se_regeneran_igual(self):
+        rutas = [RAIZ / "escenarios" / f"c{c}.json" for c in range(61, 89)]
+        self.assertEqual(len(rutas), 28)
+        for ruta in rutas:
+            viejo = json.loads(ruta.read_text(encoding="utf-8"))
+            nuevo = escenario.generar(viejo["corrida"], viejo["nivel"], viejo["semilla"])
+            with self.subTest(escenario=ruta.name):
+                self.assertNotIn("actualizaciones_fijas", nuevo)
+                self.assertEqual(list(nuevo), list(viejo))
+                for clave in ("corrida", "nivel", "semilla", "catalogo_migraciones", "versiones", "eventos_ordenados"):
+                    self.assertEqual(nuevo[clave], viejo[clave], clave)
+                self.assertEqual(nuevo["generador"]["version_formato"], viejo["generador"]["version_formato"])
+                sin_nueva = {k: v for k, v in nuevo["parametros"].items() if k != "actualizaciones_fijas"}
+                self.assertEqual(sin_nueva, viejo["parametros"])
+
+    def test_none_es_el_default(self):
+        self.assertEqual(escenario.generar(3, 5, 11), escenario.generar(3, 5, 11, actualizaciones_fijas=None))
+
+
 if __name__ == "__main__":
     unittest.main()

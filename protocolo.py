@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Protocolo congelado del experimento: manifiesto versionado y verificación en vivo.
 
-    python protocolo.py --generar protocolo/protocolo-v4.json   # relevamiento (solo lectura) y manifiesto
-    python protocolo.py --verificar [protocolo/protocolo-v4.json]
+    python protocolo.py --generar protocolo/protocolo-v5.json   # relevamiento (solo lectura) y manifiesto
+    python protocolo.py --verificar [protocolo/protocolo-v5.json]
 
 El manifiesto registra los ETags de main/ del bucket de buildspecs, los commits de main de los repos, el
 tag.json de main de los -cd, la imagen de la suite y PLAYWRIGHT_RETRIES, el commit de terraform fijado en los
@@ -35,7 +35,7 @@ import escenario as escenario_mod
 import reset as reset_mod
 
 RAIZ = Path(__file__).resolve().parent
-MANIFIESTO = RAIZ / "protocolo" / "protocolo-v4.json"
+MANIFIESTO = RAIZ / "protocolo" / "protocolo-v5.json"
 REGION = "us-east-2"
 ORG = "tesis-entornos"
 BUCKET = "tesis-entornos-buildspecs-582621604637"
