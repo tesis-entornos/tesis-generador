@@ -297,3 +297,5 @@ c112,3,637789,2,release/c112-2,combinacion,integrada,efimero,2026-11-18T08:38:29
 c112,3,637789,2,release/c112-2,combinacion,integrada,fijo,2026-11-18T08:38:22Z,2026-11-18T10:53:06Z,8084.7,ok,4,5064.0,,0,0,false,tesis-fijo-desplegar-backend:a2087b9c-5c20-491b-b5d3-3052f50d9ead
 c112,3,637789,3,release/c112-3,solo_frontend,integrada,efimero,2026-11-18T08:39:29Z,2026-11-18T09:31:52Z,3144.0,ok,3,,305,0,0,false,tesis-efimero-desplegar-frontend:5455cc60-f6ea-474f-83e7-990b1f2a340a
 c112,3,637789,3,release/c112-3,solo_frontend,integrada,fijo,2026-11-18T08:39:37Z,2026-11-18T10:37:04Z,7047.3,ok,3,4249.0,,0,0,false,tesis-fijo-desplegar-frontend:cb65842b-352c-4460-a42c-460e72b5c834
+c113,1,52747,1,release/c113-1,combinacion,integrada,efimero,2026-11-18T11:33:51Z,2026-11-18T12:24:47Z,3056.6,ok,3,,317,0,0,false,tesis-efimero-desplegar-frontend:0ad9bf62-d0d7-4872-8bae-70fb207831ae
+c113,1,52747,1,release/c113-1,combinacion,integrada,fijo,2026-11-18T11:33:58Z,2026-11-18T12:20:17Z,2779.5,ok,3,521.0,,0,0,false,tesis-fijo-desplegar-frontend:2f4fde54-d720-4cb8-b363-3022b845eb28
