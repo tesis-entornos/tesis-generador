@@ -1,0 +1,2553 @@
+{
+  "plan": "protocolo v6 (matriz completa, Martin con el tutor, 19/11)",
+  "semilla_maestra": 20261120,
+  "metodo": "rng = random.Random(semilla_maestra); casillas = [(tipo, k, nivel) for tipo in (solo_backend, solo_frontend, combinacion) for k in (0, 1, 2) for nivel in (1, 3, 5)]; orden = copia de casillas; rng.shuffle(orden); c130..c156 = orden, cada una con rng.randint(1, 10**6); reservas c157..c183 = una por casilla en el orden de casillas, cada una con rng.randint(1, 10**6) (se usa solo si la corrida de esa casilla sale inválida). Escenarios con escenario.py --tipo-fijo T --actualizaciones-fijas k --brecha-actualizacion-seg 120 --brecha-segundo-repo-seg 120.",
+  "diseno": "27 corridas, una por casilla tipo de cambio (solo backend, solo frontend, backend + frontend) × actualizaciones por versión (0, 1, 2) × nivel (1, 3, 5); en cada corrida todas las versiones son del mismo tipo y tienen exactamente k actualizaciones; brecha de cada actualización y apertura del segundo repo de las combinaciones fijas en 120 s; migraciones excluido por tardar igual que solo backend; reset sin regresión en la línea base (no medido). Las corridas anteriores (c61–c128) son exploración previa y no se reusan. Sin piloto: los tres tipos y los tres k ya se probaron en real (c110, c111–c127). Numeración c130–c156 y reservas c157–c183 (libres: sin escenarios, registros, commits ni ramas; c129 es el reset aislado de prueba).",
+  "protocolo": {
+    "nombre": "protocolo-v6",
+    "huella": "029681c240a2443488e0a0a5034999ff31c528d165eb9189bfcfdbeeaed5a21f",
+    "generador": "b2b81661d9debc2841059ddf18dae85c41b06507"
+  },
+  "corridas": [
+    {
+      "corrida": "c130",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 2,
+      "nivel": 5,
+      "semilla": 604591,
+      "escenario": "escenarios/c130.json",
+      "resumen": {
+        "aperturas": {
+          "c130-1": {
+            "frontend": 0
+          },
+          "c130-2": {
+            "frontend": 23
+          },
+          "c130-3": {
+            "frontend": 123
+          },
+          "c130-4": {
+            "frontend": 279
+          },
+          "c130-5": {
+            "frontend": 430
+          }
+        },
+        "actualizaciones": {
+          "c130-1": [
+            [
+              "frontend",
+              120
+            ],
+            [
+              "frontend",
+              240
+            ]
+          ],
+          "c130-2": [
+            [
+              "frontend",
+              143
+            ],
+            [
+              "frontend",
+              263
+            ]
+          ],
+          "c130-3": [
+            [
+              "frontend",
+              243
+            ],
+            [
+              "frontend",
+              363
+            ]
+          ],
+          "c130-4": [
+            [
+              "frontend",
+              399
+            ],
+            [
+              "frontend",
+              519
+            ]
+          ],
+          "c130-5": [
+            [
+              "frontend",
+              550
+            ],
+            [
+              "frontend",
+              670
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada",
+          "declinada",
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 15
+      }
+    },
+    {
+      "corrida": "c131",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 0,
+      "nivel": 3,
+      "semilla": 951373,
+      "escenario": "escenarios/c131.json",
+      "resumen": {
+        "aperturas": {
+          "c131-1": {
+            "backend": 0
+          },
+          "c131-2": {
+            "backend": 154
+          },
+          "c131-3": {
+            "backend": 391
+          }
+        },
+        "actualizaciones": {
+          "c131-1": [],
+          "c131-2": [],
+          "c131-3": []
+        },
+        "resultados": [
+          "integrada",
+          "declinada",
+          "integrada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c132",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 0,
+      "nivel": 3,
+      "semilla": 820634,
+      "escenario": "escenarios/c132.json",
+      "resumen": {
+        "aperturas": {
+          "c132-1": {
+            "frontend": 0
+          },
+          "c132-2": {
+            "frontend": 443
+          },
+          "c132-3": {
+            "frontend": 460
+          }
+        },
+        "actualizaciones": {
+          "c132-1": [],
+          "c132-2": [],
+          "c132-3": []
+        },
+        "resultados": [
+          "integrada",
+          "declinada",
+          "declinada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c133",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 1,
+      "nivel": 5,
+      "semilla": 420887,
+      "escenario": "escenarios/c133.json",
+      "resumen": {
+        "aperturas": {
+          "c133-1": {
+            "backend": 0,
+            "frontend": 120
+          },
+          "c133-2": {
+            "backend": 121,
+            "frontend": 241
+          },
+          "c133-3": {
+            "frontend": 401,
+            "backend": 521
+          },
+          "c133-4": {
+            "backend": 422,
+            "frontend": 542
+          },
+          "c133-5": {
+            "frontend": 447,
+            "backend": 567
+          }
+        },
+        "actualizaciones": {
+          "c133-1": [
+            [
+              "backend",
+              120
+            ]
+          ],
+          "c133-2": [
+            [
+              "frontend",
+              241
+            ]
+          ],
+          "c133-3": [
+            [
+              "backend",
+              521
+            ]
+          ],
+          "c133-4": [
+            [
+              "frontend",
+              542
+            ]
+          ],
+          "c133-5": [
+            [
+              "frontend",
+              567
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "declinada",
+          "integrada"
+        ],
+        "eventos": 15
+      }
+    },
+    {
+      "corrida": "c134",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 1,
+      "nivel": 1,
+      "semilla": 386418,
+      "escenario": "escenarios/c134.json",
+      "resumen": {
+        "aperturas": {
+          "c134-1": {
+            "frontend": 0,
+            "backend": 120
+          }
+        },
+        "actualizaciones": {
+          "c134-1": [
+            [
+              "backend",
+              120
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c135",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 1,
+      "nivel": 3,
+      "semilla": 330109,
+      "escenario": "escenarios/c135.json",
+      "resumen": {
+        "aperturas": {
+          "c135-1": {
+            "frontend": 0,
+            "backend": 120
+          },
+          "c135-2": {
+            "frontend": 39,
+            "backend": 159
+          },
+          "c135-3": {
+            "frontend": 72,
+            "backend": 192
+          }
+        },
+        "actualizaciones": {
+          "c135-1": [
+            [
+              "backend",
+              120
+            ]
+          ],
+          "c135-2": [
+            [
+              "backend",
+              159
+            ]
+          ],
+          "c135-3": [
+            [
+              "frontend",
+              192
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 9
+      }
+    },
+    {
+      "corrida": "c136",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 0,
+      "nivel": 1,
+      "semilla": 396999,
+      "escenario": "escenarios/c136.json",
+      "resumen": {
+        "aperturas": {
+          "c136-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c136-1": []
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 1
+      }
+    },
+    {
+      "corrida": "c137",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 2,
+      "nivel": 5,
+      "semilla": 723347,
+      "escenario": "escenarios/c137.json",
+      "resumen": {
+        "aperturas": {
+          "c137-1": {
+            "frontend": 0,
+            "backend": 120
+          },
+          "c137-2": {
+            "backend": 59,
+            "frontend": 179
+          },
+          "c137-3": {
+            "backend": 82,
+            "frontend": 202
+          },
+          "c137-4": {
+            "frontend": 85,
+            "backend": 205
+          },
+          "c137-5": {
+            "backend": 528,
+            "frontend": 648
+          }
+        },
+        "actualizaciones": {
+          "c137-1": [
+            [
+              "frontend",
+              120
+            ],
+            [
+              "backend",
+              240
+            ]
+          ],
+          "c137-2": [
+            [
+              "frontend",
+              179
+            ],
+            [
+              "frontend",
+              299
+            ]
+          ],
+          "c137-3": [
+            [
+              "frontend",
+              202
+            ],
+            [
+              "frontend",
+              322
+            ]
+          ],
+          "c137-4": [
+            [
+              "frontend",
+              205
+            ],
+            [
+              "frontend",
+              325
+            ]
+          ],
+          "c137-5": [
+            [
+              "frontend",
+              648
+            ],
+            [
+              "frontend",
+              768
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 20
+      }
+    },
+    {
+      "corrida": "c138",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 2,
+      "nivel": 5,
+      "semilla": 384880,
+      "escenario": "escenarios/c138.json",
+      "resumen": {
+        "aperturas": {
+          "c138-1": {
+            "backend": 0
+          },
+          "c138-2": {
+            "backend": 39
+          },
+          "c138-3": {
+            "backend": 69
+          },
+          "c138-4": {
+            "backend": 311
+          },
+          "c138-5": {
+            "backend": 388
+          }
+        },
+        "actualizaciones": {
+          "c138-1": [
+            [
+              "backend",
+              120
+            ],
+            [
+              "backend",
+              240
+            ]
+          ],
+          "c138-2": [
+            [
+              "backend",
+              159
+            ],
+            [
+              "backend",
+              279
+            ]
+          ],
+          "c138-3": [
+            [
+              "backend",
+              189
+            ],
+            [
+              "backend",
+              309
+            ]
+          ],
+          "c138-4": [
+            [
+              "backend",
+              431
+            ],
+            [
+              "backend",
+              551
+            ]
+          ],
+          "c138-5": [
+            [
+              "backend",
+              508
+            ],
+            [
+              "backend",
+              628
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "declinada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 15
+      }
+    },
+    {
+      "corrida": "c139",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 0,
+      "nivel": 5,
+      "semilla": 386501,
+      "escenario": "escenarios/c139.json",
+      "resumen": {
+        "aperturas": {
+          "c139-1": {
+            "backend": 0
+          },
+          "c139-2": {
+            "backend": 154
+          },
+          "c139-3": {
+            "backend": 301
+          },
+          "c139-4": {
+            "backend": 435
+          },
+          "c139-5": {
+            "backend": 457
+          }
+        },
+        "actualizaciones": {
+          "c139-1": [],
+          "c139-2": [],
+          "c139-3": [],
+          "c139-4": [],
+          "c139-5": []
+        },
+        "resultados": [
+          "integrada",
+          "declinada",
+          "integrada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 5
+      }
+    },
+    {
+      "corrida": "c140",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 0,
+      "nivel": 5,
+      "semilla": 16261,
+      "escenario": "escenarios/c140.json",
+      "resumen": {
+        "aperturas": {
+          "c140-1": {
+            "frontend": 0
+          },
+          "c140-2": {
+            "frontend": 107
+          },
+          "c140-3": {
+            "frontend": 139
+          },
+          "c140-4": {
+            "frontend": 439
+          },
+          "c140-5": {
+            "frontend": 439
+          }
+        },
+        "actualizaciones": {
+          "c140-1": [],
+          "c140-2": [],
+          "c140-3": [],
+          "c140-4": [],
+          "c140-5": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 5
+      }
+    },
+    {
+      "corrida": "c141",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 1,
+      "nivel": 5,
+      "semilla": 813717,
+      "escenario": "escenarios/c141.json",
+      "resumen": {
+        "aperturas": {
+          "c141-1": {
+            "backend": 0
+          },
+          "c141-2": {
+            "backend": 48
+          },
+          "c141-3": {
+            "backend": 70
+          },
+          "c141-4": {
+            "backend": 438
+          },
+          "c141-5": {
+            "backend": 560
+          }
+        },
+        "actualizaciones": {
+          "c141-1": [
+            [
+              "backend",
+              120
+            ]
+          ],
+          "c141-2": [
+            [
+              "backend",
+              168
+            ]
+          ],
+          "c141-3": [
+            [
+              "backend",
+              190
+            ]
+          ],
+          "c141-4": [
+            [
+              "backend",
+              558
+            ]
+          ],
+          "c141-5": [
+            [
+              "backend",
+              680
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "declinada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 10
+      }
+    },
+    {
+      "corrida": "c142",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 2,
+      "nivel": 3,
+      "semilla": 574457,
+      "escenario": "escenarios/c142.json",
+      "resumen": {
+        "aperturas": {
+          "c142-1": {
+            "backend": 0
+          },
+          "c142-2": {
+            "backend": 228
+          },
+          "c142-3": {
+            "backend": 302
+          }
+        },
+        "actualizaciones": {
+          "c142-1": [
+            [
+              "backend",
+              120
+            ],
+            [
+              "backend",
+              240
+            ]
+          ],
+          "c142-2": [
+            [
+              "backend",
+              348
+            ],
+            [
+              "backend",
+              468
+            ]
+          ],
+          "c142-3": [
+            [
+              "backend",
+              422
+            ],
+            [
+              "backend",
+              542
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 9
+      }
+    },
+    {
+      "corrida": "c143",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 2,
+      "nivel": 3,
+      "semilla": 617785,
+      "escenario": "escenarios/c143.json",
+      "resumen": {
+        "aperturas": {
+          "c143-1": {
+            "backend": 0,
+            "frontend": 120
+          },
+          "c143-2": {
+            "backend": 196,
+            "frontend": 316
+          },
+          "c143-3": {
+            "backend": 426,
+            "frontend": 546
+          }
+        },
+        "actualizaciones": {
+          "c143-1": [
+            [
+              "frontend",
+              120
+            ],
+            [
+              "frontend",
+              240
+            ]
+          ],
+          "c143-2": [
+            [
+              "backend",
+              316
+            ],
+            [
+              "frontend",
+              436
+            ]
+          ],
+          "c143-3": [
+            [
+              "frontend",
+              546
+            ],
+            [
+              "frontend",
+              666
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 12
+      }
+    },
+    {
+      "corrida": "c144",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 2,
+      "nivel": 1,
+      "semilla": 252574,
+      "escenario": "escenarios/c144.json",
+      "resumen": {
+        "aperturas": {
+          "c144-1": {
+            "frontend": 0
+          }
+        },
+        "actualizaciones": {
+          "c144-1": [
+            [
+              "frontend",
+              120
+            ],
+            [
+              "frontend",
+              240
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c145",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 2,
+      "nivel": 1,
+      "semilla": 370274,
+      "escenario": "escenarios/c145.json",
+      "resumen": {
+        "aperturas": {
+          "c145-1": {
+            "backend": 0,
+            "frontend": 120
+          }
+        },
+        "actualizaciones": {
+          "c145-1": [
+            [
+              "frontend",
+              120
+            ],
+            [
+              "backend",
+              240
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 4
+      }
+    },
+    {
+      "corrida": "c146",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 0,
+      "nivel": 5,
+      "semilla": 241568,
+      "escenario": "escenarios/c146.json",
+      "resumen": {
+        "aperturas": {
+          "c146-1": {
+            "frontend": 0,
+            "backend": 120
+          },
+          "c146-2": {
+            "backend": 196,
+            "frontend": 316
+          },
+          "c146-3": {
+            "backend": 537,
+            "frontend": 657
+          },
+          "c146-4": {
+            "frontend": 547,
+            "backend": 667
+          },
+          "c146-5": {
+            "backend": 594,
+            "frontend": 714
+          }
+        },
+        "actualizaciones": {
+          "c146-1": [],
+          "c146-2": [],
+          "c146-3": [],
+          "c146-4": [],
+          "c146-5": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 10
+      }
+    },
+    {
+      "corrida": "c147",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 0,
+      "nivel": 3,
+      "semilla": 454034,
+      "escenario": "escenarios/c147.json",
+      "resumen": {
+        "aperturas": {
+          "c147-1": {
+            "backend": 0,
+            "frontend": 120
+          },
+          "c147-2": {
+            "backend": 52,
+            "frontend": 172
+          },
+          "c147-3": {
+            "frontend": 265,
+            "backend": 385
+          }
+        },
+        "actualizaciones": {
+          "c147-1": [],
+          "c147-2": [],
+          "c147-3": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 6
+      }
+    },
+    {
+      "corrida": "c148",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 1,
+      "nivel": 1,
+      "semilla": 519181,
+      "escenario": "escenarios/c148.json",
+      "resumen": {
+        "aperturas": {
+          "c148-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c148-1": [
+            [
+              "backend",
+              120
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada"
+        ],
+        "eventos": 2
+      }
+    },
+    {
+      "corrida": "c149",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 1,
+      "nivel": 3,
+      "semilla": 57050,
+      "escenario": "escenarios/c149.json",
+      "resumen": {
+        "aperturas": {
+          "c149-1": {
+            "frontend": 0
+          },
+          "c149-2": {
+            "frontend": 202
+          },
+          "c149-3": {
+            "frontend": 490
+          }
+        },
+        "actualizaciones": {
+          "c149-1": [
+            [
+              "frontend",
+              120
+            ]
+          ],
+          "c149-2": [
+            [
+              "frontend",
+              322
+            ]
+          ],
+          "c149-3": [
+            [
+              "frontend",
+              610
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 6
+      }
+    },
+    {
+      "corrida": "c150",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 1,
+      "nivel": 3,
+      "semilla": 764458,
+      "escenario": "escenarios/c150.json",
+      "resumen": {
+        "aperturas": {
+          "c150-1": {
+            "backend": 0
+          },
+          "c150-2": {
+            "backend": 235
+          },
+          "c150-3": {
+            "backend": 410
+          }
+        },
+        "actualizaciones": {
+          "c150-1": [
+            [
+              "backend",
+              120
+            ]
+          ],
+          "c150-2": [
+            [
+              "backend",
+              355
+            ]
+          ],
+          "c150-3": [
+            [
+              "backend",
+              530
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 6
+      }
+    },
+    {
+      "corrida": "c151",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 2,
+      "nivel": 1,
+      "semilla": 442010,
+      "escenario": "escenarios/c151.json",
+      "resumen": {
+        "aperturas": {
+          "c151-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c151-1": [
+            [
+              "backend",
+              120
+            ],
+            [
+              "backend",
+              240
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c152",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 0,
+      "nivel": 1,
+      "semilla": 385117,
+      "escenario": "escenarios/c152.json",
+      "resumen": {
+        "aperturas": {
+          "c152-1": {
+            "frontend": 0
+          }
+        },
+        "actualizaciones": {
+          "c152-1": []
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 1
+      }
+    },
+    {
+      "corrida": "c153",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 1,
+      "nivel": 1,
+      "semilla": 46193,
+      "escenario": "escenarios/c153.json",
+      "resumen": {
+        "aperturas": {
+          "c153-1": {
+            "frontend": 0
+          }
+        },
+        "actualizaciones": {
+          "c153-1": [
+            [
+              "frontend",
+              120
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 2
+      }
+    },
+    {
+      "corrida": "c154",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 2,
+      "nivel": 3,
+      "semilla": 642635,
+      "escenario": "escenarios/c154.json",
+      "resumen": {
+        "aperturas": {
+          "c154-1": {
+            "frontend": 0
+          },
+          "c154-2": {
+            "frontend": 309
+          },
+          "c154-3": {
+            "frontend": 314
+          }
+        },
+        "actualizaciones": {
+          "c154-1": [
+            [
+              "frontend",
+              120
+            ],
+            [
+              "frontend",
+              240
+            ]
+          ],
+          "c154-2": [
+            [
+              "frontend",
+              429
+            ],
+            [
+              "frontend",
+              549
+            ]
+          ],
+          "c154-3": [
+            [
+              "frontend",
+              434
+            ],
+            [
+              "frontend",
+              554
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 9
+      }
+    },
+    {
+      "corrida": "c155",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 0,
+      "nivel": 1,
+      "semilla": 909940,
+      "escenario": "escenarios/c155.json",
+      "resumen": {
+        "aperturas": {
+          "c155-1": {
+            "frontend": 0,
+            "backend": 120
+          }
+        },
+        "actualizaciones": {
+          "c155-1": []
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 2
+      }
+    },
+    {
+      "corrida": "c156",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 1,
+      "nivel": 5,
+      "semilla": 545215,
+      "escenario": "escenarios/c156.json",
+      "resumen": {
+        "aperturas": {
+          "c156-1": {
+            "frontend": 0
+          },
+          "c156-2": {
+            "frontend": 74
+          },
+          "c156-3": {
+            "frontend": 81
+          },
+          "c156-4": {
+            "frontend": 322
+          },
+          "c156-5": {
+            "frontend": 402
+          }
+        },
+        "actualizaciones": {
+          "c156-1": [
+            [
+              "frontend",
+              120
+            ]
+          ],
+          "c156-2": [
+            [
+              "frontend",
+              194
+            ]
+          ],
+          "c156-3": [
+            [
+              "frontend",
+              201
+            ]
+          ],
+          "c156-4": [
+            [
+              "frontend",
+              442
+            ]
+          ],
+          "c156-5": [
+            [
+              "frontend",
+              522
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 10
+      }
+    }
+  ],
+  "reservas": [
+    {
+      "corrida": "c157",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 0,
+      "nivel": 1,
+      "semilla": 549544,
+      "escenario": "escenarios/c157.json",
+      "resumen": {
+        "aperturas": {
+          "c157-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c157-1": []
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 1
+      }
+    },
+    {
+      "corrida": "c158",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 0,
+      "nivel": 3,
+      "semilla": 331009,
+      "escenario": "escenarios/c158.json",
+      "resumen": {
+        "aperturas": {
+          "c158-1": {
+            "backend": 0
+          },
+          "c158-2": {
+            "backend": 122
+          },
+          "c158-3": {
+            "backend": 470
+          }
+        },
+        "actualizaciones": {
+          "c158-1": [],
+          "c158-2": [],
+          "c158-3": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c159",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 0,
+      "nivel": 5,
+      "semilla": 869250,
+      "escenario": "escenarios/c159.json",
+      "resumen": {
+        "aperturas": {
+          "c159-1": {
+            "backend": 0
+          },
+          "c159-2": {
+            "backend": 72
+          },
+          "c159-3": {
+            "backend": 387
+          },
+          "c159-4": {
+            "backend": 434
+          },
+          "c159-5": {
+            "backend": 440
+          }
+        },
+        "actualizaciones": {
+          "c159-1": [],
+          "c159-2": [],
+          "c159-3": [],
+          "c159-4": [],
+          "c159-5": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 5
+      }
+    },
+    {
+      "corrida": "c160",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 1,
+      "nivel": 1,
+      "semilla": 502867,
+      "escenario": "escenarios/c160.json",
+      "resumen": {
+        "aperturas": {
+          "c160-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c160-1": [
+            [
+              "backend",
+              120
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 2
+      }
+    },
+    {
+      "corrida": "c161",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 1,
+      "nivel": 3,
+      "semilla": 481316,
+      "escenario": "escenarios/c161.json",
+      "resumen": {
+        "aperturas": {
+          "c161-1": {
+            "backend": 0
+          },
+          "c161-2": {
+            "backend": 88
+          },
+          "c161-3": {
+            "backend": 310
+          }
+        },
+        "actualizaciones": {
+          "c161-1": [
+            [
+              "backend",
+              120
+            ]
+          ],
+          "c161-2": [
+            [
+              "backend",
+              208
+            ]
+          ],
+          "c161-3": [
+            [
+              "backend",
+              430
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 6
+      }
+    },
+    {
+      "corrida": "c162",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 1,
+      "nivel": 5,
+      "semilla": 501978,
+      "escenario": "escenarios/c162.json",
+      "resumen": {
+        "aperturas": {
+          "c162-1": {
+            "backend": 0
+          },
+          "c162-2": {
+            "backend": 34
+          },
+          "c162-3": {
+            "backend": 136
+          },
+          "c162-4": {
+            "backend": 298
+          },
+          "c162-5": {
+            "backend": 460
+          }
+        },
+        "actualizaciones": {
+          "c162-1": [
+            [
+              "backend",
+              120
+            ]
+          ],
+          "c162-2": [
+            [
+              "backend",
+              154
+            ]
+          ],
+          "c162-3": [
+            [
+              "backend",
+              256
+            ]
+          ],
+          "c162-4": [
+            [
+              "backend",
+              418
+            ]
+          ],
+          "c162-5": [
+            [
+              "backend",
+              580
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 10
+      }
+    },
+    {
+      "corrida": "c163",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 2,
+      "nivel": 1,
+      "semilla": 401505,
+      "escenario": "escenarios/c163.json",
+      "resumen": {
+        "aperturas": {
+          "c163-1": {
+            "backend": 0
+          }
+        },
+        "actualizaciones": {
+          "c163-1": [
+            [
+              "backend",
+              120
+            ],
+            [
+              "backend",
+              240
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c164",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 2,
+      "nivel": 3,
+      "semilla": 285993,
+      "escenario": "escenarios/c164.json",
+      "resumen": {
+        "aperturas": {
+          "c164-1": {
+            "backend": 0
+          },
+          "c164-2": {
+            "backend": 242
+          },
+          "c164-3": {
+            "backend": 379
+          }
+        },
+        "actualizaciones": {
+          "c164-1": [
+            [
+              "backend",
+              120
+            ],
+            [
+              "backend",
+              240
+            ]
+          ],
+          "c164-2": [
+            [
+              "backend",
+              362
+            ],
+            [
+              "backend",
+              482
+            ]
+          ],
+          "c164-3": [
+            [
+              "backend",
+              499
+            ],
+            [
+              "backend",
+              619
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 9
+      }
+    },
+    {
+      "corrida": "c165",
+      "tipo": "solo_backend",
+      "actualizaciones_fijas": 2,
+      "nivel": 5,
+      "semilla": 422086,
+      "escenario": "escenarios/c165.json",
+      "resumen": {
+        "aperturas": {
+          "c165-1": {
+            "backend": 0
+          },
+          "c165-2": {
+            "backend": 219
+          },
+          "c165-3": {
+            "backend": 350
+          },
+          "c165-4": {
+            "backend": 424
+          },
+          "c165-5": {
+            "backend": 534
+          }
+        },
+        "actualizaciones": {
+          "c165-1": [
+            [
+              "backend",
+              120
+            ],
+            [
+              "backend",
+              240
+            ]
+          ],
+          "c165-2": [
+            [
+              "backend",
+              339
+            ],
+            [
+              "backend",
+              459
+            ]
+          ],
+          "c165-3": [
+            [
+              "backend",
+              470
+            ],
+            [
+              "backend",
+              590
+            ]
+          ],
+          "c165-4": [
+            [
+              "backend",
+              544
+            ],
+            [
+              "backend",
+              664
+            ]
+          ],
+          "c165-5": [
+            [
+              "backend",
+              654
+            ],
+            [
+              "backend",
+              774
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 15
+      }
+    },
+    {
+      "corrida": "c166",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 0,
+      "nivel": 1,
+      "semilla": 669805,
+      "escenario": "escenarios/c166.json",
+      "resumen": {
+        "aperturas": {
+          "c166-1": {
+            "frontend": 0
+          }
+        },
+        "actualizaciones": {
+          "c166-1": []
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 1
+      }
+    },
+    {
+      "corrida": "c167",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 0,
+      "nivel": 3,
+      "semilla": 388520,
+      "escenario": "escenarios/c167.json",
+      "resumen": {
+        "aperturas": {
+          "c167-1": {
+            "frontend": 0
+          },
+          "c167-2": {
+            "frontend": 208
+          },
+          "c167-3": {
+            "frontend": 289
+          }
+        },
+        "actualizaciones": {
+          "c167-1": [],
+          "c167-2": [],
+          "c167-3": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c168",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 0,
+      "nivel": 5,
+      "semilla": 3625,
+      "escenario": "escenarios/c168.json",
+      "resumen": {
+        "aperturas": {
+          "c168-1": {
+            "frontend": 0
+          },
+          "c168-2": {
+            "frontend": 0
+          },
+          "c168-3": {
+            "frontend": 191
+          },
+          "c168-4": {
+            "frontend": 431
+          },
+          "c168-5": {
+            "frontend": 467
+          }
+        },
+        "actualizaciones": {
+          "c168-1": [],
+          "c168-2": [],
+          "c168-3": [],
+          "c168-4": [],
+          "c168-5": []
+        },
+        "resultados": [
+          "integrada",
+          "declinada",
+          "integrada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 5
+      }
+    },
+    {
+      "corrida": "c169",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 1,
+      "nivel": 1,
+      "semilla": 773661,
+      "escenario": "escenarios/c169.json",
+      "resumen": {
+        "aperturas": {
+          "c169-1": {
+            "frontend": 0
+          }
+        },
+        "actualizaciones": {
+          "c169-1": [
+            [
+              "frontend",
+              120
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada"
+        ],
+        "eventos": 2
+      }
+    },
+    {
+      "corrida": "c170",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 1,
+      "nivel": 3,
+      "semilla": 603832,
+      "escenario": "escenarios/c170.json",
+      "resumen": {
+        "aperturas": {
+          "c170-1": {
+            "frontend": 0
+          },
+          "c170-2": {
+            "frontend": 67
+          },
+          "c170-3": {
+            "frontend": 148
+          }
+        },
+        "actualizaciones": {
+          "c170-1": [
+            [
+              "frontend",
+              120
+            ]
+          ],
+          "c170-2": [
+            [
+              "frontend",
+              187
+            ]
+          ],
+          "c170-3": [
+            [
+              "frontend",
+              268
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 6
+      }
+    },
+    {
+      "corrida": "c171",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 1,
+      "nivel": 5,
+      "semilla": 765676,
+      "escenario": "escenarios/c171.json",
+      "resumen": {
+        "aperturas": {
+          "c171-1": {
+            "frontend": 0
+          },
+          "c171-2": {
+            "frontend": 2
+          },
+          "c171-3": {
+            "frontend": 178
+          },
+          "c171-4": {
+            "frontend": 382
+          },
+          "c171-5": {
+            "frontend": 578
+          }
+        },
+        "actualizaciones": {
+          "c171-1": [
+            [
+              "frontend",
+              120
+            ]
+          ],
+          "c171-2": [
+            [
+              "frontend",
+              122
+            ]
+          ],
+          "c171-3": [
+            [
+              "frontend",
+              298
+            ]
+          ],
+          "c171-4": [
+            [
+              "frontend",
+              502
+            ]
+          ],
+          "c171-5": [
+            [
+              "frontend",
+              698
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "declinada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 10
+      }
+    },
+    {
+      "corrida": "c172",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 2,
+      "nivel": 1,
+      "semilla": 481580,
+      "escenario": "escenarios/c172.json",
+      "resumen": {
+        "aperturas": {
+          "c172-1": {
+            "frontend": 0
+          }
+        },
+        "actualizaciones": {
+          "c172-1": [
+            [
+              "frontend",
+              120
+            ],
+            [
+              "frontend",
+              240
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c173",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 2,
+      "nivel": 3,
+      "semilla": 40952,
+      "escenario": "escenarios/c173.json",
+      "resumen": {
+        "aperturas": {
+          "c173-1": {
+            "frontend": 0
+          },
+          "c173-2": {
+            "frontend": 272
+          },
+          "c173-3": {
+            "frontend": 507
+          }
+        },
+        "actualizaciones": {
+          "c173-1": [
+            [
+              "frontend",
+              120
+            ],
+            [
+              "frontend",
+              240
+            ]
+          ],
+          "c173-2": [
+            [
+              "frontend",
+              392
+            ],
+            [
+              "frontend",
+              512
+            ]
+          ],
+          "c173-3": [
+            [
+              "frontend",
+              627
+            ],
+            [
+              "frontend",
+              747
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 9
+      }
+    },
+    {
+      "corrida": "c174",
+      "tipo": "solo_frontend",
+      "actualizaciones_fijas": 2,
+      "nivel": 5,
+      "semilla": 541518,
+      "escenario": "escenarios/c174.json",
+      "resumen": {
+        "aperturas": {
+          "c174-1": {
+            "frontend": 0
+          },
+          "c174-2": {
+            "frontend": 107
+          },
+          "c174-3": {
+            "frontend": 225
+          },
+          "c174-4": {
+            "frontend": 534
+          },
+          "c174-5": {
+            "frontend": 596
+          }
+        },
+        "actualizaciones": {
+          "c174-1": [
+            [
+              "frontend",
+              120
+            ],
+            [
+              "frontend",
+              240
+            ]
+          ],
+          "c174-2": [
+            [
+              "frontend",
+              227
+            ],
+            [
+              "frontend",
+              347
+            ]
+          ],
+          "c174-3": [
+            [
+              "frontend",
+              345
+            ],
+            [
+              "frontend",
+              465
+            ]
+          ],
+          "c174-4": [
+            [
+              "frontend",
+              654
+            ],
+            [
+              "frontend",
+              774
+            ]
+          ],
+          "c174-5": [
+            [
+              "frontend",
+              716
+            ],
+            [
+              "frontend",
+              836
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 15
+      }
+    },
+    {
+      "corrida": "c175",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 0,
+      "nivel": 1,
+      "semilla": 322295,
+      "escenario": "escenarios/c175.json",
+      "resumen": {
+        "aperturas": {
+          "c175-1": {
+            "frontend": 0,
+            "backend": 120
+          }
+        },
+        "actualizaciones": {
+          "c175-1": []
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 2
+      }
+    },
+    {
+      "corrida": "c176",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 0,
+      "nivel": 3,
+      "semilla": 695491,
+      "escenario": "escenarios/c176.json",
+      "resumen": {
+        "aperturas": {
+          "c176-1": {
+            "frontend": 0,
+            "backend": 120
+          },
+          "c176-2": {
+            "backend": 51,
+            "frontend": 171
+          },
+          "c176-3": {
+            "backend": 314,
+            "frontend": 434
+          }
+        },
+        "actualizaciones": {
+          "c176-1": [],
+          "c176-2": [],
+          "c176-3": []
+        },
+        "resultados": [
+          "declinada",
+          "declinada",
+          "integrada"
+        ],
+        "eventos": 6
+      }
+    },
+    {
+      "corrida": "c177",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 0,
+      "nivel": 5,
+      "semilla": 985826,
+      "escenario": "escenarios/c177.json",
+      "resumen": {
+        "aperturas": {
+          "c177-1": {
+            "frontend": 0,
+            "backend": 120
+          },
+          "c177-2": {
+            "backend": 65,
+            "frontend": 185
+          },
+          "c177-3": {
+            "backend": 66,
+            "frontend": 186
+          },
+          "c177-4": {
+            "frontend": 248,
+            "backend": 368
+          },
+          "c177-5": {
+            "frontend": 407,
+            "backend": 527
+          }
+        },
+        "actualizaciones": {
+          "c177-1": [],
+          "c177-2": [],
+          "c177-3": [],
+          "c177-4": [],
+          "c177-5": []
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 10
+      }
+    },
+    {
+      "corrida": "c178",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 1,
+      "nivel": 1,
+      "semilla": 111170,
+      "escenario": "escenarios/c178.json",
+      "resumen": {
+        "aperturas": {
+          "c178-1": {
+            "backend": 0,
+            "frontend": 120
+          }
+        },
+        "actualizaciones": {
+          "c178-1": [
+            [
+              "backend",
+              120
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 3
+      }
+    },
+    {
+      "corrida": "c179",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 1,
+      "nivel": 3,
+      "semilla": 213387,
+      "escenario": "escenarios/c179.json",
+      "resumen": {
+        "aperturas": {
+          "c179-1": {
+            "backend": 0,
+            "frontend": 120
+          },
+          "c179-2": {
+            "backend": 243,
+            "frontend": 363
+          },
+          "c179-3": {
+            "frontend": 470,
+            "backend": 590
+          }
+        },
+        "actualizaciones": {
+          "c179-1": [
+            [
+              "backend",
+              120
+            ]
+          ],
+          "c179-2": [
+            [
+              "backend",
+              363
+            ]
+          ],
+          "c179-3": [
+            [
+              "frontend",
+              590
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 9
+      }
+    },
+    {
+      "corrida": "c180",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 1,
+      "nivel": 5,
+      "semilla": 607353,
+      "escenario": "escenarios/c180.json",
+      "resumen": {
+        "aperturas": {
+          "c180-1": {
+            "frontend": 0,
+            "backend": 120
+          },
+          "c180-2": {
+            "backend": 110,
+            "frontend": 230
+          },
+          "c180-3": {
+            "backend": 329,
+            "frontend": 449
+          },
+          "c180-4": {
+            "frontend": 377,
+            "backend": 497
+          },
+          "c180-5": {
+            "backend": 559,
+            "frontend": 679
+          }
+        },
+        "actualizaciones": {
+          "c180-1": [
+            [
+              "backend",
+              120
+            ]
+          ],
+          "c180-2": [
+            [
+              "backend",
+              230
+            ]
+          ],
+          "c180-3": [
+            [
+              "backend",
+              449
+            ]
+          ],
+          "c180-4": [
+            [
+              "frontend",
+              497
+            ]
+          ],
+          "c180-5": [
+            [
+              "frontend",
+              679
+            ]
+          ]
+        },
+        "resultados": [
+          "declinada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "declinada"
+        ],
+        "eventos": 15
+      }
+    },
+    {
+      "corrida": "c181",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 2,
+      "nivel": 1,
+      "semilla": 178740,
+      "escenario": "escenarios/c181.json",
+      "resumen": {
+        "aperturas": {
+          "c181-1": {
+            "backend": 0,
+            "frontend": 120
+          }
+        },
+        "actualizaciones": {
+          "c181-1": [
+            [
+              "backend",
+              120
+            ],
+            [
+              "backend",
+              240
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada"
+        ],
+        "eventos": 4
+      }
+    },
+    {
+      "corrida": "c182",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 2,
+      "nivel": 3,
+      "semilla": 788299,
+      "escenario": "escenarios/c182.json",
+      "resumen": {
+        "aperturas": {
+          "c182-1": {
+            "frontend": 0,
+            "backend": 120
+          },
+          "c182-2": {
+            "frontend": 132,
+            "backend": 252
+          },
+          "c182-3": {
+            "backend": 332,
+            "frontend": 452
+          }
+        },
+        "actualizaciones": {
+          "c182-1": [
+            [
+              "backend",
+              120
+            ],
+            [
+              "frontend",
+              240
+            ]
+          ],
+          "c182-2": [
+            [
+              "backend",
+              252
+            ],
+            [
+              "frontend",
+              372
+            ]
+          ],
+          "c182-3": [
+            [
+              "frontend",
+              452
+            ],
+            [
+              "frontend",
+              572
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 12
+      }
+    },
+    {
+      "corrida": "c183",
+      "tipo": "combinacion",
+      "actualizaciones_fijas": 2,
+      "nivel": 5,
+      "semilla": 862902,
+      "escenario": "escenarios/c183.json",
+      "resumen": {
+        "aperturas": {
+          "c183-1": {
+            "backend": 0,
+            "frontend": 120
+          },
+          "c183-2": {
+            "frontend": 241,
+            "backend": 361
+          },
+          "c183-3": {
+            "frontend": 456,
+            "backend": 576
+          },
+          "c183-4": {
+            "frontend": 508,
+            "backend": 628
+          },
+          "c183-5": {
+            "backend": 510,
+            "frontend": 630
+          }
+        },
+        "actualizaciones": {
+          "c183-1": [
+            [
+              "backend",
+              120
+            ],
+            [
+              "frontend",
+              240
+            ]
+          ],
+          "c183-2": [
+            [
+              "backend",
+              361
+            ],
+            [
+              "backend",
+              481
+            ]
+          ],
+          "c183-3": [
+            [
+              "backend",
+              576
+            ],
+            [
+              "frontend",
+              696
+            ]
+          ],
+          "c183-4": [
+            [
+              "backend",
+              628
+            ],
+            [
+              "frontend",
+              748
+            ]
+          ],
+          "c183-5": [
+            [
+              "frontend",
+              630
+            ],
+            [
+              "frontend",
+              750
+            ]
+          ]
+        },
+        "resultados": [
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada",
+          "integrada"
+        ],
+        "eventos": 20
+      }
+    }
+  ]
+}
