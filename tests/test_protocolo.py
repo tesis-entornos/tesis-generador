@@ -96,6 +96,25 @@ class Comparar(unittest.TestCase):
         self.assertIn("desplegar-efimero.yml tiene 2 sleep", d[0])
         self.assertIn("desplegar-fijo.yml tiene 0 sleep", d[1])
 
+    def test_sleep_del_reset_corto_cuenta_uno(self):
+        # desplegar-fijo.yml de tesis-buildspecs 93cc6c7: el comando va entre comillas simples en el YAML (con '' dentro)
+        # y saltea el sleep solo en el reset de la línea base; tiene que seguir contando exactamente un sleep.
+        vieja = ('      - if [ "$SIMULAR_TRABAJO_SEG" -gt 0 ]; then echo "SIMULAR_TRABAJO_SEG=$SIMULAR_TRABAJO_SEG, tiempo adicional '
+                 'de validacion (regresion simulada) - duerme $SIMULAR_TRABAJO_SEG s"; sleep "$SIMULAR_TRABAJO_SEG"; fi\n')
+        nueva = ("      - '" 'if [ "$SIMULAR_TRABAJO_SEG" -gt 0 ] && [ "$CORRIDA" = "sin-corrida" ] && git log -1 --format=%s 2>/dev/null | '
+                 'grep -Eqx \'\'reset c[0-9]+: linea base\'\'; then echo "Reset de linea base (commit \'\'$(git log -1 --format=%s)\'\', '
+                 'sin rama): sin regresion simulada, SIMULAR_TRABAJO_SEG=$SIMULAR_TRABAJO_SEG -> 0"; export SIMULAR_TRABAJO_SEG=0; fi; '
+                 'if [ "$SIMULAR_TRABAJO_SEG" -gt 0 ]; then echo "SIMULAR_TRABAJO_SEG=$SIMULAR_TRABAJO_SEG, tiempo adicional de '
+                 'validacion (regresion simulada) - duerme $SIMULAR_TRABAJO_SEG s"; sleep "$SIMULAR_TRABAJO_SEG"; fi\'\n')
+        env = 'env:\n  variables:\n    SIMULAR_TRABAJO_SEG: "600"\nphases:\n  build:\n    commands:\n'
+        for linea in (vieja, nueva):
+            suite = protocolo.suite_de({"desplegar-efimero.yml": env + vieja, "desplegar-fijo.yml": env + linea})
+            self.assertEqual(suite["sleeps_simular"], {"desplegar-efimero.yml": 1, "desplegar-fijo.yml": 1})
+            self.assertEqual(suite["simular_trabajo_seg"], {"desplegar-efimero.yml": "600", "desplegar-fijo.yml": "600"})
+            self.assertEqual(protocolo.problemas_simular(suite, "600"), [])
+        doble = protocolo.suite_de({"desplegar-efimero.yml": env + vieja, "desplegar-fijo.yml": env + nueva + vieja})
+        self.assertEqual(doble["sleeps_simular"]["desplegar-fijo.yml"], 2)
+
     def test_tag_json_terraform_y_escenario(self):
         m = manifiesto()
         v = vivo(m)
@@ -146,7 +165,7 @@ class DosRamas(unittest.TestCase):
         v = self.vivo_v4(m)
         v["ejecutor"] = dict(v["ejecutor"], max_espera_seg=14400)
         self.assertEqual(len(protocolo.comparar(m, v)), 1)
-        self.assertEqual(protocolo.parametros_ejecutor()["max_espera_seg"], 21600)
+        self.assertEqual(protocolo.parametros_ejecutor()["max_espera_seg"], 43200)
         self.assertEqual(protocolo.parametros_ejecutor()["esquema"], 2)
 
     def test_manifiesto_sin_las_secciones_nuevas_no_las_compara(self):
@@ -162,7 +181,7 @@ class DosRamas(unittest.TestCase):
         self.assertIsNone(protocolo.webhook_de({"name": "y"}))
 
     def test_manifiesto_por_defecto(self):
-        self.assertEqual(protocolo.MANIFIESTO.name, "protocolo-v5.json")
+        self.assertEqual(protocolo.MANIFIESTO.name, "protocolo-v6.json")
 
 
 class Huella(unittest.TestCase):

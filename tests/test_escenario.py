@@ -356,5 +356,155 @@ class SinParametroIgualQueAntes(unittest.TestCase):
         self.assertEqual(escenario.generar(3, 5, 11), escenario.generar(3, 5, 11, actualizaciones_fijas=None))
 
 
+class TipoYBrechasFijas(unittest.TestCase):
+    """Matriz completa (Martin con el tutor, 19/11): con tipo_fijo = T toda versión es de tipo T; con
+    brecha_actualizacion_seg = 120 y brecha_segundo_repo_seg = 120 toda actualización va a +120 s del evento anterior de
+    la cadena y el segundo repo de cada combinación abre a +120 s del primero. El resto se sortea igual."""
+
+    FIJOS = {"brecha_actualizacion_seg": 120, "brecha_segundo_repo_seg": 120}
+
+    @classmethod
+    def setUpClass(cls):
+        cls.casos = [
+            escenario.generar(c, nivel, s, actualizaciones_fijas=k, tipo_fijo=tipo, **cls.FIJOS)
+            for tipo in escenario.TIPOS_FIJOS for k in escenario.ACTUALIZACIONES_FIJAS for nivel in escenario.NIVELES
+            for c, s in ((1, 0), (9, 1), (130, 2), (157, 3)) + tuple((200 + x, 1000 + x) for x in range(12))
+        ]
+
+    def test_todas_las_versiones_del_tipo_fijo_y_k_exacto(self):
+        for esc in self.casos:
+            with self.subTest(tipo=esc["tipo_fijo"], k=esc["actualizaciones_fijas"], nivel=esc["nivel"], semilla=esc["semilla"]):
+                self.assertEqual({v["tipo"] for v in esc["versiones"]}, {esc["tipo_fijo"]})
+                for v in esc["versiones"]:
+                    self.assertEqual(sum(e["accion"] == "actualizacion" for e in v["eventos"]), esc["actualizaciones_fijas"])
+
+    def test_repos_por_tipo(self):
+        for esc in self.casos:
+            tipo = esc["tipo_fijo"]
+            tocados = {e["repo"] for e in esc["eventos_ordenados"]}
+            with self.subTest(tipo=tipo, k=esc["actualizaciones_fijas"], nivel=esc["nivel"], semilla=esc["semilla"]):
+                if tipo == "solo_backend":
+                    self.assertEqual(tocados, {"backend"})
+                    self.assertEqual(esc["catalogo_migraciones"], [])
+                elif tipo == "solo_frontend":
+                    self.assertEqual(tocados, {"frontend"})
+                    self.assertEqual(esc["catalogo_migraciones"], [])
+                else:
+                    for v in esc["versiones"]:
+                        abre = sorted(e["repo"] for e in v["eventos"] if e["accion"] == "apertura")
+                        self.assertEqual(abre, ["backend", "frontend"])
+                        self.assertEqual(v["migracion"], f"c{esc['corrida']}_{v['n']}")
+
+    def test_brechas_de_actualizacion_120(self):
+        import ejecutor
+        for esc in self.casos:
+            eventos = [dict(e, i=i) for i, e in enumerate(esc["eventos_ordenados"])]
+            b = ejecutor.brechas(eventos)
+            with self.subTest(tipo=esc["tipo_fijo"], k=esc["actualizaciones_fijas"], nivel=esc["nivel"], semilla=esc["semilla"]):
+                self.assertEqual(len(b), esc["actualizaciones_fijas"] * esc["nivel"])
+                self.assertEqual({x for _, x in b.values()} or {120}, {120})
+                for v in esc["versiones"]:
+                    cadena = [v["eventos"][0]["t"]] + [e["t"] for e in v["eventos"] if e["accion"] == "actualizacion"]
+                    self.assertEqual([y - x for x, y in zip(cadena, cadena[1:])], [120] * esc["actualizaciones_fijas"])
+
+    def test_segunda_apertura_a_120(self):
+        n = 0
+        for esc in self.casos:
+            for v in esc["versiones"]:
+                if v["tipo"] != "combinacion":
+                    continue
+                abre = sorted(e["t"] for e in v["eventos"] if e["accion"] == "apertura")
+                self.assertEqual(abre[1] - abre[0], 120)
+                n += 1
+        self.assertGreater(n, 0)
+
+    def test_resto_se_sortea_igual(self):
+        reglas = Reglas()
+        primeros = collections.Counter()
+        repos_act = collections.Counter()
+        resultados = collections.Counter()
+        for esc in self.casos:
+            reglas.revisar(esc)
+            self.assertEqual(esc["parametros"], escenario.PARAMETROS)
+            # Aperturas de las versiones: las mismas que sin parámetros (se sortean primero y no cambian).
+            libre = escenario.generar(esc["corrida"], esc["nivel"], esc["semilla"])
+            self.assertEqual([v["eventos"][0]["t"] for v in libre["versiones"]],
+                             [v["eventos"][0]["t"] for v in esc["versiones"]])
+            for v in esc["versiones"]:
+                resultados[v["resultado"]] += 1
+                if v["tipo"] == "combinacion":
+                    primeros[v["eventos"][0]["repo"]] += 1
+                    for e in v["eventos"]:
+                        if e["accion"] == "actualizacion":
+                            repos_act[e["repo"]] += 1
+        self.assertGreater(primeros["backend"], 0)
+        self.assertGreater(primeros["frontend"], 0)
+        self.assertGreater(repos_act["backend"], 0)
+        self.assertGreater(repos_act["frontend"], 0)
+        self.assertEqual(set(resultados), {"integrada", "declinada"})
+
+    def test_sin_brechas_fijas_se_sortean(self):
+        brechas = set()
+        for s in range(200):
+            esc = escenario.generar(1, 5, s, actualizaciones_fijas=2, tipo_fijo="combinacion")
+            for v in esc["versiones"]:
+                abre = sorted(e["t"] for e in v["eventos"] if e["accion"] == "apertura")
+                brechas.add(abre[1] - abre[0])
+        self.assertGreater(len(brechas), 50)
+
+    def test_claves_y_cli(self):
+        with tempfile.TemporaryDirectory() as d:
+            salida = Path(d) / "c130.json"
+            subprocess.run(
+                [sys.executable, str(RAIZ / "escenario.py"), "--corrida", "130", "--nivel", "5", "--semilla", "7",
+                 "--actualizaciones-fijas", "2", "--tipo-fijo", "combinacion", "--brecha-actualizacion-seg", "120",
+                 "--brecha-segundo-repo-seg", "120", "--salida", str(salida)],
+                check=True, capture_output=True,
+            )
+            e = json.loads(salida.read_text(encoding="utf-8"))
+            self.assertEqual(e, escenario.generar(130, 5, 7, actualizaciones_fijas=2, tipo_fijo="combinacion", **self.FIJOS))
+            self.assertEqual(list(e)[:8], ["corrida", "nivel", "semilla", "actualizaciones_fijas", "tipo_fijo",
+                                           "brecha_actualizacion_seg", "brecha_segundo_repo_seg", "generador"])
+            ver = subprocess.run([sys.executable, str(RAIZ / "escenario.py"), "--ver", str(salida)],
+                                 check=True, capture_output=True, text=True)
+            self.assertIn("tipo fijo combinacion", ver.stdout)
+            self.assertIn("brecha de actualización 120 s", ver.stdout)
+
+    def test_valores_invalidos(self):
+        for kw in ({"tipo_fijo": "migracion"}, {"tipo_fijo": "x"}, {"tipo_fijo": 1},
+                   {"brecha_actualizacion_seg": 601}, {"brecha_actualizacion_seg": -1}, {"brecha_actualizacion_seg": 120.0},
+                   {"brecha_segundo_repo_seg": True}, {"brecha_segundo_repo_seg": "120"}):
+            with self.subTest(**kw), self.assertRaises(ValueError):
+                escenario.generar(1, 3, 1, **kw)
+
+    def test_registrado_en_reglas_fijas(self):
+        self.assertEqual(escenario.TIPOS_FIJOS, ("solo_backend", "solo_frontend", "combinacion"))
+        self.assertEqual(set(escenario.REGLAS_FIJAS), {"tipo_fijo", "brecha_actualizacion_seg", "brecha_segundo_repo_seg"})
+        self.assertNotIn("tipo_fijo", escenario.PARAMETROS)
+
+
+class C61aC128IdenticosConParametrosNuevos(unittest.TestCase):
+    """Sin tipo_fijo ni brechas fijas, todos los escenarios commiteados c61–c128 se regeneran idénticos (salvo el
+    commit del generador): mismas claves, mismos parámetros, mismos sorteos."""
+
+    def test_regeneracion(self):
+        rutas = sorted((RAIZ / "escenarios").glob("c*.json"), key=lambda r: int(r.stem[1:]))
+        # c96 y c99 son pruebas de v1 hechas con un generador anterior: ya el de 383aba3 no los reproduce.
+        rutas = [r for r in rutas if 61 <= int(r.stem[1:]) <= 128 and r.stem not in ("c96", "c99")]
+        self.assertEqual(len(rutas), 28 + 2 + 19)  # c61–c88, c90/c95, c110–c128
+        for ruta in rutas:
+            viejo = json.loads(ruta.read_text(encoding="utf-8"))
+            if viejo.get("generador", {}).get("version_formato") != 1 or "parametros" not in viejo:
+                continue
+            nuevo = escenario.generar(viejo["corrida"], viejo["nivel"], viejo["semilla"],
+                                      actualizaciones_fijas=viejo.get("actualizaciones_fijas"))
+            nuevo["generador"]["commit"] = viejo["generador"]["commit"]
+            with self.subTest(escenario=ruta.name):
+                if viejo["parametros"] == escenario.PARAMETROS:
+                    self.assertEqual(nuevo, viejo)
+                else:  # anteriores a v5 (sin la entrada actualizaciones_fijas en PARAMETROS)
+                    for clave in ("corrida", "nivel", "semilla", "catalogo_migraciones", "versiones", "eventos_ordenados"):
+                        self.assertEqual(nuevo[clave], viejo[clave], clave)
+
 if __name__ == "__main__":
     unittest.main()

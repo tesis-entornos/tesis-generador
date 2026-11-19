@@ -28,7 +28,7 @@ Un bucle de un solo hilo que cada 15 s:
   6. cierre en cada modelo (efímero: PR release/c<N>-<n> -> main-efimero; fijo: PR release/fijo/c<N>-<n> ->
      main-fijo), limpieza y registro final en registros/corrida-c<N>.json (esquema 2).
 
-Si algo espera más de MAX_ESPERA_SEG (6 h), la corrida se aborta como inválida. --dry-run recorre el escenario contra
+Si algo espera más de MAX_ESPERA_SEG (12 h), la corrida se aborta como inválida. --dry-run recorre el escenario contra
 una plataforma simulada con reloj virtual, sin tocar nada.
 """
 
@@ -56,7 +56,7 @@ ORG = "tesis-entornos"
 REGION = "us-east-2"
 
 VUELTA_SEG = 15
-MAX_ESPERA_SEG = 360 * 60
+MAX_ESPERA_SEG = 720 * 60
 WEBHOOK_SEG = 120
 MERGED_SEG = 180
 EXPIRACION_SEG = 4 * 24 * 3600
