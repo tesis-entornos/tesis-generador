@@ -389,3 +389,5 @@ c135,3,330109,2,release/c135-2,combinacion,integrada,efimero,2026-11-20T03:42:44
 c135,3,330109,2,release/c135-2,combinacion,integrada,fijo,2026-11-20T03:42:37Z,2026-11-20T05:40:01Z,7044.6,ok,3,5479.0,,0,0,false,tesis-fijo-desplegar-backend:858345a2-32f1-4717-becb-22e3c894e938
 c135,3,330109,3,release/c135-3,combinacion,integrada,efimero,2026-11-20T03:43:16Z,2026-11-20T04:32:38Z,2962.5,ok,3,,312,0,0,false,tesis-efimero-desplegar-frontend:e4776ef2-29e9-4c52-90cc-9351759b43b5
 c135,3,330109,3,release/c135-3,combinacion,integrada,fijo,2026-11-20T03:43:22Z,2026-11-20T05:52:36Z,7754.3,ok,3,7168.0,,0,0,false,tesis-fijo-desplegar-frontend:10c4f987-683b-40d8-81c4-7da2bd172c76
+c136,1,396999,1,release/c136-1,solo_backend,integrada,efimero,2026-11-20T06:14:05Z,2026-11-20T06:36:53Z,1368.8,ok,1,,334,0,0,false,tesis-efimero-desplegar-backend:4537dc31-42b2-401a-a920-770dfe11e207
+c136,1,396999,1,release/c136-1,solo_backend,integrada,fijo,2026-11-20T06:14:12Z,2026-11-20T06:31:48Z,1056.3,ok,1,27.0,,0,0,false,tesis-fijo-desplegar-backend:72e2babb-16d2-4306-b351-b4d069d19b88
