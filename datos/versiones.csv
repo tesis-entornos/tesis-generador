@@ -487,3 +487,5 @@ c150,3,764458,2,release/c150-2,solo_backend,integrada,efimero,2026-11-21T14:19:5
 c150,3,764458,2,release/c150-2,solo_backend,integrada,fijo,2026-11-21T14:19:46Z,2026-11-21T15:37:45Z,4679.2,ok,2,2465.0,,0,0,false,tesis-fijo-desplegar-backend:b2b78cbb-78e0-4f41-bac2-663762f7b851
 c150,3,764458,3,release/c150-3,solo_backend,integrada,efimero,2026-11-21T14:22:42Z,2026-11-21T15:05:29Z,2567.1,ok,2,,326,0,0,false,tesis-efimero-desplegar-backend:e7347c62-3541-4b52-9465-63a782feff63
 c150,3,764458,3,release/c150-3,solo_backend,integrada,fijo,2026-11-21T14:22:49Z,2026-11-21T15:53:36Z,5447.8,ok,2,3213.0,,0,0,false,tesis-fijo-desplegar-backend:f0167147-aa92-4c99-ba13-ec726e907dc9
+c151,1,442010,1,release/c151-1,solo_backend,declinada,efimero,2026-11-21T16:12:58Z,2026-11-21T17:14:26Z,3688.6,ok,3,,311,0,0,false,tesis-efimero-desplegar-backend:ebed0a2b-d688-4efa-9a11-b0b38ed8b93e
+c151,1,442010,1,release/c151-1,solo_backend,declinada,fijo,2026-11-21T16:13:05Z,2026-11-21T17:09:53Z,3408.7,ok,3,84.0,,0,0,false,tesis-fijo-desplegar-backend:cf181b6c-789a-414e-942f-13bde95b9576
