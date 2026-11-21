@@ -1,0 +1,58 @@
+[2026-11-21T11:22:21Z] t  pre  protocolo protocolo-v6 verificado: huella 029681c240a2443488e0a0a5034999ff31c528d165eb9189bfcfdbeeaed5a21f
+[2026-11-21T11:22:21Z] t  pre  reset.py
+[2026-11-21T11:22:21Z] 1. precondiciones
+[2026-11-21T11:22:45Z]   ok
+[2026-11-21T11:22:47Z]   línea base backend 582621604637.dkr.ecr.us-east-2.amazonaws.com/tesis-backend@sha256:eb07d223d0f4133d7bdd18f932b39d2c399b716cbaab19d3924c619b5a38a99a
+[2026-11-21T11:22:47Z] 2. primer reset de datos
+[2026-11-21T11:22:49Z]   copia registrada arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:437
+[2026-11-21T11:22:51Z]   tarea ef616f7ddf5a449a923657332d41c3aa lanzada; esperando que pare
+[2026-11-21T11:23:45Z]   copia arn:aws:ecs:us-east-2:491265021424:task-definition/fijo-compartido-backend:437 desregistrada
+[2026-11-21T11:23:45Z] 3. despliegue de la línea base en dev de tesis-backend-cd
+[2026-11-21T11:23:49Z]   tesis-backend-cd: push de cda65e2 a dev; esperando el build de tesis-fijo-desplegar-backend
+[2026-11-21T11:23:52Z]   build tesis-fijo-desplegar-backend:f3ae77ea-edec-4a5e-aac3-0cbc4a2d3617
+[2026-11-21T11:29:47Z] 3. despliegue de la línea base en dev de tesis-frontend-cd
+[2026-11-21T11:29:51Z]   tesis-frontend-cd: push de 0b8c232 a dev; esperando el build de tesis-fijo-desplegar-frontend
+[2026-11-21T11:30:25Z]   build tesis-fijo-desplegar-frontend:65481791-b85f-4d8a-9aaa-8bb89dc5e68a
+[2026-11-21T11:32:44Z] 4. segundo reset de datos
+[2026-11-21T11:32:47Z]   tarea faa9afa8edac44949c79f1125a5a170c lanzada; esperando que pare
+[2026-11-21T11:33:40Z] 5. ramas de cierre
+[2026-11-21T11:33:43Z]   tesis-backend-cd main-fijo: actualizar -> db1881d
+[2026-11-21T11:33:44Z]   tesis-backend-cd main-efimero: actualizar -> db1881d
+[2026-11-21T11:33:47Z]   tesis-frontend-cd main-fijo: actualizar -> 900cda0
+[2026-11-21T11:33:49Z]   tesis-frontend-cd main-efimero: actualizar -> 900cda0
+[2026-11-21T11:33:53Z] reset c148 terminado; t0 = 2026-11-21T11:33:53Z
+[2026-11-21T11:33:53Z] registro en /Users/martincometta/tesis/aplicacion/tesis-generador/registros/reset-c148.json
+[2026-11-21T11:33:53Z] t+00:00  t = 0 en 2026-11-21T11:33:53Z; 2 eventos, 1 versiones
+[2026-11-21T11:34:20Z] t+00:27  abrir release/efimero/c148-1 backend: PR #279 (2026-11-21T11:34:19Z), commit ebdf35b
+[2026-11-21T11:34:27Z] t+00:34  abrir release/fijo/c148-1 backend: PR #280 (2026-11-21T11:34:25Z), commit 71adf48
+[2026-11-21T11:36:09Z] t+02:16  build bd4778a7 release/efimero/c148-1 backend SUCCEEDED, tag ebdf35b digest 003865e316d7 -> tesis-backend-cd release/c148-1 a39e881 (entrega al efímero)
+[2026-11-21T11:36:25Z] t+02:32  build 6b1cfbcd release/fijo/c148-1 backend SUCCEEDED, tag 71adf48 digest e5dc51a378d8 -> tesis-backend-cd release/fijo/c148-1 bd73bc5 (solicitud en la cola del fijo)
+[2026-11-21T11:36:28Z] t+02:35  fijo: integra release/fijo/c148-1 backend k=0 (bd73bc5, entregado 2026-11-21T11:36:03Z) en dev -> c63627a (conflicto: sin_conflicto)
+[2026-11-21T11:36:39Z] t+02:46  fijo: build tesis-fijo-desplegar-backend:21da60dd-aefc-427b-9001-1b7af2d69284 de la integración de release/c148-1 backend k=0
+[2026-11-21T11:52:25Z] t+18:32  validación fijo release/c148-1 backend 21da60dd SUCCEEDED ok digest e5dc51a378d8 (939 s)
+[2026-11-21T11:52:25Z] t+18:32  release/c148-1 backend k=1 en fijo: validaciones previas terminadas en 2026-11-21T11:52:08Z, brecha 120 s -> T = 2026-11-21T11:54:08Z
+[2026-11-21T11:52:25Z] t+18:32  fijo: build 21da60dd terminó SUCCEEDED (939 s)
+[2026-11-21T11:54:13Z] t+20:20  actualizar release/fijo/c148-1 backend k=1: commit 33a860f
+[2026-11-21T11:56:12Z] t+22:19  build 786c4ac7 release/fijo/c148-1 backend SUCCEEDED, tag 33a860f digest afd7881362ae -> tesis-backend-cd release/fijo/c148-1 4c2e928 (solicitud en la cola del fijo)
+[2026-11-21T11:56:15Z] t+22:22  fijo: integra release/fijo/c148-1 backend k=1 (4c2e928, entregado 2026-11-21T11:55:51Z) en dev -> b589fb1 (conflicto: sin_conflicto)
+[2026-11-21T11:56:26Z] t+22:33  fijo: build tesis-fijo-desplegar-backend:f7331285-69ef-46a7-84ed-e725c24d8385 de la integración de release/c148-1 backend k=1
+[2026-11-21T11:59:27Z] t+25:34  validación efimero release/c148-1 backend d8adca7d SUCCEEDED ok digest 003865e316d7 (1403 s)
+[2026-11-21T11:59:27Z] t+25:34  release/c148-1 backend k=1 en efimero: validaciones previas terminadas en 2026-11-21T11:59:14Z, brecha 120 s -> T = 2026-11-21T12:01:14Z
+[2026-11-21T12:01:29Z] t+27:36  actualizar release/efimero/c148-1 backend k=1: commit d21dfb9
+[2026-11-21T12:03:14Z] t+29:21  build 9a57ff89 release/efimero/c148-1 backend SUCCEEDED, tag d21dfb9 digest cf5eea81358d -> tesis-backend-cd release/c148-1 7f4d1c3 (entrega al efímero)
+[2026-11-21T12:11:57Z] t+38:04  validación fijo release/c148-1 backend f7331285 SUCCEEDED ok digest afd7881362ae (921 s)
+[2026-11-21T12:11:57Z] t+38:04  fijo: build f7331285 terminó SUCCEEDED (921 s)
+[2026-11-21T12:11:57Z] t+38:04  VALIDACIÓN FINAL release/c148-1 fijo: tesis-fijo-desplegar-backend:f7331285-69ef-46a7-84ed-e725c24d8385 ok fin 2026-11-21T12:11:38Z tiempo de validación 2233 s
+[2026-11-21T12:12:02Z] t+38:09  cierre fijo release/c148-1 backend: PR #692 release/fijo/c148-1 -> main-fijo, cerrado sin merge
+[2026-11-21T12:12:02Z] t+38:09  CERRADA release/c148-1 en fijo
+[2026-11-21T12:18:58Z] t+45:05  validación efimero release/c148-1 backend 50c2268d SUCCEEDED ok digest cf5eea81358d (944 s)
+[2026-11-21T12:18:58Z] t+45:05  VALIDACIÓN FINAL release/c148-1 efimero: tesis-efimero-desplegar-backend:50c2268d-048d-4edb-95a3-07bbf4ef603a ok fin 2026-11-21T12:18:45Z tiempo de validación 2667 s
+[2026-11-21T12:19:03Z] t+45:10  cierre efímero release/c148-1 backend: PR #693 -> main-efimero, cerrado sin merge
+[2026-11-21T12:19:18Z] t+45:25  cierre efímero release/c148-1 backend: build del webhook tesis-efimero-cerrar-backend:8d3d7497-71f5-4c9f-96b7-c1d51a45cb9d
+[2026-11-21T12:25:02Z] t+51:09  cierre efímero release/c148-1 backend: 8d3d7497 SUCCEEDED, accion destruir, resultado ok (341 s)
+[2026-11-21T12:25:02Z] t+51:09  CERRADA release/c148-1 en efímero: entorno destruido por webhook (tesis-efimero-cerrar-backend:8d3d7497-71f5-4c9f-96b7-c1d51a45cb9d)
+[2026-11-21T12:25:15Z] t+51:22  limpieza release/c148-1: ramas del -cd borradas (tesis-backend-cd release/c148-1, tesis-backend-cd release/fijo/c148-1); PR y ramas de la app de los dos modelos cerrados y borrados
+[2026-11-21T12:25:15Z] t+51:22  corrida c148 terminada en 3082 s desde t = 0
+[2026-11-21T12:25:15Z] t+51:22  depurador
+[2026-11-21T12:25:46Z] t+51:53    depurador: 0 restos encontrados
+[2026-11-21T12:25:51Z] t+51:58  cierre c148: VÁLIDA
